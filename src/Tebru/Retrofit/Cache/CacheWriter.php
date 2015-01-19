@@ -92,10 +92,10 @@ class CacheWriter
     }
 
     /**
-     * Remove contents from cache file
+     * Reset content in cache file
      */
     public function clean()
     {
-        $this->write('', null);
+        $this->write('<?php', null);
     }
 }

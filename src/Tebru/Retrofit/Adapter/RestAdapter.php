@@ -60,7 +60,8 @@ class RestAdapter
      */
     public function create($service)
     {
-        $class = '\\Tebru\\Retrofit\\Service\\Generated_' . md5($service);
+        $className = md5($service);
+        $class = sprintf('\\Tebru\\Retrofit\\Service\\NSGenerated_%s\\Generated_%s', $className, $className);
 
         return new $class($this->baseUrl, $this->httpClient, $this->serializer);
     }

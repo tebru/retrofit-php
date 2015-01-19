@@ -113,7 +113,12 @@ class InterfaceToClientConverter
         // render class as string
         $template = $this->twig->loadTemplate('service.php.twig');
 
-        return $template->render(['uses' => $useStatements, 'methods' => $methods, 'className' => $className, 'interfaceName' => $interfaceName]);
+        return $template->render([
+            'uses' => $useStatements,
+            'className' => $className,
+            'interfaceName' => $interfaceName,
+            'methods' => $methods,
+        ]);
     }
 
     /**

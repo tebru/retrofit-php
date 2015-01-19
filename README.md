@@ -8,6 +8,39 @@ This library is still under development.  Please install from dev-master.
 composer require tebru/retrofit-php:dev-master
 ```
 
+## Setup
+You must register the annotation namespaces
+
+```
+AnnotationRegistry::registerAutoloadNamespace('Tebru\Retrofit\Annotation', __DIR__ . '/src');
+AnnotationRegistry::registerAutoloadNamespace('JMS\Serializer\Annotation', __DIR__ . '/vendor/jms/serializer/src');
+```
+
+Create a new `Retrofit` object and specify the cache directory.  Defaults to `/tmp`
+
+```
+$retrofit = new \Tebru\Retrofit\Retrofit(__DIR__ . '/cache');
+```
+
+Register all services with the `Retrofit` object.  These are the interfaces you're creating.  This is necessary to generate the cache file.
+
+```
+$retrofit->registerServices([FooService::class, BarService::class]);
+$retrofit->registerService(BazService::class);
+```
+
+Create the cache.  We need to do this in order to prevent costly class generation during runtime.  Passing `false` to this method will only compile the classes if a cache file does not currently exist.
+
+```
+$retrofit->createCache(true|false);
+```
+
+Finally load the classes into memory.
+
+```
+$retrofit->load();
+```
+
 ## Usage Overview
 *Usage examples are referenced from Square's documentation*
 
