@@ -9,10 +9,10 @@ composer require tebru/retrofit-php:dev-master
 ```
 
 ## Setup
-You must register the annotation namespaces
+You must register the annotation namespaces.  For example:
 
 ```
-AnnotationRegistry::registerAutoloadNamespace('Tebru\Retrofit\Annotation', __DIR__ . '/src');
+AnnotationRegistry::registerAutoloadNamespace('Tebru\Retrofit\Annotation', __DIR__ . '/vendor/tebru/retrofit-php/src');
 AnnotationRegistry::registerAutoloadNamespace('JMS\Serializer\Annotation', __DIR__ . '/vendor/jms/serializer/src');
 ```
 
