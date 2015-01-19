@@ -1,0 +1,32 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Composer Wrapper
+ *
+ * You may use this file as you would the standard composer command line tool.
+ * This script is made to wrap the composer script. It will download composer
+ * and place the executable phar file in the `bin/` folder of the project if
+ * it is not already available. When the executable phar is available this
+ * script will forward all commands to the composer executable.
+ * To change/update composer version, see the url below.
+ *
+ * @copyright 2014 Maxwell Vandervelde
+ * @license MIT <http://opensource.org/licenses/MIT>
+ * @author Maxwell Vandervelde <Max@MaxVandervelde.com>
+ */
+$composerExecutable = __DIR__ . '/composer.phar';
+$composerUrl = 'https://getcomposer.org/download/1.0.0-alpha9/composer.phar';
+if (false === file_exists($composerExecutable)) {
+    $fileName = basename($composerExecutable);
+    echo "> $fileName not found, attempting to download...\r\n";
+    $fh = fopen($composerExecutable, 'w');
+    if (!$fh) {
+        throw new \RuntimeException('Could not create file: ' . $composerExecutable);
+    }
+    if (false === fwrite($fh, file_get_contents($composerUrl))) {
+        throw new \RuntimeException('Download failed: error');
+    }
+    chmod($composerExecutable, 0777);
+}
+require 'phar://' . $composerExecutable . '/bin/composer';
+
