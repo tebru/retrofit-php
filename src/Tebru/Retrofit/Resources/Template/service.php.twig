@@ -1,0 +1,53 @@
+{{ '<?php' }}
+
+namespace {{ 'Tebru\\Retrofit\\Service' }}
+{
+    use GuzzleHttp\ClientInterface;
+    use JMS\Serializer\SerializerInterface;
+{% for use in uses %}
+    {{ use }}
+{% endfor %}
+
+    class {{ className }} implements \{{ interfaceName }}
+    {
+        private $baseUrl;
+        private $client;
+        private $serializer;
+
+        public function __construct($baseUrl, ClientInterface $client, SerializerInterface $serializer)
+        {
+            $this->baseUrl = $baseUrl;
+            $this->client = $client;
+            $this->serializer = $serializer;
+        }
+{% for method in methods %}
+
+        {{ method.methodDeclaration }}
+        {
+{% if method.options.body is not empty %}
+            if (is_object({{ method.options.body }})) {
+                {{ method.options.body }} = $this->serializer->serialize({{ method.options.body }}, 'json');
+            }
+
+{% endif %}
+            $request = $this->client->createRequest('{{ method.type|upper }}', $this->baseUrl . "{{ method.path }}", {{ export_php_array(method.options)|raw }});
+{% if method.query is not empty %}
+            $request->setQuery({{ export_php_array(method.query)|raw }});
+{% endif %}
+{% if method.headers is not empty %}
+            $request->addHeaders({{ export_php_array(method.headers)|raw }});
+{% endif %}
+
+            $response = (string)$this->client->send($request)->getBody();
+
+{% if 'raw' == method.return %}
+            return $response;
+{% elseif 'array' == method.return %}
+            return json_decode($response, true);
+{% else %}
+            return $this->serializer->deserialize($response, '{{ method.return }}', 'json');
+{% endif %}
+        }
+{% endfor %}
+    }
+}

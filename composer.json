@@ -1,0 +1,25 @@
+{
+    "name": "tebru/retrofit-php",
+    "description": "Retrofit for PHP - A PHP REST client.",
+    "require": {
+        "guzzlehttp/guzzle": "5.0.*",
+        "jms/serializer": "0.16.*",
+        "doctrine/annotations": "1.2.*",
+        "doctrine/common": "2.4.*",
+        "twig/twig": "*",
+        "symfony/filesystem": "2.6.*",
+        "symfony/event-dispatcher": "2.6.*"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nate Brunette",
+            "email": "n@tebru.net"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "Tebru\\Retrofit": "src/"
+        }
+    }
+}
