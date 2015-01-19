@@ -177,6 +177,18 @@ public function listRepos($user, $accept)
 {
 ```
 
+### Returning
+Use `@Returns` to specify a return type.  The default is `array`.  Other acceptable values are `raw` or any type specified in the JMS Serializer documentation.  A `raw` return will return the API response as a string.
+
+```
+/**
+ * @GET("/users/{user}/list")
+ * @Returns("ArrayCollection<My\Foo\ReposList>")
+ */
+public function listRepos($user, $accept)
+{
+```
+
 ## Interoperability
 The two main technologies backing Retrofit are Guzzle and JMS Serializer.  We aim to provide enough integration points with these libraries so you can use them as you're accustom.
 
