@@ -7,6 +7,7 @@ namespace Tebru\Retrofit\Adapter;
 
 use GuzzleHttp\ClientInterface;
 use JMS\Serializer\SerializerInterface;
+use Tebru\Retrofit\RequestInterceptor;
 
 /**
  * Class RestAdapter
@@ -26,6 +27,11 @@ class RestAdapter
      * @var SerializerInterface $serializer
      */
     private $serializer;
+
+    /**
+     * @var RequestInterceptor $requestInterceptor
+     */
+    private $requestInterceptor;
 
     /**
      * Constructor
@@ -52,6 +58,14 @@ class RestAdapter
     }
 
     /**
+     * @param RequestInterceptor $requestInterceptor
+     */
+    public function setRequestInterceptor(RequestInterceptor $requestInterceptor)
+    {
+        $this->requestInterceptor = $requestInterceptor;
+    }
+
+    /**
      * Create a new service
      *
      * @param string $service
@@ -63,6 +77,6 @@ class RestAdapter
         $className = md5($service);
         $class = sprintf('\\Tebru\\Retrofit\\Service\\NSGenerated_%s\\Generated_%s', $className, $className);
 
-        return new $class($this->baseUrl, $this->httpClient, $this->serializer);
+        return new $class($this->baseUrl, $this->httpClient, $this->serializer, $this->requestInterceptor);
     }
 }

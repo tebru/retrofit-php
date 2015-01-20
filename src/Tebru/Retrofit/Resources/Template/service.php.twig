@@ -3,6 +3,7 @@ namespace {{ 'Tebru\\Retrofit\\Service\\NS' ~ className }}
 {
     use GuzzleHttp\ClientInterface;
     use JMS\Serializer\SerializerInterface;
+    use Tebru\Retrofit\RequestInterceptor;
 {% for use in uses %}
     {{ use }}
 {% endfor %}
@@ -12,12 +13,14 @@ namespace {{ 'Tebru\\Retrofit\\Service\\NS' ~ className }}
         private $baseUrl;
         private $client;
         private $serializer;
+        private $requestInterceptor;
 
-        public function __construct($baseUrl, ClientInterface $client, SerializerInterface $serializer)
+        public function __construct($baseUrl, ClientInterface $client, SerializerInterface $serializer, RequestInterceptor $requestInterceptor = null)
         {
             $this->baseUrl = $baseUrl;
             $this->client = $client;
             $this->serializer = $serializer;
+            $this->requestInterceptor = $requestInterceptor;
         }
 {% for method in methods %}
 
@@ -30,12 +33,17 @@ namespace {{ 'Tebru\\Retrofit\\Service\\NS' ~ className }}
 
 {% endif %}
             $request = $this->client->createRequest('{{ method.type|upper }}', $this->baseUrl . "{{ method.path }}", {{ export_php_array(method.options)|raw }});
-{% if method.query is not empty %}
-            $request->setQuery({{ export_php_array(method.query)|raw }});
-{% endif %}
-{% if method.headers is not empty %}
-            $request->addHeaders({{ export_php_array(method.headers)|raw }});
-{% endif %}
+
+            $queries = {{ export_php_array(method.query)|raw }};
+            $headers = {{ export_php_array(method.headers)|raw }};
+
+            if (null !== $this->requestInterceptor) {
+                $queries = array_merge($queries, $this->requestInterceptor->getQueries());
+                $headers = array_merge($headers, $this->requestInterceptor->getHeaders());
+            }
+
+            $request->setQuery($queries);
+            $request->addHeaders($headers);
 
             $response = (string)$this->client->send($request)->getBody();
 

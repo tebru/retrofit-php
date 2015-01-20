@@ -189,6 +189,19 @@ public function listRepos($user, $accept)
 {
 ```
 
+## Sending data on every request
+If there is a dynamic query parameter or header you'd like to send on each request, use a `RequestInterceptor`
+
+```
+$requestInterceptor = new \Tebru\Retrofit\RequestInterceptor();
+$requestInterceptor->addQuery('authToken', $authToken);
+$requestInterceptor->addHeader('My-Header', $myHeader);
+
+...
+
+$builder->setRequestInterceptor($requestInterceptor);
+```
+
 ## Interoperability
 The two main technologies backing Retrofit are Guzzle and JMS Serializer.  We aim to provide enough integration points with these libraries so you can use them as you're accustom.
 

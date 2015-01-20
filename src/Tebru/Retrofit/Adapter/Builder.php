@@ -14,6 +14,7 @@ use JMS\Serializer\Handler\HandlerRegistryInterface;
 use JMS\Serializer\SerializerBuilder;
 use JMS\Serializer\SerializerInterface;
 use LogicException;
+use Tebru\Retrofit\RequestInterceptor;
 
 /**
  * Class Builder
@@ -38,6 +39,11 @@ class Builder
      * @var SerializerInterface $serializer
      */
     private $serializer;
+
+    /**
+     * @var RequestInterceptor $requestInterceptor
+     */
+    private $requestInterceptor;
 
     /**
      * An array of http client subscribers
@@ -77,50 +83,78 @@ class Builder
      * Sets the http client used with rest client
      *
      * @param ClientInterface $httpClient
+     * @return $this
      */
     public function setHttpClient(ClientInterface $httpClient)
     {
         $this->httpClient = $httpClient;
+
+        return $this;
     }
 
     /**
      * Set the serializer used with rest client
      *
      * @param SerializerInterface $serializer
+     * @return $this
      */
     public function setSerializer(SerializerInterface $serializer)
     {
         $this->serializer = $serializer;
+
+        return $this;
+    }
+
+    /**
+     * Set the request interceptor
+     *
+     * @param RequestInterceptor $requestInterceptor
+     * @return $this
+     */
+    public function setRequestInterceptor(RequestInterceptor $requestInterceptor)
+    {
+        $this->requestInterceptor = $requestInterceptor;
+
+        return $this;
     }
 
     /**
      * Add a subscriber to the http client
      *
      * @param SubscriberInterface $subscriber
+     * @return $this
      */
     public function addHttpClientSubscriber(SubscriberInterface $subscriber)
     {
         $this->httpClientSubscribers[] = $subscriber;
+
+        return $this;
     }
 
     /**
      * Add a subscriber to the serializer
      *
      * @param EventSubscriberInterface $subscriber
+     * @return $this
      */
     public function addSerializerSubscriber(EventSubscriberInterface $subscriber)
     {
         $this->serializerSubscribers[] = $subscriber;
+
+        return $this;
     }
 
     /**
      * Add a subscribing handler to the serializer
      *
      * @param HandlerRegistryInterface $handler
+     * @return $this
      */
     public function addSerializerSubscribingHandler(HandlerRegistryInterface $handler)
     {
         $this->serializerSubscribingHandlers[] = $handler;
+
+        return $this;
     }
 
     /**
@@ -159,7 +193,10 @@ class Builder
         }
 
 
-        return new RestAdapter($this->baseUrl, $this->httpClient, $this->serializer);
+        $adapter = new RestAdapter($this->baseUrl, $this->httpClient, $this->serializer);
+        $adapter->setRequestInterceptor($this->requestInterceptor);
+
+        return $adapter;
     }
 
     /**
