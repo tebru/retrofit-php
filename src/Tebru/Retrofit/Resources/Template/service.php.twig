@@ -26,13 +26,21 @@ namespace {{ 'Tebru\\Retrofit\\Service\\NS' ~ className }}
 
         {{ method.methodDeclaration }}
         {
+            $options = {{ export_php_array(method.options)|raw }};
 {% if method.options.body is not empty %}
             if (is_object({{ method.options.body }})) {
-                {{ method.options.body }} = $this->serializer->serialize({{ method.options.body }}, 'json');
+                $options['body'] = $this->serializer->serialize({{ method.options.body }}, 'json');
+            } else {
+                $options['body'] = {{ method.options.body }};
             }
 
+{% elseif method.parts is not empty %}
+{% for key, part in method.parts %}
+            $options['body']['{{ key }}'] = {{ part }};
+{% endfor %}
 {% endif %}
-            $request = $this->client->createRequest('{{ method.type|upper }}', $this->baseUrl . "{{ method.path }}", {{ export_php_array(method.options)|raw }});
+
+            $request = $this->client->createRequest('{{ method.type|upper }}', $this->baseUrl . "{{ method.path }}", $options);
 
             $queries = {{ export_php_array(method.query)|raw }};
             $headers = {{ export_php_array(method.headers)|raw }};

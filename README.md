@@ -146,6 +146,19 @@ public function listRepos($user, $body);
 
 If an array is passed in, the http client will determine the correct method for sending the body (`application/x-www-form-urlencoded` or `multipart/form-data`)
 
+You can also build the body dynamically with `@Part` annotations.  Each annotation maps to a method parameter and will create a body array.
+
+```
+/**
+ * @GET("/users/{user}/list")
+ * @Part("part1")
+ * @Part("part2", var="foo")
+ */
+public function listRepos($user, $part1, $foo);
+```
+
+Both `@Body` and `@Part` annotations cannot be set.
+
 ### Headers
 Headers can be set on the class or method using `@Headers`.  If they're set on the class, they'll be applied to each method.
 

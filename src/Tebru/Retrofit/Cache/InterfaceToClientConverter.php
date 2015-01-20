@@ -6,11 +6,12 @@
 namespace Tebru\Retrofit\Cache;
 
 use Doctrine\Common\Annotations\AnnotationReader;
-use JMS\Serializer\Exception\LogicException;
+use LogicException;
 use ReflectionClass;
 use Tebru\Retrofit\Annotation\Body;
 use Tebru\Retrofit\Annotation\Header;
 use Tebru\Retrofit\Annotation\Headers;
+use Tebru\Retrofit\Annotation\Part;
 use Tebru\Retrofit\Annotation\Query;
 use Tebru\Retrofit\Annotation\QueryMap;
 use Tebru\Retrofit\Annotation\Returns;
@@ -85,6 +86,7 @@ class InterfaceToClientConverter
             $methods[$index]['return'] = 'array';
             $methods[$index]['methodDeclaration'] = '';
             $methods[$index]['options'] = [];
+            $methods[$index]['parts'] = [];
             $methods[$index]['query'] = [];
             $methods[$index]['queryMap'] = [];
             $methods[$index]['headers'] = [];
@@ -96,6 +98,7 @@ class InterfaceToClientConverter
                 $methods[$index] = $this->queryAnnotation($methodAnnotation, $methods[$index], $parameters);
                 $methods[$index] = $this->queryMapAnnotation($methodAnnotation, $methods[$index], $parameters);
                 $methods[$index] = $this->bodyAnnotation($methodAnnotation, $methods[$index], $parameters);
+                $methods[$index] = $this->partAnnotation($methodAnnotation, $methods[$index], $parameters);
                 $methods[$index] = $this->headersAnnotation($methodAnnotation, $methods[$index]);
                 $methods[$index] = $this->headerAnnotation($methodAnnotation, $methods[$index], $parameters);
                 $methods[$index] = $this->returnsAnnotation($methodAnnotation, $methods[$index]);
@@ -106,6 +109,10 @@ class InterfaceToClientConverter
 
             if (empty($methods[$index]['type'])) {
                 throw new LogicException('Request method must be set');
+            }
+
+            if (!empty($methods[$index]['options']['body']) && !empty($methods[$index]['parts'])) {
+                throw new LogicException('Body and part cannot both be set');
             }
         }
 
@@ -249,6 +256,28 @@ class InterfaceToClientConverter
         $this->assertParameter($parameters, [substr($methodAnnotation->getBody(), 1)]);
 
         $method['options']['body'] = $methodAnnotation->getBody();
+
+        return $method;
+    }
+
+    /**
+     * Configures array for body parts annotation
+     *
+     * @param mixed $methodAnnotation
+     * @param array $method
+     * @param array $parameters
+     * @return array
+     */
+    private function partAnnotation($methodAnnotation, array $method, array $parameters)
+    {
+        if (!$methodAnnotation instanceof Part) {
+            return $method;
+        }
+
+        // ensure parameter exists
+        $this->assertParameter($parameters, [substr($methodAnnotation->getPart(), 1)]);
+
+        $method['parts'][$methodAnnotation->getKey()] = $methodAnnotation->getPart();
 
         return $method;
     }
