@@ -194,7 +194,10 @@ class Builder
 
 
         $adapter = new RestAdapter($this->baseUrl, $this->httpClient, $this->serializer);
-        $adapter->setRequestInterceptor($this->requestInterceptor);
+
+        if (null !== $this->requestInterceptor) {
+            $adapter->setRequestInterceptor($this->requestInterceptor);
+        }
 
         return $adapter;
     }
