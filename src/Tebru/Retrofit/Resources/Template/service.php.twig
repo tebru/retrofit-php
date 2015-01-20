@@ -26,7 +26,7 @@ namespace {{ 'Tebru\\Retrofit\\Service\\NS' ~ className }}
 
         {{ method.methodDeclaration }}
         {
-            $options = {{ export_php_array(method.options)|raw }};
+            $options = {{ print_array(method.options)|raw }};
 {% if method.options.body is not empty %}
             if (is_object({{ method.options.body }})) {
                 $options['body'] = $this->serializer->serialize({{ method.options.body }}, 'json');
@@ -35,13 +35,13 @@ namespace {{ 'Tebru\\Retrofit\\Service\\NS' ~ className }}
             }
 
 {% elseif method.parts is not empty %}
-            $options['body'] = {{ export_php_array(method.parts)|raw }};
+            $options['body'] = {{ print_array(method.parts)|raw }};
 {% endif %}
 
             $request = $this->client->createRequest('{{ method.type|upper }}', $this->baseUrl . "{{ method.path }}", $options);
 
-            $queries = {{ export_php_array(method.query)|raw }};
-            $headers = {{ export_php_array(method.headers)|raw }};
+            $queries = {{ print_array(method.query)|raw }};
+            $headers = {{ print_array(method.headers)|raw }};
 
             if (null !== $this->requestInterceptor) {
                 $queries = array_merge($queries, $this->requestInterceptor->getQueries());

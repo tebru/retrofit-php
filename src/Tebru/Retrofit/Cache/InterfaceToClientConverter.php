@@ -43,7 +43,7 @@ class InterfaceToClientConverter
         // set up twig environment
         $loader = new Twig_Loader_Filesystem(__DIR__ . '/../Resources/Template');
         $this->twig = new Twig_Environment($loader);
-        $this->twig->addFunction(new Twig_SimpleFunction('export_php_array', new PrintArrayFunction()));
+        $this->twig->addFunction(new Twig_SimpleFunction('print_array', new PrintArrayFunction()));
     }
 
     /**
