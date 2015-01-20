@@ -35,9 +35,7 @@ namespace {{ 'Tebru\\Retrofit\\Service\\NS' ~ className }}
             }
 
 {% elseif method.parts is not empty %}
-{% for key, part in method.parts %}
-            $options['body']['{{ key }}'] = {{ part }};
-{% endfor %}
+            $options['body'] = {{ export_php_array(method.parts)|raw }};
 {% endif %}
 
             $request = $this->client->createRequest('{{ method.type|upper }}', $this->baseUrl . "{{ method.path }}", $options);
