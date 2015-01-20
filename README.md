@@ -92,8 +92,7 @@ As seen before, parameters can be defined by inserting curly braces into the url
 /**
  * @GET("/users/{user}/list")
  */
-public function listRepos($user)
-{
+public function listRepos($user);
 ```
 
 The are mapped automatically to parameters on the method.  Anything that maps to PHP variables can be overriden by passing a `var` key.
@@ -102,8 +101,7 @@ The are mapped automatically to parameters on the method.  Anything that maps to
 /**
  * @GET("/users/{user}/list", var="id")
  */
-public function listRepos($id)
-{
+public function listRepos($id);
 ```
 
 Which will allow you to name your parameter `id` in your method definition.
@@ -122,8 +120,7 @@ Or as an annotation which maps to a method parameter and lets you change the val
  * @GET("/users/{user}/list")
  * @Query("sort")
  */
-public function listRepos($user, $sort)
-{
+public function listRepos($user, $sort);
 ```
 
 You can also pass in an array of parameters with `@QueryMap`, which also maps to a method parameter.
@@ -133,8 +130,7 @@ You can also pass in an array of parameters with `@QueryMap`, which also maps to
  * @GET("/users/{user}/list")
  * @QueryMap("queryParams")
  */
-public function listRepos($user, array $queryParams)
-{
+public function listRepos($user, array $queryParams);
 ```
 
 ### Request Body
@@ -145,8 +141,7 @@ Request body also maps to a method parameter.  Acceptable values are `string`, `
  * @GET("/users/{user}/list")
  * @Body("body")
  */
-public function listRepos($user, $body)
-{
+public function listRepos($user, $body);
 ```
 
 If an array is passed in, the http client will determine the correct method for sending the body (`application/x-www-form-urlencoded` or `multipart/form-data`)
@@ -173,8 +168,7 @@ They can also be set individually on methods with `@HEADER` and map to a method 
  * @GET("/users/{user}/list")
  * @Header("Accept", var="accept")
  */
-public function listRepos($user, $accept)
-{
+public function listRepos($user, $accept);
 ```
 
 ### Returning
@@ -185,8 +179,7 @@ Use `@Returns` to specify a return type.  The default is `array`.  Other accepta
  * @GET("/users/{user}/list")
  * @Returns("ArrayCollection<My\Foo\ReposList>")
  */
-public function listRepos($user, $accept)
-{
+public function listRepos($user, $accept);
 ```
 
 ## Sending data on every request
