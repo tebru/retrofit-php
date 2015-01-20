@@ -59,7 +59,7 @@ class InterfaceToClientConverter
 
         // get information about the class
         $interfaceName = $reflectionClass->getName();
-        $className = 'Generated_' . md5($reflectionClass->getShortName());
+        $className = 'Generated_' . md5($interfaceName);
         $fileName = $reflectionClass->getFileName();
 
         // get use statements as array
