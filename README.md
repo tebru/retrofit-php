@@ -228,5 +228,5 @@ $builder->addSerializerSubscriber(new MyEventSubscriber());
 $builder->addSerializerSubscribingHandler(new MySubscribingHandler());
 ```
 
-### Known issues
+## Known issues
 - If you are importing a class in your interface that is defined in the same package as your interface, you must use the full namespaced name or declare a `use` statement even though it's not required by PHP.
