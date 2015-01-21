@@ -5,7 +5,6 @@
         "guzzlehttp/guzzle": "5.0.*",
         "jms/serializer": "0.16.*",
         "doctrine/annotations": "1.2.*",
-        "doctrine/common": "2.4.*",
         "twig/twig": "*",
         "symfony/filesystem": "2.6.*",
         "symfony/event-dispatcher": "2.6.*"
