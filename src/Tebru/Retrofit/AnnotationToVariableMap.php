@@ -17,6 +17,13 @@ use Exception;
 abstract class AnnotationToVariableMap
 {
     /**
+     * Annotation key mapped to variable
+     *
+     * @var string $key
+     */
+    private $key;
+
+    /**
      * Constructor
      *
      * @param array $params
@@ -31,7 +38,18 @@ abstract class AnnotationToVariableMap
         // will prepend '$' to either the original value or the 'var' key, if set
         $value = '$' . (isset($params['var']) ? $params['var'] : $params['value']);
 
+        $this->key = $params['value'];
         $this->setValue($params['value'], $value);
+    }
+
+    /**
+     * Get the annotation key
+     *
+     * @return string
+     */
+    public function getKey()
+    {
+        return $this->key;
     }
 
     /**

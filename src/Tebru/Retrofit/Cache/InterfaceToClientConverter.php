@@ -233,7 +233,7 @@ class InterfaceToClientConverter
         $this->assertParameter($parameters, [substr($methodAnnotation->getQueryMap(), 1)]);
 
         // add map to current query list
-        $method['query'][] = $methodAnnotation->getQueryMap();
+        $method['query'][$methodAnnotation->getKey()] = $methodAnnotation->getQueryMap();
 
         return $method;
     }

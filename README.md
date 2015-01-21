@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/tebru/retrofit-php.svg?branch=master)](https://travis-ci.org/tebru/retrofit-php)
+
 # Retrofit PHP
 This library aims to ease creation of REST clients.  It is blatantly stolen from square/retrofit (https://github.com/square/retrofit) and implemented in PHP.
 
@@ -225,3 +227,6 @@ There are two methods `addSerializerSubscriber` and `addSerializerSubscribingHan
 $builder->addSerializerSubscriber(new MyEventSubscriber());
 $builder->addSerializerSubscribingHandler(new MySubscribingHandler());
 ```
+
+### Known issues
+- If you are importing a class in your interface that is defined in the same package as your interface, you must use the full namespaced name or declare a `use` statement even though it's not required by PHP.

@@ -2,12 +2,18 @@
     "name": "tebru/retrofit-php",
     "description": "Retrofit for PHP - A PHP REST client.",
     "require": {
+        "php": ">= 5.4",
         "guzzlehttp/guzzle": "5.0.*",
         "jms/serializer": "0.16.*",
         "doctrine/annotations": "1.2.*",
         "twig/twig": "*",
         "symfony/filesystem": "2.6.*",
         "symfony/event-dispatcher": "2.6.*"
+    },
+    "require-dev": {
+        "php": ">= 5.5",
+        "mockery/mockery": "0.9.*",
+        "phpunit/phpunit": "4.4.*"
     },
     "license": "MIT",
     "authors": [
@@ -19,6 +25,9 @@
     "autoload": {
         "psr-0": {
             "Tebru\\Retrofit": "src/"
+        },
+        "psr-4": {
+            "Tebru\\Retrofit\\Test\\": "tests/"
         }
     }
 }
