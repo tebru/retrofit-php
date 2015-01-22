@@ -206,17 +206,34 @@ Use `@Returns` to specify a return type.  The default is `array`.  Other accepta
 public function listRepos($user, $accept);
 ```
 
-## Sending data on every request
-If there is a dynamic query parameter or header you'd like to send on each request, use a `RequestInterceptor`
+## Events
+Retrofit uses Symfony's event dispatching component.  To listen to events, you can add a subscriber or listener to the builder.
+
+### beforeRequest
+This event will be dispatched before a request is made and a Guzzle RequestInterface will be available.
 
 ```
-$requestInterceptor = new \Tebru\Retrofit\RequestInterceptor();
-$requestInterceptor->addQuery('authToken', $authToken);
-$requestInterceptor->addHeader('My-Header', $myHeader);
+$builder->addSubscriber(new RequestSubscriber());
+$builder->addListener('beforeRequest', function use ($myHeader) (\Tebru\Retrofit\Event\BeforeRequestEvent $event) {
+    $request = $event->getRequest();
+    
+    $request->getQuery()->add('sort', 'desc');
+    $request->addHeader('My-Header', $myHeader);
+});
+```
 
-...
+### afterRequest
+This event will e dispatched after a request is made and a Guzzle ResponseInterface will be available
 
-$builder->setRequestInterceptor($requestInterceptor);
+```
+$builder->addSubscriber(new RequestSubscriber());
+$builder->addListener('afterRequest', function use () (\Tebru\Retrofit\Event\AfterRequestEvent $event) {
+    $response = $event->getResponse();
+    
+    if (200 !== $response->getStatusCode()) {
+        throw new Exception('boo!');
+    }
+});
 ```
 
 ## Interoperability

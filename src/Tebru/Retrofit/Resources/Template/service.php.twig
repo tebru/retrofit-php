@@ -3,7 +3,9 @@ namespace {{ 'Tebru\\Retrofit\\Service\\NS' ~ className }}
 {
     use GuzzleHttp\ClientInterface;
     use JMS\Serializer\SerializerInterface;
-    use Tebru\Retrofit\RequestInterceptor;
+    use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+    use Tebru\Retrofit\Event\BeforeRequestEvent;
+    use Tebru\Retrofit\Event\AfterRequestEvent;
 {% for use in uses %}
     {{ use }}
 {% endfor %}
@@ -13,14 +15,14 @@ namespace {{ 'Tebru\\Retrofit\\Service\\NS' ~ className }}
         private $baseUrl;
         private $client;
         private $serializer;
-        private $requestInterceptor;
+        private $eventDispatcher;
 
-        public function __construct($baseUrl, ClientInterface $client, SerializerInterface $serializer, RequestInterceptor $requestInterceptor = null)
+        public function __construct($baseUrl, ClientInterface $client, SerializerInterface $serializer, EventDispatcherInterface $eventDispatcher)
         {
             $this->baseUrl = $baseUrl;
             $this->client = $client;
             $this->serializer = $serializer;
-            $this->requestInterceptor = $requestInterceptor;
+            $this->eventDispatcher = $eventDispatcher;
         }
 {% for method in methods %}
 
@@ -40,25 +42,21 @@ namespace {{ 'Tebru\\Retrofit\\Service\\NS' ~ className }}
 
             $request = $this->client->createRequest('{{ method.type|upper }}', $this->baseUrl . "{{ method.path }}", $options);
 
-            $queries = {{ print_array(method.query)|raw }};
-            $headers = {{ print_array(method.headers)|raw }};
+            $request->setQuery({{ print_array(method.query)|raw }});
+            $request->addHeaders({{ print_array(method.headers)|raw }});
 
-            if (null !== $this->requestInterceptor) {
-                $queries = array_merge($queries, $this->requestInterceptor->getQueries());
-                $headers = array_merge($headers, $this->requestInterceptor->getHeaders());
-            }
+            $this->eventDispatcher->dispatch('beforeRequest', new BeforeRequestEvent($request));
+            $response = $this->client->send($request);
+            $this->eventDispatcher->dispatch('afterRequest', new AfterRequestEvent($response));
 
-            $request->setQuery($queries);
-            $request->addHeaders($headers);
-
-            $response = (string)$this->client->send($request)->getBody();
+            $responseBody = (string)$response->getBody();
 
 {% if 'raw' == method.return %}
-            return $response;
+            return $responseBody;
 {% elseif 'array' == method.return %}
-            return json_decode($response, true);
+            return json_decode($responseBody, true);
 {% else %}
-            return $this->serializer->deserialize($response, '{{ method.return }}', 'json');
+            return $this->serializer->deserialize($responseBody, '{{ method.return }}', 'json');
 {% endif %}
         }
 {% endfor %}

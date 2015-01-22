@@ -7,7 +7,7 @@ namespace Tebru\Retrofit\Adapter;
 
 use GuzzleHttp\ClientInterface;
 use JMS\Serializer\SerializerInterface;
-use Tebru\Retrofit\RequestInterceptor;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Class RestAdapter
@@ -16,6 +16,9 @@ use Tebru\Retrofit\RequestInterceptor;
  */
 class RestAdapter
 {
+    /**
+     * @var string $baseUrl
+     */
     private $baseUrl;
 
     /**
@@ -29,9 +32,9 @@ class RestAdapter
     private $serializer;
 
     /**
-     * @var RequestInterceptor $requestInterceptor
+     * @var EventDispatcherInterface $eventDispatcher
      */
-    private $requestInterceptor;
+    private $eventDispatcher;
 
     /**
      * Constructor
@@ -39,12 +42,14 @@ class RestAdapter
      * @param string $baseUrl
      * @param ClientInterface $httpClient
      * @param SerializerInterface $serializer
+     * @param EventDispatcherInterface $eventDispatcher
      */
-    public function __construct($baseUrl, ClientInterface $httpClient, SerializerInterface $serializer)
+    public function __construct($baseUrl, ClientInterface $httpClient, SerializerInterface $serializer, EventDispatcherInterface $eventDispatcher)
     {
         $this->baseUrl = $baseUrl;
         $this->httpClient = $httpClient;
         $this->serializer = $serializer;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -55,14 +60,6 @@ class RestAdapter
     static public function builder()
     {
         return new Builder();
-    }
-
-    /**
-     * @param RequestInterceptor $requestInterceptor
-     */
-    public function setRequestInterceptor(RequestInterceptor $requestInterceptor)
-    {
-        $this->requestInterceptor = $requestInterceptor;
     }
 
     /**
@@ -77,6 +74,6 @@ class RestAdapter
         $className = md5($service);
         $class = sprintf('\\Tebru\\Retrofit\\Service\\NSGenerated_%s\\Generated_%s', $className, $className);
 
-        return new $class($this->baseUrl, $this->httpClient, $this->serializer, $this->requestInterceptor);
+        return new $class($this->baseUrl, $this->httpClient, $this->serializer, $this->eventDispatcher);
     }
 }
