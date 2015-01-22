@@ -81,12 +81,17 @@ class ClientGenerationTest extends PHPUnit_Framework_TestCase
 
     public function testGetWithQueryMap()
     {
-        $this->createClient('GET', '/get', [], ['foo' => 'bar', 'baz' => 'buzz', 'map' => ['bing' => 'bong']])->getWithQueryMap('buzz', ['bing' => 'bong']);
+        $this->createClient('GET', '/get', [], ['foo' => 'bar', 'baz' => 'buzz', 0 => ['bing' => 'bong']])->getWithQueryMap('buzz', ['bing' => 'bong']);
+    }
+
+    public function testGetWithQueryMapNested()
+    {
+        $this->createClient('GET', '/get', [], ['foo' => 'bar', 'baz' => 'buzz', 0 => ['map' => ['bing' => 'bong'], 'bloop' => 'loop']])->getWithQueryMapNested('buzz', ['map' => ['bing' => 'bong'], 'bloop' => 'loop']);
     }
 
     public function testCanChangeQueryMapVar()
     {
-        $this->createClient('GET', '/get', [], ['foo' => 'bar', 'baz' => 'buzz', 'map' => ['bing' => 'bong']])->canChangeQueryMapVar('buzz', ['bing' => 'bong']);
+        $this->createClient('GET', '/get', [], ['foo' => 'bar', 'baz' => 'buzz', 0 => ['bing' => 'bong']])->canChangeQueryMapVar('buzz', ['bing' => 'bong']);
     }
 
     public function testPostWithSimpleBody()

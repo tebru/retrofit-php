@@ -99,10 +99,10 @@ class InterfaceToClientConverter
                 // check each annotation type expected
                 $method = $this->httpRequestAnnotation($methodAnnotation, $method, $fileName, $parameters);
                 $method = $this->configureMethod($methodAnnotation, $method, $parameters, Query::class, 'query');
-                $method = $this->configureMethod($methodAnnotation, $method, $parameters, QueryMap::class, 'query');
                 $method = $this->configureMethod($methodAnnotation, $method, $parameters, Body::class, 'options');
                 $method = $this->configureMethod($methodAnnotation, $method, $parameters, Part::class, 'parts');
                 $method = $this->configureMethod($methodAnnotation, $method, $parameters, Header::class, 'headers');
+                $method = $this->queryMapAnnotation($methodAnnotation, $method, $parameters);
                 $method = $this->headersAnnotation($methodAnnotation, $method);
                 $method = $this->returnsAnnotation($methodAnnotation, $method);
             }
@@ -165,7 +165,7 @@ class InterfaceToClientConverter
 
     /**
      * Generic method to configure the method array
-     * @param string $annotation
+     * @param mixed $annotation
      * @param array $method
      * @param array $methodParameters
      * @param $expectedAnnotation
@@ -183,6 +183,28 @@ class InterfaceToClientConverter
         $this->assertParameter($methodParameters, $paramName);
 
         $method[$key][$annotation->getKey()] = $annotation->getValue();
+
+        return $method;
+    }
+
+    /**
+     * Configure array for query map
+     *
+     * @param mixed $methodAnnotation
+     * @param array $method
+     * @param array $parameters
+     * @return array
+     */
+    private function queryMapAnnotation($methodAnnotation, array $method, array $parameters)
+    {
+        if (!$methodAnnotation instanceof QueryMap) {
+            return $method;
+        }
+
+        $paramName = substr($methodAnnotation->getValue(), 1);
+        $this->assertParameter($parameters, $paramName);
+
+        $method['query'][] = $methodAnnotation->getValue();
 
         return $method;
     }

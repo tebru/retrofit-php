@@ -74,6 +74,13 @@ interface MockService
     /**
      * @Rest\GET("/get?foo=bar")
      * @Rest\Query("baz")
+     * @Rest\QueryMap("map")
+     */
+    public function getWithQueryMapNested($baz, array $map);
+
+    /**
+     * @Rest\GET("/get?foo=bar")
+     * @Rest\Query("baz")
      * @Rest\QueryMap("map", var="mapped")
      */
     public function canChangeQueryMapVar($baz, array $mapped);

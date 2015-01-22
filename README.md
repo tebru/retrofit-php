@@ -145,7 +145,7 @@ You can also pass in an array of parameters with `@QueryMap`, which also maps to
 public function listRepos($user, array $queryParams);
 ```
 
-Passing ['foo' => 'bar'] to $queryParams will result in a query formatted like `queryParams[foo]=bar`
+Passing `['foo' => 'bar']` to $queryParams will result in a query formatted like `?foo=bar` while passing `['key' => ['foo' => 'bar']]` will result in `?key[foo]=bar`.
 
 ### Request Body
 Request body also maps to a method parameter.  Acceptable values are `string`, `array`, or an object that can be serialied.
@@ -258,4 +258,4 @@ $builder->addSerializerSubscribingHandler(new MySubscribingHandler());
 ```
 
 ## Known issues
-- If you are importing a class in your interface that is defined in the same package as your interface, you must use the full namespaced name or declare a `use` statement even though it's not required by PHP.
+If you are importing a class in your interface that is defined in the same package as your interface, you must use the full namespaced name or declare a `use` statement even though it's not required by PHP.
