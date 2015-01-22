@@ -97,16 +97,7 @@ As seen before, parameters can be defined by inserting curly braces into the url
 public function listRepos($user);
 ```
 
-The are mapped automatically to parameters on the method.  Anything that maps to PHP variables can be overriden by passing a `var` key.
-
-```
-/**
- * @GET("/users/{user}/list", var="id")
- */
-public function listRepos($id);
-```
-
-Which will allow you to name your parameter `id` in your method definition.
+The are mapped automatically to parameters on the method.
 
 ### Query Parameters
 Query parameters can be added to the url
@@ -125,6 +116,16 @@ Or as an annotation which maps to a method parameter and lets you change the val
 public function listRepos($user, $sort);
 ```
 
+Any annotation that maps to PHP variables can be overriden by passing a `var` key.
+
+```
+/**
+ * @GET("/users/{user}/list")
+ * @Query("sort", var="foo")
+ */
+public function listRepos($user, $foo);
+```
+
 You can also pass in an array of parameters with `@QueryMap`, which also maps to a method parameter.
 
 ```
@@ -134,6 +135,8 @@ You can also pass in an array of parameters with `@QueryMap`, which also maps to
  */
 public function listRepos($user, array $queryParams);
 ```
+
+Passing ['foo' => 'bar'] to $queryParams will result in a query formatted like `queryParams[foo]=bar`
 
 ### Request Body
 Request body also maps to a method parameter.  Acceptable values are `string`, `array`, or an object that can be serialied.
