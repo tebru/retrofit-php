@@ -49,14 +49,12 @@ namespace {{ 'Tebru\\Retrofit\\Service\\NS' ~ className }}
             $response = $this->client->send($request);
             $this->eventDispatcher->dispatch('afterRequest', new AfterRequestEvent($response));
 
-            $responseBody = (string)$response->getBody();
-
 {% if 'raw' == method.return %}
-            return $responseBody;
+            return (string)$response->getBody();
 {% elseif 'array' == method.return %}
-            return json_decode($responseBody, true);
+            return json_decode((string)$response->getBody(), true);
 {% else %}
-            return $this->serializer->deserialize($responseBody, '{{ method.return }}', 'json');
+            return $this->serializer->deserialize((string)$response->getBody(), '{{ method.return }}', 'json');
 {% endif %}
         }
 {% endfor %}
