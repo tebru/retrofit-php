@@ -16,27 +16,4 @@ use Tebru\Retrofit\AnnotationToVariableMap;
  */
 class Body extends AnnotationToVariableMap
 {
-    /**
-     * @var mixed $body
-     */
-    private $body;
-
-    /**
-     * @param string $key
-     * @param string $value
-     */
-    protected function setValue($key, $value)
-    {
-        $this->body = $value;
-    }
-
-    /**
-     * Gets the body content
-     *
-     * @return mixed
-     */
-    public function getBody()
-    {
-        return $this->body;
-    }
 }

@@ -16,26 +16,4 @@ use Tebru\Retrofit\AnnotationToVariableMap;
  */
 class Header extends AnnotationToVariableMap
 {
-    /**
-     * @var array $header
-     */
-    private $header = [];
-
-    /**
-     * @param string $key
-     * @param string $value
-     */
-    protected function setValue($key, $value)
-    {
-        $this->header[$key] = $value;
-    }
-
-    /**
-     * @return array
-     */
-    public function getHeader()
-    {
-        return $this->header;
-    }
-
 }

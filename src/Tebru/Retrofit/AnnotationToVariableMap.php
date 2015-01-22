@@ -24,6 +24,13 @@ abstract class AnnotationToVariableMap
     private $key;
 
     /**
+     * Variable name prefixed with '$'
+     *
+     * @var string $value
+     */
+    private $value;
+
+    /**
      * Constructor
      *
      * @param array $params
@@ -39,7 +46,7 @@ abstract class AnnotationToVariableMap
         $value = '$' . (isset($params['var']) ? $params['var'] : $params['value']);
 
         $this->key = $params['value'];
-        $this->setValue($params['value'], $value);
+        $this->value = $value;
     }
 
     /**
@@ -53,10 +60,12 @@ abstract class AnnotationToVariableMap
     }
 
     /**
-     * Sets the key/value pair to the annotation
+     * Get the variable name
      *
-     * @param string $key
-     * @param string $value
+     * @return string
      */
-    abstract protected function setValue($key, $value);
+    public function getValue()
+    {
+        return $this->value;
+    }
 }

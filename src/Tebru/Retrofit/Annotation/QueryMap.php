@@ -16,25 +16,4 @@ use Tebru\Retrofit\AnnotationToVariableMap;
  */
 class QueryMap extends AnnotationToVariableMap
 {
-    /**
-     * @var string $queryMap
-     */
-    private $queryMap;
-
-    /**
-     * @param string $key
-     * @param string $value
-     */
-    protected function setValue($key, $value)
-    {
-        $this->queryMap = $value;
-    }
-
-    /**
-     * @return string
-     */
-    public function getQueryMap()
-    {
-        return $this->queryMap;
-    }
 }
