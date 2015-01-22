@@ -43,7 +43,7 @@ Finally load the classes into memory.
 $retrofit->load();
 ```
 
-You can use the console command (likely in `vendor/tebru/retrofit-php/bin/console`) to generate the cache file
+You can use the console command (likely in `vendor/tebru/retrofit-php/bin/console`) to generate the cache file.  In some development/deployment workflows, all of the above setup could be bypassed using the command to generate the cache file.  The only requirement after the cache is generated is to require the file, which is what `load()` does.
 
 Run `path/to/console retrofit:compile source/directory cache/directory`
 
