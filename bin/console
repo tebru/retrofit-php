@@ -1,0 +1,16 @@
+#!/usr/bin/env php
+
+<?php
+
+use Doctrine\Common\Annotations\AnnotationRegistry;
+use Tebru\Retrofit\Command\CompileCommand;
+use Symfony\Component\Console\Application;
+
+require __DIR__ . '/../vendor/autoload.php';
+
+AnnotationRegistry::registerAutoloadNamespace('Tebru\Retrofit\Annotation', __DIR__ . '/../src');
+AnnotationRegistry::registerAutoloadNamespace('JMS\Serializer\Annotation', __DIR__ . '/../vendor/jms/serializer/src');
+
+$application = new Application();
+$application->add(new CompileCommand);
+$application->run();

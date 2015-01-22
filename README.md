@@ -43,6 +43,12 @@ Finally load the classes into memory.
 $retrofit->load();
 ```
 
+You can use the console command (likely in `vendor/tebru/retrofit-php/bin/console`) to generate the cache file
+
+Run `path/to/console retrofit:compile source/directory cache/directory`
+
+Source and cache directory are both relative to the directory you're executing the command from
+
 ## Usage Overview
 *Usage examples are referenced from Square's documentation*
 
