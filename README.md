@@ -44,10 +44,10 @@ $retrofit->load();
 ```
 
 ### Warming the Cache
-You can use the console command (likely in `vendor/tebru/retrofit-php/bin/console`) to generate the cache file.  In some development/deployment workflows, all of the above setup could be bypassed using the command to generate the cache file.  The only requirement after the cache is generated is to require the file, which is what `load()` does.
+You can use the console command (likely in `vendor/bin/retrofit`) to generate the cache file.  In some development/deployment workflows, all of the above setup could be bypassed using the command to generate the cache file.  The only requirement after the cache is generated is to require the file, which is what `load()` does.
 
 ```
-path/to/console retrofit:compile source/directory cache/directory
+path/to/retrofit compile source/directory cache/directory
 ```
 
 Source and cache directory are both relative to the directory you're executing the command from

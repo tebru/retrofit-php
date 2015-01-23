@@ -1,0 +1,29 @@
+#!/usr/bin/env php
+
+<?php
+
+use Doctrine\Common\Annotations\AnnotationRegistry;
+use Tebru\Retrofit\Command\CompileCommand;
+use Symfony\Component\Console\Application;
+
+$dirs = [__DIR__ . '/../vendor', __DIR__ . '/../../..'];
+foreach ($dirs as $dir) {
+    $file = $dir . '/autoload.php';
+    if (file_exists($file)) {
+        $vendorDir = $dir;
+        require $file;
+    }
+}
+
+$dirs = [$vendorDir . '/tebru/retrofit-php/src', __DIR__ . '/../src'];
+foreach ($dirs as $dir) {
+    if (is_dir($dir)) {
+        AnnotationRegistry::registerAutoloadNamespace('Tebru\Retrofit\Annotation', $dir);
+    }
+}
+
+AnnotationRegistry::registerAutoloadNamespace('JMS\Serializer\Annotation', $vendorDir . '/jms/serializer/src');
+
+$application = new Application();
+$application->add(new CompileCommand);
+$application->run();

@@ -24,7 +24,7 @@ class CompileCommand extends Command
 {
     protected function configure()
     {
-        $this->setName('retrofit:compile');
+        $this->setName('compile');
         $this->setDescription('Compiles and caches all services found in the project');
         $this->addArgument('sourceDirectory', InputArgument::REQUIRED, 'Enter the source directory');
         $this->addArgument('cacheDirectory', InputArgument::REQUIRED, 'Enter the cache directory');

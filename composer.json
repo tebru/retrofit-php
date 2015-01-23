@@ -30,5 +30,6 @@
         "psr-4": {
             "Tebru\\Retrofit\\Test\\": "tests/"
         }
-    }
+    },
+    "bin": ["bin/retrofit"]
 }
