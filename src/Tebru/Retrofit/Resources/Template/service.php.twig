@@ -3,9 +3,6 @@ namespace {{ 'Tebru\\Retrofit\\Service\\NS' ~ className }}
 {
     use GuzzleHttp\ClientInterface;
     use JMS\Serializer\SerializerInterface;
-    use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-    use Tebru\Retrofit\Event\BeforeRequestEvent;
-    use Tebru\Retrofit\Event\AfterRequestEvent;
 {% for use in uses %}
     {{ use }}
 {% endfor %}
@@ -15,14 +12,12 @@ namespace {{ 'Tebru\\Retrofit\\Service\\NS' ~ className }}
         private $baseUrl;
         private $client;
         private $serializer;
-        private $eventDispatcher;
 
-        public function __construct($baseUrl, ClientInterface $client, SerializerInterface $serializer, EventDispatcherInterface $eventDispatcher)
+        public function __construct($baseUrl, ClientInterface $client, SerializerInterface $serializer)
         {
             $this->baseUrl = $baseUrl;
             $this->client = $client;
             $this->serializer = $serializer;
-            $this->eventDispatcher = $eventDispatcher;
         }
 {% for method in methods %}
 
@@ -45,9 +40,7 @@ namespace {{ 'Tebru\\Retrofit\\Service\\NS' ~ className }}
             $request->setQuery({{ print_array(method.query)|raw }});
             $request->addHeaders({{ print_array(method.headers)|raw }});
 
-            $this->eventDispatcher->dispatch('beforeRequest', new BeforeRequestEvent($request));
             $response = $this->client->send($request);
-            $this->eventDispatcher->dispatch('afterRequest', new AfterRequestEvent($response));
 
 {% if 'raw' == method.return %}
             return (string)$response->getBody();

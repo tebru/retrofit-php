@@ -210,14 +210,12 @@ public function listRepos($user, $accept);
 ```
 
 ## Events
-Retrofit uses Symfony's event dispatching component.  To listen to events, you can add a subscriber or listener to the builder.
+Add event listeners directly to the guzzle client or serializer, or add a subscriber to the builder.
 
-### beforeRequest
-This event will be dispatched before a request is made and a Guzzle RequestInterface will be available.
+### Examples of handling request events
 
 ```
-$builder->addSubscriber(new RequestSubscriber());
-$builder->addListener('beforeRequest', function use ($myHeader) (\Tebru\Retrofit\Event\BeforeRequestEvent $event) {
+$httpClient->getEmiter()->on('before', function use ($myHeader) (BeforeEvent $event) {
     $request = $event->getRequest();
     
     $request->getQuery()->add('sort', 'desc');
@@ -225,15 +223,12 @@ $builder->addListener('beforeRequest', function use ($myHeader) (\Tebru\Retrofit
 });
 ```
 
-### afterRequest
-This event will e dispatched after a request is made and a Guzzle ResponseInterface will be available
-
 ```
-$builder->addSubscriber(new RequestSubscriber());
-$builder->addListener('afterRequest', function use () (\Tebru\Retrofit\Event\AfterRequestEvent $event) {
-    $response = $event->getResponse();
+$httpCient->getEmiter()->on('complete', function (CompleteEvent $event) {
+    $responseBody = (string)$event->getResponse()->getBody();
+    $responseBody = json_decode($responseBody);
     
-    if (200 !== $response->getStatusCode()) {
+    if ('success' !== $responseBody['status'], true) {
         throw new Exception('boo!');
     }
 });

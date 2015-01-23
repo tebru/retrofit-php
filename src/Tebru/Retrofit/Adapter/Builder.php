@@ -14,9 +14,6 @@ use JMS\Serializer\Handler\HandlerRegistryInterface;
 use JMS\Serializer\SerializerBuilder;
 use JMS\Serializer\SerializerInterface;
 use LogicException;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface as SymfonyEventDispatcherInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface as SymfonyEventSubscriberInterface;
 
 /**
  * Class Builder
@@ -41,21 +38,6 @@ class Builder
      * @var SerializerInterface $serializer
      */
     private $serializer;
-
-    /**
-     * @var SymfonyEventDispatcherInterface $eventDispatcher
-     */
-    private $eventDispatcher;
-
-    /**
-     * @var array $eventSubscribers
-     */
-    private $eventSubscribers = [];
-
-    /**
-     * @var array $eventListeners
-     */
-    private $eventListeners = [];
 
     /**
      * An array of http client subscribers
@@ -115,32 +97,6 @@ class Builder
         $this->serializer = $serializer;
 
         return $this;
-    }
-
-    /**
-     * @param SymfonyEventDispatcherInterface $eventDispatcher
-     */
-    public function setDispatcher(SymfonyEventDispatcherInterface $eventDispatcher)
-    {
-        $this->eventDispatcher = $eventDispatcher;
-    }
-
-    /**
-     * @param SymfonyEventSubscriberInterface $eventSubscriber
-     */
-    public function addEventSubscriber(SymfonyEventSubscriberInterface $eventSubscriber)
-    {
-        $this->eventSubscribers[] = $eventSubscriber;
-    }
-
-    public function onBeforeRequest(callable $beforeRequest)
-    {
-        $this->eventListeners[] = ['beforeRequest' => $beforeRequest];
-    }
-
-    public function onAfterRequest(callable $afterRequest)
-    {
-        $this->eventListeners[] = ['afterRequest' => $afterRequest];
     }
 
     /**
@@ -217,19 +173,7 @@ class Builder
             $this->serializer = $serializerBuilder->build();
         }
 
-        if (null === $this->eventDispatcher) {
-            $this->eventDispatcher = new EventDispatcher();
-        }
-
-        foreach ($this->eventSubscribers as $subscriber) {
-            $this->eventDispatcher->addSubscriber($subscriber);
-        }
-
-        foreach($this->eventListeners as $key => $listener) {
-            $this->eventDispatcher->addListener($key, $listener);
-        }
-
-        $adapter = new RestAdapter($this->baseUrl, $this->httpClient, $this->serializer, $this->eventDispatcher);
+        $adapter = new RestAdapter($this->baseUrl, $this->httpClient, $this->serializer);
 
         return $adapter;
     }
