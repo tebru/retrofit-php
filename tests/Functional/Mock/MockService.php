@@ -87,21 +87,21 @@ interface MockService
 
     /**
      * @Rest\POST("/post")
-     * @Rest\Body("body")
+     * @Rest\Body("myBody")
      */
-    public function postWithSimpleBody($body);
+    public function postWithSimpleBody($myBody);
 
     /**
      * @Rest\POST("/post")
-     * @Rest\Body("body", var="foo")
+     * @Rest\Body("myBody", var="foo")
      */
     public function canChangeBodyVar($foo);
 
     /**
      * @Rest\POST("/post")
-     * @Rest\Body("body")
+     * @Rest\Body("user")
      */
-    public function postWithObjectBody(MockUser $body);
+    public function postWithObjectBody(MockUser $user);
 
     /**
      * @Rest\POST("/post")

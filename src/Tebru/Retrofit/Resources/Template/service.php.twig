@@ -23,23 +23,26 @@ namespace {{ 'Tebru\\Retrofit\\Service\\NS' ~ className }}
 
         {{ method.methodDeclaration }}
         {
-            $options = {{ print_array(method.options)|raw }};
+{% set methodType = method.type|upper %}
+{% set path = method.path %}
 {% if method.options.body is not empty %}
             if (is_object({{ method.options.body }})) {
                 $options['body'] = $this->serializer->serialize({{ method.options.body }}, 'json');
             } else {
                 $options['body'] = {{ method.options.body }};
             }
-
+            $request = $this->client->createRequest('{{ methodType }}', $this->baseUrl . "{{ path }}", $options);
 {% elseif method.parts is not empty %}
-            $options['body'] = {{ print_array(method.parts)|raw }};
+            $request = $this->client->createRequest('{{ methodType }}', $this->baseUrl . "{{ path }}", ['body' => {{ print_array(method.parts)|raw }}]);
+{% else %}
+            $request = $this->client->createRequest('{{ methodType }}', $this->baseUrl . "{{ path }}", []);
 {% endif %}
-
-            $request = $this->client->createRequest('{{ method.type|upper }}', $this->baseUrl . "{{ method.path }}", $options);
-
+{% if method.query is not empty %}
             $request->setQuery({{ print_array(method.query)|raw }});
+{% endif %}
+{% if method.headers is not empty %}
             $request->addHeaders({{ print_array(method.headers)|raw }});
-
+{% endif %}
             $response = $this->client->send($request);
 
 {% if 'raw' == method.return %}

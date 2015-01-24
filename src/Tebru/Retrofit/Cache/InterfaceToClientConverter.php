@@ -53,7 +53,8 @@ class InterfaceToClientConverter
      * @param string $interface
      * @return string
      */
-    public function createRestClient($interface) {
+    public function createRestClient($interface)
+    {
         // use reflection to inspect the interface
         $reader = new AnnotationReader();
         $reflectionClass = new ReflectionClass($interface);
@@ -99,9 +100,9 @@ class InterfaceToClientConverter
                 // check each annotation type expected
                 $method = $this->httpRequestAnnotation($methodAnnotation, $method, $fileName, $parameters);
                 $method = $this->configureMethod($methodAnnotation, $method, $parameters, Query::class, 'query');
-                $method = $this->configureMethod($methodAnnotation, $method, $parameters, Body::class, 'options');
                 $method = $this->configureMethod($methodAnnotation, $method, $parameters, Part::class, 'parts');
                 $method = $this->configureMethod($methodAnnotation, $method, $parameters, Header::class, 'headers');
+                $method = $this->bodyAnnotation($methodAnnotation, $method, $parameters);
                 $method = $this->queryMapAnnotation($methodAnnotation, $method, $parameters);
                 $method = $this->headersAnnotation($methodAnnotation, $method);
                 $method = $this->returnsAnnotation($methodAnnotation, $method);
@@ -183,6 +184,28 @@ class InterfaceToClientConverter
         $this->assertParameter($methodParameters, $paramName);
 
         $method[$key][$annotation->getKey()] = $annotation->getValue();
+
+        return $method;
+    }
+
+    /**
+     * Configures array for body annotation
+     *
+     * @param mixed $annotation
+     * @param array $method
+     * @param array $methodParameters
+     * @return array
+     */
+    private function bodyAnnotation($annotation, array $method, array $methodParameters)
+    {
+        if (!$annotation instanceof Body) {
+            return $method;
+        }
+
+        $paramName = substr($annotation->getValue(), 1);
+        $this->assertParameter($methodParameters, $paramName);
+
+        $method['options']['body'] = $annotation->getValue();
 
         return $method;
     }

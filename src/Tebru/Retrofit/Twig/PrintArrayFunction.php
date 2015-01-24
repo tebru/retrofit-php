@@ -49,6 +49,10 @@ class PrintArrayFunction
             }
         }
 
+        // remove indexes
+        $regex = '/\d+\s=>\s/';
+        $array = preg_replace($regex, '', $array);
+
         return $array;
     }
 }
