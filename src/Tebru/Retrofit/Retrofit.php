@@ -6,6 +6,7 @@
 namespace Tebru\Retrofit;
 
 use Symfony\Component\Filesystem\LockHandler;
+use Tebru\Retrofit\Adapter\RestAdapter;
 use Tebru\Retrofit\Cache\CacheWriter;
 use Tebru\Retrofit\Cache\InterfaceToClientConverter;
 
@@ -119,14 +120,15 @@ class Retrofit
      */
     public function cacheClass($interfaceName, $force = false)
     {
-        if (class_exists($interfaceName) && !$force) {
+        $name = md5($interfaceName);
+        if (class_exists(sprintf(RestAdapter::SERVICE_NAME, $name, $name)) && !$force) {
             return null;
         }
 
         $lockHandler = new LockHandler(self::RETROFIT_LOCK_FILE);
         $lockHandler->lock(true);
 
-        if (class_exists($interfaceName) && !$force) {
+        if (class_exists(sprintf(RestAdapter::SERVICE_NAME, $name, $name)) && !$force) {
             return null;
         }
 

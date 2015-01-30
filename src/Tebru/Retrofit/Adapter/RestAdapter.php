@@ -16,6 +16,11 @@ use JMS\Serializer\SerializerInterface;
 class RestAdapter
 {
     /**
+     * Generated class name
+     */
+    const SERVICE_NAME = '\\Tebru\\Retrofit\\Service\\NSGenerated_%s\\Generated_%s';
+
+    /**
      * @var string $baseUrl
      */
     private $baseUrl;
@@ -64,7 +69,7 @@ class RestAdapter
     public function create($service)
     {
         $className = md5($service);
-        $class = sprintf('\\Tebru\\Retrofit\\Service\\NSGenerated_%s\\Generated_%s', $className, $className);
+        $class = sprintf(self::SERVICE_NAME, $className, $className);
 
         return new $class($this->baseUrl, $this->httpClient, $this->serializer);
     }
