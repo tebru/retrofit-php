@@ -89,13 +89,13 @@ interface MockService
      * @Rest\POST("/post")
      * @Rest\Body("myBody")
      */
-    public function postWithSimpleBody($myBody);
+    public function postWithSimpleBody(array $myBody);
 
     /**
      * @Rest\POST("/post")
      * @Rest\Body("myBody", var="foo")
      */
-    public function canChangeBodyVar($foo);
+    public function canChangeBodyVar(array $foo);
 
     /**
      * @Rest\POST("/post")
