@@ -3,7 +3,7 @@
     "description": "Retrofit for PHP - A PHP REST client.",
     "require": {
         "php": ">= 5.4",
-        "guzzlehttp/guzzle": "5.0.*",
+        "guzzlehttp/guzzle": "5.2.*",
         "jms/serializer": "0.16.*",
         "doctrine/annotations": "1.2.*",
         "twig/twig": "*",
