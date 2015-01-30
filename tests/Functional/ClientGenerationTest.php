@@ -24,6 +24,11 @@ class ClientGenerationTest extends PHPUnit_Framework_TestCase
 {
     const BASE_URL = 'http://mockservice.com';
 
+    protected function tearDown()
+    {
+        Mockery::close();
+    }
+
     public function testSimpleGet()
     {
         $this->createClient('GET', '/get')->simpleGet();
@@ -186,8 +191,14 @@ class ClientGenerationTest extends PHPUnit_Framework_TestCase
     private function createClient($method, $path, $options = [], $query = [], $headers = [])
     {
         $request = Mockery::mock(RequestInterface::class);
-        $request->shouldReceive('setQuery')->times(1)->with($query)->andReturnNull();
-        $request->shouldReceive('addHeaders')->times(1)->with($headers)->andReturnNull();
+
+        if (!empty($query)) {
+            $request->shouldReceive('setQuery')->times(1)->with($query)->andReturnNull();
+        }
+
+        if (!empty($headers)) {
+            $request->shouldReceive('addHeaders')->times(1)->with($headers)->andReturnNull();
+        }
 
         $response = Mockery::mock(ResponseInterface::class);
         $response->shouldReceive('getBody')->times(1)->withNoArgs()->andReturn($this->serializeUser($this->getUser()));
