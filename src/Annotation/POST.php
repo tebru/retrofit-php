@@ -5,8 +5,6 @@
 
 namespace Tebru\Retrofit\Annotation;
 
-use Tebru\Retrofit\HttpRequest;
-
 /**
  * Class POST
  *

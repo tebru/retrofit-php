@@ -3,7 +3,7 @@
  * File AnnotationToVariableMap.php 
  */
 
-namespace Tebru\Retrofit;
+namespace Tebru\Retrofit\Annotation;
 
 use Exception;
 
