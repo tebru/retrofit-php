@@ -3,9 +3,7 @@
  * File RestAdapterProvider.php 
  */
 
-namespace Tebru\Retrofit;
-
-use Tebru\Retrofit\Adapter\RestAdapter;
+namespace Tebru\Retrofit\Adapter;
 
 /**
  * Interface RestAdapterProvider
