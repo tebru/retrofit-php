@@ -131,6 +131,16 @@ class ClientGenerationTest extends PHPUnit_Framework_TestCase
         $this->createClient('POST', '/post', ['body' => ['foo' => 'bar']], [], [])->canChangePartVar('bar');
     }
 
+    public function testPostWithJsonBody()
+    {
+        $this->createClient('POST', '/post', ['json' => ['foo' => 'bar']], [], [])->postWithJsonBody(['foo' => 'bar']);
+    }
+
+    public function testPartWithJsonBody()
+    {
+        $this->createClient('POST', '/post', ['json' => ['foo' => 'bar', 'baz' => 'buzz']], [], [])->postWithJsonBodyParts('bar', 'buzz');
+    }
+
     public function testGetWithHeader()
     {
         $this->createClient('GET', '/get', [], [], ['foo' => 'bar'])->getWithHeader('bar');

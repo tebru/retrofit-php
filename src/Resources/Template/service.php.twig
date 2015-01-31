@@ -25,15 +25,16 @@ namespace {{ 'Tebru\\Retrofit\\Service\\NS' ~ className }}
         {
 {% set methodType = method.type|upper %}
 {% set path = method.path %}
+{% set bodyKey = (method.jsonBody) ? 'json' : 'body' %}
 {% if method.options.body is not empty %}
             if (is_object({{ method.options.body }})) {
-                $options['body'] = $this->serializer->serialize({{ method.options.body }}, 'json');
+                $options['{{ bodyKey }}'] = $this->serializer->serialize({{ method.options.body }}, 'json');
             } else {
-                $options['body'] = {{ method.options.body }};
+                $options['{{ bodyKey }}'] = {{ method.options.body }};
             }
             $request = $this->client->createRequest('{{ methodType }}', $this->baseUrl . "{{ path }}", $options);
 {% elseif method.parts is not empty %}
-            $request = $this->client->createRequest('{{ methodType }}', $this->baseUrl . "{{ path }}", ['body' => {{ print_array(method.parts)|raw }}]);
+            $request = $this->client->createRequest('{{ methodType }}', $this->baseUrl . "{{ path }}", ['{{ bodyKey }}' => {{ print_array(method.parts)|raw }}]);
 {% else %}
             $request = $this->client->createRequest('{{ methodType }}', $this->baseUrl . "{{ path }}", []);
 {% endif %}

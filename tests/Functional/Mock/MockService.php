@@ -123,6 +123,21 @@ interface MockService
     public function canChangePartVar($bar);
 
     /**
+     * @Rest\POST("/post")
+     * @Rest\Body("myBody")
+     * @Rest\JsonBody
+     */
+    public function postWithJsonBody(array $myBody);
+
+    /**
+     * @Rest\POST("/post")
+     * @Rest\Part("foo")
+     * @Rest\Part("baz")
+     * @Rest\JsonBody
+     */
+    public function postWithJsonBodyParts($foo, $baz);
+
+    /**
      * @Rest\GET("/get")
      * @Rest\Header("foo")
      */

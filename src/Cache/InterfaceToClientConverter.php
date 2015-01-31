@@ -11,6 +11,7 @@ use ReflectionClass;
 use Tebru\Retrofit\Annotation\Body;
 use Tebru\Retrofit\Annotation\Header;
 use Tebru\Retrofit\Annotation\Headers;
+use Tebru\Retrofit\Annotation\JsonBody;
 use Tebru\Retrofit\Annotation\Part;
 use Tebru\Retrofit\Annotation\Query;
 use Tebru\Retrofit\Annotation\QueryMap;
@@ -93,6 +94,7 @@ class InterfaceToClientConverter
                 'query' => [],
                 'queryMap' => [],
                 'headers' => [],
+                'jsonBody' => false,
             ];
 
             // loop through method annotations
@@ -106,6 +108,7 @@ class InterfaceToClientConverter
                 $method = $this->queryMapAnnotation($methodAnnotation, $method, $parameters);
                 $method = $this->headersAnnotation($methodAnnotation, $method);
                 $method = $this->returnsAnnotation($methodAnnotation, $method);
+                $method = $this->jsonBodyAnnotation($methodAnnotation, $method);
             }
 
             // merge class headers array with method headers
@@ -265,6 +268,24 @@ class InterfaceToClientConverter
         }
 
         $method['return'] = $methodAnnotation->getReturn();
+
+        return $method;
+    }
+
+    /**
+     * Sets json body to true if annotation exists
+     *
+     * @param mixed $methodAnnotation
+     * @param array $method
+     * @return array
+     */
+    private function jsonBodyAnnotation($methodAnnotation, array $method)
+    {
+        if (!$methodAnnotation instanceof JsonBody) {
+            return $method;
+        }
+
+        $method['jsonBody'] = true;
 
         return $method;
     }
