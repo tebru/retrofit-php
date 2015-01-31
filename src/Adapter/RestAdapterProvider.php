@@ -18,5 +18,5 @@ interface RestAdapterProvider
      * @see \Tebru\Retrofit\Adapter\Builder
      * @return RestAdapter
      */
-    public function getRestAdapter();
+    static public function getRestAdapter();
 }
