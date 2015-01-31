@@ -23,10 +23,8 @@
         }
     ],
     "autoload": {
-        "psr-0": {
-            "Tebru\\Retrofit": "src/"
-        },
         "psr-4": {
+            "Tebru\\Retrofit\\": "src/",
             "Tebru\\Retrofit\\Test\\": "tests/"
         }
     },
