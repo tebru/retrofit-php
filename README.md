@@ -11,7 +11,7 @@ composer require tebru/retrofit-php:dev-master
 ```
 
 ## Setup
-You *may* have to register an autoloader. If one is not provided, you can use composers.
+You *may* have to register an autoloader. If one is not provided, you can use composer's.
 
 ```
 $loader = require 'path/to/vendor/autoload.php'
