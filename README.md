@@ -173,6 +173,17 @@ public function listRepos($user, $part1, $foo);
 
 Both `@Body` and `@Part` annotations cannot be set.
 
+The body can be sent as json by adding the `@JsonBody` annotation
+
+```
+/**
+ * @GET("/users/{user}/list")
+ * @Body("body")
+ * @JsonBody
+ */
+public function listRepos($user, $body);
+```
+
 ### Headers
 Headers can be set on the class or method using `@Headers`.  If they're set on the class, they'll be applied to each method.
 
