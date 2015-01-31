@@ -21,7 +21,7 @@ namespace {{ 'Tebru\\Retrofit\\Service\\NS' ~ className }}
         }
 {% for method in methods %}
 
-        {{ method.methodDeclaration }}
+        {{ method.methodDeclaration|raw }}
         {
 {% set methodType = method.type|upper %}
 {% set path = method.path %}
