@@ -15,14 +15,8 @@ foreach ($dirs as $dir) {
     }
 }
 
-$dirs = [$vendorDir . '/tebru/retrofit-php/src', __DIR__ . '/../src'];
-foreach ($dirs as $dir) {
-    if (is_dir($dir)) {
-        AnnotationRegistry::registerAutoloadNamespace('Tebru\Retrofit\Annotation', $dir);
-    }
-}
-
-AnnotationRegistry::registerAutoloadNamespace('JMS\Serializer\Annotation', $vendorDir . '/jms/serializer/src');
+$loader = require $vendorDir . '/autoload.php';
+AnnotationRegistry::registerLoader([$loader, 'loadClass']);
 
 $application = new Application();
 $application->add(new CompileCommand);

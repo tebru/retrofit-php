@@ -11,11 +11,11 @@ composer require tebru/retrofit-php:dev-master
 ```
 
 ## Setup
-You must register the annotation namespaces.  For example:
+You *may* have to register an autoloader. If one is not provided, you can use composers.
 
 ```
-AnnotationRegistry::registerAutoloadNamespace('Tebru\Retrofit\Annotation', __DIR__ . '/vendor/tebru/retrofit-php/src');
-AnnotationRegistry::registerAutoloadNamespace('JMS\Serializer\Annotation', __DIR__ . '/vendor/jms/serializer/src');
+$loader = require 'path/to/vendor/autoload.php'
+AnnotationRegistry::registerLoader([$loader, 'loadClass'])
 ```
 
 Create a new `Retrofit` object and specify the cache directory.  Defaults to `/tmp`
