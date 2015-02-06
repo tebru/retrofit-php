@@ -9,7 +9,6 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Tebru\Retrofit\Finder\ServiceResolver;
 use Tebru\Retrofit\Retrofit;
 
 /**
@@ -32,14 +31,9 @@ class CompileCommand extends Command
         $srcDir = $input->getArgument('sourceDirectory');
         $cacheDir = $input->getArgument('cacheDirectory');
 
-        $serviceResolver = new ServiceResolver();
-        $services = $serviceResolver->findServices($srcDir);
-
         $retrofit = new Retrofit($cacheDir);
-        $retrofit->registerServices($services);
-        $retrofit->createCache();
+        $count = $retrofit->cacheAll($srcDir);
 
-        $matches = count($services);
-        $output->writeln(sprintf('<info>Compiled %s %s successfully</info>', $matches, ($matches === 1) ? 'class' : 'classes'));
+        $output->writeln(sprintf('<info>Compiled %s %s successfully</info>', $count, ($count === 1) ? 'class' : 'classes'));
     }
 }

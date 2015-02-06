@@ -9,6 +9,7 @@ use Symfony\Component\Filesystem\LockHandler;
 use Tebru\Retrofit\Adapter\RestAdapter;
 use Tebru\Retrofit\Cache\CacheWriter;
 use Tebru\Retrofit\Cache\InterfaceToClientConverter;
+use Tebru\Retrofit\Finder\ServiceResolver;
 
 /**
  * Class Retrofit
@@ -46,6 +47,13 @@ class Retrofit
     private $interfaceToClientConverter;
 
     /**
+     * Finds all services in a given source directory
+     *
+     * @var ServiceResolver $serviceResolver
+     */
+    private $serviceResolver;
+
+    /**
      * Constructor
      *
      * @param string $cacheDir Location of cache directory
@@ -54,6 +62,7 @@ class Retrofit
     {
         $this->cacheWriter = new CacheWriter($cacheDir);
         $this->interfaceToClientConverter = new InterfaceToClientConverter();
+        $this->serviceResolver = new ServiceResolver();
     }
 
     /**
@@ -87,12 +96,28 @@ class Retrofit
     }
 
     /**
+     * Use the service resolver to find all the services dynamically
+     *
+     * If debug is false, it will only create the cache file if it doesn't already exist
+     *
+     * @param string $srcDir
+     * @param bool $debug
+     * @return int Number of services cached
+     */
+    public function cacheAll($srcDir, $debug = true)
+    {
+        $this->services = $this->serviceResolver->findServices($srcDir);
+
+        return $this->createCache($debug);
+    }
+
+    /**
      * Creates cache file based on registered services
      *
      * If debug is false, it will only create the cache file if it doesn't already exist
      *
      * @param bool $debug
-     * @return null
+     * @return int Number of services cached
      */
     public function createCache($debug = true)
     {
@@ -107,6 +132,8 @@ class Retrofit
         foreach ($this->services as $service) {
             $this->cacheClass($service);
         }
+
+        return count($this->services);
     }
 
     /**
