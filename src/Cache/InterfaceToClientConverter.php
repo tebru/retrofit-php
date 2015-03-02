@@ -101,9 +101,9 @@ class InterfaceToClientConverter
             foreach ($reader->getMethodAnnotations($classMethod) as $methodAnnotation) {
                 // check each annotation type expected
                 $method = $this->httpRequestAnnotation($methodAnnotation, $method, $fileName, $parameters);
-                $method = $this->configureMethod($methodAnnotation, $method, $parameters, Query::class, 'query');
-                $method = $this->configureMethod($methodAnnotation, $method, $parameters, Part::class, 'parts');
-                $method = $this->configureMethod($methodAnnotation, $method, $parameters, Header::class, 'headers');
+                $method = $this->configureMethod($methodAnnotation, $method, $parameters, '\Tebru\Retrofit\Annotation\Query', 'query');
+                $method = $this->configureMethod($methodAnnotation, $method, $parameters, '\Tebru\Retrofit\Annotation\Part', 'parts');
+                $method = $this->configureMethod($methodAnnotation, $method, $parameters, '\Tebru\Retrofit\Annotation\Header', 'headers');
                 $method = $this->bodyAnnotation($methodAnnotation, $method, $parameters);
                 $method = $this->queryMapAnnotation($methodAnnotation, $method, $parameters);
                 $method = $this->headersAnnotation($methodAnnotation, $method);
