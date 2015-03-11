@@ -148,14 +148,14 @@ class Retrofit
     public function cacheClass($interfaceName, $force = false)
     {
         $name = md5($interfaceName);
-        if (class_exists(sprintf(RestAdapter::SERVICE_NAME, $name, $name)) && !$force) {
+        if (class_exists(sprintf(RestAdapter::SERVICE_NAME, $name, $name), false) && !$force) {
             return null;
         }
 
         $lockHandler = new LockHandler(self::RETROFIT_LOCK_FILE);
         $lockHandler->lock(true);
 
-        if (class_exists(sprintf(RestAdapter::SERVICE_NAME, $name, $name)) && !$force) {
+        if (class_exists(sprintf(RestAdapter::SERVICE_NAME, $name, $name), false) && !$force) {
             return null;
         }
 
