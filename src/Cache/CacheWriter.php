@@ -96,6 +96,6 @@ class CacheWriter
      */
     public function clean()
     {
-        $this->write('<?php', null);
+        $this->write("<?php\n", null);
     }
 }
