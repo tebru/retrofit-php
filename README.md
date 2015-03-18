@@ -14,8 +14,8 @@ composer require tebru/retrofit-php:dev-master
 You *may* have to register an autoloader. If one is not provided, you can use composer's.
 
 ```
-$loader = require 'path/to/vendor/autoload.php'
-AnnotationRegistry::registerLoader([$loader, 'loadClass'])
+$loader = require 'path/to/vendor/autoload.php';
+AnnotationRegistry::registerLoader([$loader, 'loadClass']);
 ```
 
 Create a new `Retrofit` object and specify the cache directory.  Defaults to `/tmp`
