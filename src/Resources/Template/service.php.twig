@@ -51,7 +51,7 @@ namespace {{ 'Tebru\\Retrofit\\Service\\NS' ~ className }}
 {% elseif 'array' == method.return %}
             return json_decode((string)$response->getBody(), true);
 {% else %}
-            return $this->serializer->deserialize((string)$response->getBody(), '{{ method.return }}', 'json');
+            return $this->serializer->deserialize((string)$response->getBody(), '{{ method.return|raw }}', 'json');
 {% endif %}
         }
 {% endfor %}
