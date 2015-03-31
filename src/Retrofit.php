@@ -125,43 +125,20 @@ class Retrofit
             return null;
         }
 
+        $lockHandler = new LockHandler(self::RETROFIT_LOCK_FILE);
+        $lockHandler->lock(true);
+
         // blank file
         $this->cacheWriter->clean();
 
         // loop through registered services and write to file
         foreach ($this->services as $service) {
-            $this->cacheClass($service);
+            $this->cacheWriter->write($this->getClass($service));
         }
-
-        return count($this->services);
-    }
-
-    /**
-     * Writes a single class to file
-     *
-     * Attempts to get lock before writing, will block until lock is obtained
-     *
-     * @param string $interfaceName
-     * @param bool $force
-     * @return null
-     */
-    public function cacheClass($interfaceName, $force = false)
-    {
-        $name = md5($interfaceName);
-        if (class_exists(sprintf(RestAdapter::SERVICE_NAME, $name, $name), false) && !$force) {
-            return null;
-        }
-
-        $lockHandler = new LockHandler(self::RETROFIT_LOCK_FILE);
-        $lockHandler->lock(true);
-
-        if (class_exists(sprintf(RestAdapter::SERVICE_NAME, $name, $name), false) && !$force) {
-            return null;
-        }
-
-        $this->cacheWriter->write($this->getClass($interfaceName));
 
         $lockHandler->release();
+
+        return count($this->services);
     }
 
     /**
@@ -170,7 +147,7 @@ class Retrofit
      * @param string $interfaceName
      * @return string
      */
-    public function getClass($interfaceName)
+    private function getClass($interfaceName)
     {
         return $this->interfaceToClientConverter->createRestClient($interfaceName);
     }
