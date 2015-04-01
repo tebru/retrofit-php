@@ -99,8 +99,10 @@ class InterfaceToClientConverter
 
             // loop through method annotations
             foreach ($reader->getMethodAnnotations($classMethod) as $methodAnnotation) {
+                $method = $this->getMethodDeclaration($method, $fileName);
+
                 // check each annotation type expected
-                $method = $this->httpRequestAnnotation($methodAnnotation, $method, $fileName, $parameters);
+                $method = $this->httpRequestAnnotation($methodAnnotation, $method, $parameters);
                 $method = $this->configureMethod($methodAnnotation, $method, $parameters, '\Tebru\Retrofit\Annotation\Query', 'query');
                 $method = $this->configureMethod($methodAnnotation, $method, $parameters, '\Tebru\Retrofit\Annotation\Part', 'parts');
                 $method = $this->configureMethod($methodAnnotation, $method, $parameters, '\Tebru\Retrofit\Annotation\Header', 'headers');
@@ -137,15 +139,32 @@ class InterfaceToClientConverter
     }
 
     /**
+     * Add method declaration to array
+     *
+     * @param array $method
+     * @param string $fileName
+     * @return array
+     */
+    private function getMethodDeclaration(array $method, $fileName)
+    {
+        $regex = sprintf('/^.*(?:function %s[\s]?\().*/m', $method['name']);
+        preg_match($regex, file_get_contents($fileName), $methodDeclaration);
+        $methodDeclaration = $methodDeclaration[0];
+        $methodDeclaration = str_replace(';', '', $methodDeclaration);
+        $method['methodDeclaration'] = trim($methodDeclaration);
+
+        return $method;
+    }
+
+    /**
      * Configures array for http request annotations
      *
      * @param mixed $annotation
      * @param array $method
-     * @param $fileName
      * @param array $parameters
      * @return array
      */
-    private function httpRequestAnnotation($annotation, array $method, $fileName, array $parameters)
+    private function httpRequestAnnotation($annotation, array $method, array $parameters)
     {
         if (!$annotation instanceof HttpRequest) {
             return $method;
@@ -158,11 +177,6 @@ class InterfaceToClientConverter
         $method['type'] = $annotation->getType();
         $method['path'] = $annotation->getPath();
         $method['query'] = array_merge($method['query'], $annotation->getQueries());
-
-        // search file for method declaration
-        $regex = sprintf('/^.*(?:function %s[\s]?\().*/m', $method['name']);
-        preg_match($regex, file_get_contents($fileName), $methodDeclaration);
-        $method['methodDeclaration'] = trim(substr($methodDeclaration[0], 0, -1));
 
         return $method;
     }
