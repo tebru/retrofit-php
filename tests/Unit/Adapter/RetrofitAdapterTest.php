@@ -10,7 +10,7 @@ use JMS\Serializer\Serializer;
 use Mockery;
 use PHPUnit_Framework_TestCase;
 use stdClass;
-use Tebru\Retrofit\Adapter\RestAdapter;
+use Tebru\Retrofit\Adapter\Rest\RestAdapter;
 use Tebru\Retrofit\Service\NSGenerated_8b6b4182e9c7c326764c6adad40eef2a\Generated_8b6b4182e9c7c326764c6adad40eef2a;
 use Tebru\Retrofit\Test\Functional\Mock\MockService;
 

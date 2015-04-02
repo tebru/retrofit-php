@@ -11,7 +11,7 @@ use GuzzleHttp\Message\ResponseInterface;
 use JMS\Serializer\SerializerBuilder;
 use Mockery;
 use PHPUnit_Framework_TestCase;
-use Tebru\Retrofit\Adapter\RestAdapter;
+use Tebru\Retrofit\Adapter\Rest\RestAdapter;
 use Tebru\Retrofit\Test\Functional\Mock\MockService;
 use Tebru\Retrofit\Test\Functional\Mock\MockUser;
 

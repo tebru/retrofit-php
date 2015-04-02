@@ -3,7 +3,7 @@
  * File RestAdapter.php 
  */
 
-namespace Tebru\Retrofit\Adapter;
+namespace Tebru\Retrofit\Adapter\Rest;
 
 use GuzzleHttp\ClientInterface;
 use InvalidArgumentException;
@@ -53,11 +53,11 @@ class RestAdapter
     /**
      * Create a rest adapter builder
      *
-     * @return Builder
+     * @return RestAdapterBuilder
      */
     static public function builder()
     {
-        return new Builder();
+        return new RestAdapterBuilder();
     }
 
     /**

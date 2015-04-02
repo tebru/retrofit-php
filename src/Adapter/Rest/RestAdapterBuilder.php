@@ -1,9 +1,9 @@
 <?php
 /**
- * File Builder.php 
+ * File RestAdapterBuilder.php
  */
 
-namespace Tebru\Retrofit\Adapter;
+namespace Tebru\Retrofit\Adapter\Rest;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
@@ -16,13 +16,13 @@ use JMS\Serializer\SerializerInterface;
 use LogicException;
 
 /**
- * Class Builder
+ * Class RestAdapterBuilder
  *
  * Builds a rest adapter
  *
  * @author Nate Brunette <n@tebru.net>
  */
-class Builder
+class RestAdapterBuilder
 {
     /**
      * @var string $baseUrl
