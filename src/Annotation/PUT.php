@@ -1,15 +1,15 @@
 <?php
-/**
- * File PUT.php
+/*
+ * Copyright (c) 2015 Nate Brunette.
+ * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
 namespace Tebru\Retrofit\Annotation;
 
 /**
- * Class PUT
+ * Defines an HTTP PUT request type to a REST path relative to base URL.
  *
  * @author Nate Brunette <n@tebru.net>
- *
  * @Annotation
  */
 class PUT extends HttpRequest

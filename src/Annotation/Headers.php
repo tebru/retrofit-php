@@ -1,17 +1,24 @@
 <?php
-/**
- * File Headers.php
+/*
+ * Copyright (c) 2015 Nate Brunette.
+ * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
+
 namespace Tebru\Retrofit\Annotation;
 
 use Exception;
 use LogicException;
 
 /**
- * Class Headers
+ * Adds headers literally supplied in the value.
+ * 
+ *     @Headers("Cache-Control: max-age=640000")
+ *     @Headers({
+ *         "X-Foo: Bar",
+ *         "X-Ping: Pong"
+ *     })
  *
  * @author Nate Brunette <n@tebru.net>
- *
  * @Annotation
  */
 class Headers

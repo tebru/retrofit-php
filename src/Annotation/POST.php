@@ -1,15 +1,15 @@
 <?php
-/**
- * File POST.php
+/*
+ * Copyright (c) 2015 Nate Brunette.
+ * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
 namespace Tebru\Retrofit\Annotation;
 
 /**
- * Class POST
+ * Defines an HTTP POST request type to a REST path relative to base URL.
  *
  * @author Nate Brunette <n@tebru.net>
- *
  * @Annotation
  */
 class POST extends HttpRequest
