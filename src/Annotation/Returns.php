@@ -1,6 +1,7 @@
 <?php
-/**
- * File Returns.php
+/*
+ * Copyright (c) 2015 Nate Brunette.
+ * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
 namespace Tebru\Retrofit\Annotation;
@@ -8,10 +9,13 @@ namespace Tebru\Retrofit\Annotation;
 use Exception;
 
 /**
- * Class Returns
+ * Defines what type of object a request returns, so that it may be deserialized.
+ * 
+ * The default is array. Other acceptable values are raw or any type specified 
+ * in the Serializer documentation. A raw return will return the API response as
+ * a string.
  *
  * @author Nate Brunette <n@tebru.net>
- *
  * @Annotation
  */
 class Returns

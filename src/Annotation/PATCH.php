@@ -1,15 +1,15 @@
 <?php
-/**
- * File PATCH.php
+/*
+ * Copyright (c) 2015 Nate Brunette.
+ * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
 namespace Tebru\Retrofit\Annotation;
 
 /**
- * Class PATCH
+ * Defines an HTTP PATCH request type to a REST path relative to base URL.
  *
  * @author Nate Brunette <n@tebru.net>
- *
  * @Annotation
  */
 class PATCH extends HttpRequest

@@ -1,6 +1,7 @@
 <?php
-/**
- * File HttpRequest.php
+/*
+ * Copyright (c) 2015 Nate Brunette.
+ * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
 namespace Tebru\Retrofit\Annotation;
@@ -8,9 +9,7 @@ namespace Tebru\Retrofit\Annotation;
 use Exception;
 
 /**
- * Class HttpRequest
- *
- * Parent class for Http request annotations
+ * Parent class for Http request annotations.
  *
  * @author Nate Brunette <n@tebru.net>
  */

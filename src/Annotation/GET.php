@@ -1,15 +1,15 @@
 <?php
-/**
- * File GET.php
+/*
+ * Copyright (c) 2015 Nate Brunette.
+ * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
 namespace Tebru\Retrofit\Annotation;
 
 /**
- * Class GET
+ * Defines an HTTP GET request type to a REST path relative to base URL.
  *
  * @author Nate Brunette <n@tebru.net>
- *
  * @Annotation
  */
 class GET extends HttpRequest
