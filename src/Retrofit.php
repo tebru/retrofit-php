@@ -6,10 +6,13 @@
 namespace Tebru\Retrofit;
 
 use Symfony\Component\Filesystem\LockHandler;
-use Tebru\Retrofit\Adapter\RestAdapter;
 use Tebru\Retrofit\Cache\CacheWriter;
 use Tebru\Retrofit\Cache\InterfaceToClientConverter;
 use Tebru\Retrofit\Finder\ServiceResolver;
+use Tebru\Retrofit\Twig\PrintArrayFunction;
+use Twig_Environment;
+use Twig_Loader_Filesystem;
+use Twig_SimpleFunction;
 
 /**
  * Class Retrofit
@@ -60,9 +63,24 @@ class Retrofit
      */
     public function __construct($cacheDir = null)
     {
+        $twig = $this->getTwig();
         $this->cacheWriter = new CacheWriter($cacheDir);
-        $this->interfaceToClientConverter = new InterfaceToClientConverter();
+        $this->interfaceToClientConverter = new InterfaceToClientConverter($twig);
         $this->serviceResolver = new ServiceResolver();
+    }
+
+    /**
+     * Set up twig environment
+     *
+     * @return Twig_Environment
+     */
+    private function getTwig()
+    {
+        $loader = new Twig_Loader_Filesystem(__DIR__ . '/Resources/Template');
+        $twig = new Twig_Environment($loader);
+        $twig->addFunction(new Twig_SimpleFunction('print_array', new PrintArrayFunction()));
+
+        return $twig;
     }
 
     /**

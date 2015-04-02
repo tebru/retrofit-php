@@ -9,19 +9,13 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use LogicException;
 use ReflectionClass;
 use Tebru\Retrofit\Annotation\Body;
-use Tebru\Retrofit\Annotation\Header;
 use Tebru\Retrofit\Annotation\Headers;
 use Tebru\Retrofit\Annotation\JsonBody;
-use Tebru\Retrofit\Annotation\Part;
-use Tebru\Retrofit\Annotation\Query;
 use Tebru\Retrofit\Annotation\QueryMap;
 use Tebru\Retrofit\Annotation\Returns;
 use Tebru\Retrofit\Annotation\AnnotationToVariableMap;
 use Tebru\Retrofit\Annotation\HttpRequest;
-use Tebru\Retrofit\Twig\PrintArrayFunction;
 use Twig_Environment;
-use Twig_Loader_Filesystem;
-use Twig_SimpleFunction;
 
 /**
  * Class InterfaceToClientConverter
@@ -39,13 +33,12 @@ class InterfaceToClientConverter
 
     /**
      * Constructor
+     *
+     * @param Twig_Environment $twig
      */
-    public function __construct()
+    public function __construct(Twig_Environment $twig)
     {
-        // set up twig environment
-        $loader = new Twig_Loader_Filesystem(__DIR__ . '/../Resources/Template');
-        $this->twig = new Twig_Environment($loader);
-        $this->twig->addFunction(new Twig_SimpleFunction('print_array', new PrintArrayFunction()));
+        $this->twig = $twig;
     }
 
     /**
