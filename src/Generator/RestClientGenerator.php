@@ -1,9 +1,9 @@
 <?php
 /**
- * File InterfaceToClientConverter.php
+ * File RestClientGenerator.php
  */
 
-namespace Tebru\Retrofit\Cache;
+namespace Tebru\Retrofit\Generator;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use LogicException;
@@ -18,13 +18,13 @@ use Tebru\Retrofit\Annotation\HttpRequest;
 use Twig_Environment;
 
 /**
- * Class InterfaceToClientConverter
+ * Class RestClientGenerator
  *
- * Converts an interface into a REST client based on annotations
+ * Generates a REST client based on an interface name
  *
  * @author Nate Brunette <n@tebru.net>
  */
-class InterfaceToClientConverter
+class RestClientGenerator
 {
     /**
      * @var Twig_Environment $twig
@@ -42,12 +42,12 @@ class InterfaceToClientConverter
     }
 
     /**
-     * Create a REST client based on an interface
+     * Generate a REST client based on an interface
      *
      * @param string $interface
      * @return string
      */
-    public function createRestClient($interface)
+    public function generate($interface)
     {
         // use reflection to inspect the interface
         $reader = new AnnotationReader();

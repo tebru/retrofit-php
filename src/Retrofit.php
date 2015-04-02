@@ -7,8 +7,8 @@ namespace Tebru\Retrofit;
 
 use Symfony\Component\Filesystem\LockHandler;
 use Tebru\Retrofit\Cache\CacheWriter;
-use Tebru\Retrofit\Cache\InterfaceToClientConverter;
 use Tebru\Retrofit\Finder\ServiceResolver;
+use Tebru\Retrofit\Generator\RestClientGenerator;
 use Tebru\Retrofit\Twig\PrintArrayFunction;
 use Twig_Environment;
 use Twig_Loader_Filesystem;
@@ -43,11 +43,11 @@ class Retrofit
     private $cacheWriter;
 
     /**
-     * Converts an interface to a rest client
+     * Generates a rest client
      *
-     * @var InterfaceToClientConverter $interfaceToClientConverter
+     * @var RestClientGenerator $restClientGenerator
      */
-    private $interfaceToClientConverter;
+    private $restClientGenerator;
 
     /**
      * Finds all services in a given source directory
@@ -65,7 +65,7 @@ class Retrofit
     {
         $twig = $this->getTwig();
         $this->cacheWriter = new CacheWriter($cacheDir);
-        $this->interfaceToClientConverter = new InterfaceToClientConverter($twig);
+        $this->restClientGenerator = new RestClientGenerator($twig);
         $this->serviceResolver = new ServiceResolver();
     }
 
@@ -167,6 +167,6 @@ class Retrofit
      */
     private function getClass($interfaceName)
     {
-        return $this->interfaceToClientConverter->createRestClient($interfaceName);
+        return $this->restClientGenerator->generate($interfaceName);
     }
 }
