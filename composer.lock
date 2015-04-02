@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "1c81043b363308c05e81f015c87130c7",
+    "hash": "f32d21d5fb257b535ffc8f830b0a2615",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -734,6 +734,48 @@
             "description": "Symfony Filesystem Component",
             "homepage": "http://symfony.com",
             "time": "2015-01-03 21:13:09"
+        },
+        {
+            "name": "tebru/assert",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tebru/assert.git",
+                "reference": "d4fded60403c4d213667677bd8eb7efa0375f727"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tebru/assert/zipball/d4fded60403c4d213667677bd8eb7efa0375f727",
+                "reference": "d4fded60403c4d213667677bd8eb7efa0375f727",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">= 5.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.4.*"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/assert.php"
+                ],
+                "psr-4": {
+                    "Tebru\\Test\\": "tests/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nate Brunette",
+                    "email": "n@tebru.net"
+                }
+            ],
+            "description": "Simple function to assert conditions",
+            "time": "2015-02-01 17:38:27"
         },
         {
             "name": "twig/twig",
@@ -1714,6 +1756,7 @@
     "minimum-stability": "stable",
     "stability-flags": [],
     "prefer-stable": false,
+    "prefer-lowest": false,
     "platform": {
         "php": ">= 5.4"
     },

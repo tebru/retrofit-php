@@ -9,7 +9,8 @@
         "twig/twig": "*",
         "symfony/filesystem": "2.6.*",
         "symfony/console": "2.6.*",
-        "nikic/PHP-Parser": "1.2.*"
+        "nikic/PHP-Parser": "1.2.*",
+        "tebru/assert": "0.1.*"
     },
     "require-dev": {
         "php": ">= 5.5",
