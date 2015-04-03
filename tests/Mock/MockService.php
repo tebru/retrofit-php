@@ -1,9 +1,9 @@
 <?php
 
-namespace Tebru\Retrofit\Test\Functional\Mock;
+namespace Tebru\Retrofit\Test\Mock;
 
 use Tebru\Retrofit\Annotation as Rest;
-use Tebru\Retrofit\Test\Functional\Mock\MockUser;
+use Tebru\Retrofit\Test\Mock\MockUser;
 
 interface MockService
 {
@@ -162,7 +162,7 @@ interface MockService
 
     /**
      * @Rest\GET("/get")
-     * @Rest\Returns("Tebru\Retrofit\Test\Functional\Mock\MockUser")
+     * @Rest\Returns("Tebru\Retrofit\Test\Mock\MockUser")
      */
     public function getDeserializedReturn();
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tebru\Retrofit\Test\Functional\Mock;
+namespace Tebru\Retrofit\Test\Mock;
 
 use JMS\Serializer\Annotation as JMS;
 use JsonSerializable;

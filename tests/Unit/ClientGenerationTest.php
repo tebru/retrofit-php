@@ -3,7 +3,7 @@
  * File ClientGenerationTest.php 
  */
 
-namespace Tebru\Retrofit\Test\Functional;
+namespace Tebru\Retrofit\Test;
 
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Message\RequestInterface;
@@ -12,10 +12,10 @@ use JMS\Serializer\SerializerBuilder;
 use Mockery;
 use PHPUnit_Framework_TestCase;
 use Tebru\Retrofit\Adapter\Rest\RestAdapter;
-use Tebru\Retrofit\Test\Functional\Mock\MockService;
-use Tebru\Retrofit\Test\Functional\Mock\MockServiceHeaders;
-use Tebru\Retrofit\Test\Functional\Mock\MockSimpleService;
-use Tebru\Retrofit\Test\Functional\Mock\MockUser;
+use Tebru\Retrofit\Test\Mock\MockService;
+use Tebru\Retrofit\Test\Mock\MockServiceHeaders;
+use Tebru\Retrofit\Test\Mock\MockSimpleService;
+use Tebru\Retrofit\Test\Mock\MockUser;
 
 /**
  * Class ClientGenerationTest

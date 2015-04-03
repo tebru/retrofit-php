@@ -3,7 +3,7 @@
  * File MockSimpleService.php
  */
 
-namespace Tebru\Retrofit\Test\Functional\Mock;
+namespace Tebru\Retrofit\Test\Mock;
 
 use Tebru\Retrofit\Annotation as Rest;
 
