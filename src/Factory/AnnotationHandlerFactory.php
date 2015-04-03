@@ -72,7 +72,7 @@ class AnnotationHandlerFactory
                 $handler = new ReturnsHandler();
                 break;
             default:
-                throw new UnexpectedValueException('Attempted to create annotation handler but did not understand annotation');
+                throw new UnexpectedValueException(sprintf('Attempted to create annotation handler but did not understand annotation.  Got annotation of type "%s"', get_class($annotation)));
                 break;
         }
 

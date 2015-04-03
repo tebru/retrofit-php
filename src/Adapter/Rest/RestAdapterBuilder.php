@@ -14,6 +14,7 @@ use JMS\Serializer\Handler\HandlerRegistryInterface;
 use JMS\Serializer\SerializerBuilder;
 use JMS\Serializer\SerializerInterface;
 use LogicException;
+use Tebru;
 
 /**
  * Class RestAdapterBuilder
@@ -145,7 +146,8 @@ class RestAdapterBuilder
      */
     public function build()
     {
-        $this->assertProperty($this->baseUrl);
+        Tebru\assert(null !== $this->baseUrl, new LogicException(sprintf('Base URL may not be null.  Please specify before calling build().')));
+
 
         if (null === $this->httpClient) {
             $this->httpClient = new Client();
@@ -176,17 +178,5 @@ class RestAdapterBuilder
         $adapter = new RestAdapter($this->baseUrl, $this->httpClient, $this->serializer);
 
         return $adapter;
-    }
-
-    /**
-     * Make sure property is set
-     *
-     * @param null $property
-     */
-    private function assertProperty($property = null)
-    {
-        if (null === $property) {
-            throw new LogicException('Property is not defined');
-        }
     }
 }

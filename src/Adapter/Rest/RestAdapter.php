@@ -8,6 +8,7 @@ namespace Tebru\Retrofit\Adapter\Rest;
 use GuzzleHttp\ClientInterface;
 use InvalidArgumentException;
 use JMS\Serializer\SerializerInterface;
+use Tebru;
 use Tebru\Retrofit\Provider\GeneratedClassMetaDataProvider;
 
 /**
@@ -70,9 +71,7 @@ class RestAdapter
         }
 
         // if it's not a string, we don't know how to handle this type
-        if (!is_string($service)) {
-            throw new InvalidArgumentException('Argument passed to create() must be an object or string');
-        }
+        Tebru\assert(is_string($service), new InvalidArgumentException(sprintf('Expected object or string, got "%s"', gettype($service))));
 
         // get the class as a string
         // if $service is already a class, use that, otherwise,
@@ -81,7 +80,7 @@ class RestAdapter
         } elseif (interface_exists($service)) {
             $class = GeneratedClassMetaDataProvider::NAMESPACE_PREFIX . '\\' . $service;
         } else {
-            throw new InvalidArgumentException('String argument passed to create() must be a class or interface');
+            throw new InvalidArgumentException(sprintf('Could not resolve "%s" as a class or interface.', $service));
         }
 
         return new $class($this->baseUrl, $this->httpClient, $this->serializer);

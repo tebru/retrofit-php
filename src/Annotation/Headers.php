@@ -6,8 +6,9 @@
 
 namespace Tebru\Retrofit\Annotation;
 
-use Exception;
 use LogicException;
+use OutOfRangeException;
+use Tebru;
 
 /**
  * Adds headers literally supplied in the value.
@@ -36,9 +37,7 @@ class Headers
      */
     public function __construct(array $params)
     {
-        if (!isset($params['value'])) {
-            throw new Exception('Headers are not set');
-        }
+        Tebru\assert(isset($params['value']), new OutOfRangeException('Argument not found for @Headers annotation'));
 
         // convert to array
         if (!is_array($params['value'])) {
@@ -49,9 +48,7 @@ class Headers
         foreach ($params['value'] as $header) {
             $pos = strpos($header, ':');
 
-            if (false === $pos) {
-                throw new LogicException('Header in an incorrect format.  Expected <Name: value>');
-            }
+            Tebru\assert(false !== $pos, new LogicException('Header in an incorrect format.  Expected "Name: value"'));
 
             $name = trim(substr($header, 0, $pos));
             $value = trim(substr($header, $pos + 1));

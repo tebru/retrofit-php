@@ -6,7 +6,8 @@
 
 namespace Tebru\Retrofit\Annotation;
 
-use Exception;
+use OutOfRangeException;
+use Tebru;
 
 /**
  * Defines what type of object a request returns, so that it may be deserialized.
@@ -33,9 +34,7 @@ class Returns
      */
     public function __construct(array $params)
     {
-        if (!isset($params['value'])) {
-            throw new Exception('Return parameter name not set');
-        }
+        Tebru\assert(isset($params['value']), new OutOfRangeException('@Return expects an argument, none found.'));
 
         $this->return = $params['value'];
     }

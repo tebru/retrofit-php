@@ -6,7 +6,8 @@
 
 namespace Tebru\Retrofit\Annotation;
 
-use Exception;
+use OutOfRangeException;
+use Tebru;
 
 /**
  * Parent class for Http request annotations.
@@ -44,9 +45,7 @@ abstract class HttpRequest
      */
     public function __construct(array $params)
     {
-        if (!isset($params['value'])) {
-            throw new Exception('Url path not set on annotation');
-        }
+        Tebru\assert(isset($params['value']), new OutOfRangeException(sprintf('A "%s" annotation must have an argument.  None found.', get_class($this))));
 
         $path = $params['value'];
 

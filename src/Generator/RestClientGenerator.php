@@ -137,6 +137,6 @@ class RestClientGenerator
             }
         }
 
-        throw new LogicException('Parameter not found');
+        throw new LogicException(sprintf('Could not find parameter "%s" for method.', $name));
     }
 }
