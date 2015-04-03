@@ -7,7 +7,10 @@ namespace Tebru\Retrofit\Generator;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use LogicException;
+use PhpParser\Lexer;
+use PhpParser\Parser;
 use ReflectionClass;
+use Tebru\Retrofit\Adapter\PhpParser\PhpParserAdapter;
 use Tebru\Retrofit\Annotation\Body;
 use Tebru\Retrofit\Annotation\Headers;
 use Tebru\Retrofit\Annotation\JsonBody;
@@ -53,15 +56,16 @@ class RestClientGenerator
         $reader = new AnnotationReader();
         $reflectionClass = new ReflectionClass($interface);
 
-        // get information about the class
-        $interfaceName = $reflectionClass->getName();
-        $className = 'Generated_' . md5($interfaceName);
-        $fileName = $reflectionClass->getFileName();
+        // parse file
+        $file = file_get_contents($reflectionClass->getFileName());
+        $parser = new Parser(new Lexer());
+        $statements = $parser->parse($file);
 
-        // get use statements as array
-        $useRegex = '/^use(?:\s)+(?!Tebru\\\\Retrofit\\\\Annotation).+;$/m';
-        preg_match_all($useRegex, file_get_contents($reflectionClass->getFileName()), $matches);
-        $useStatements = $matches[0];
+        // create adapter
+        $parserAdapater = new PhpParserAdapter($statements);
+
+        // get interface methods
+        $parsedMethods = $parserAdapater->getInterfaceMethods();
 
         // loop through class annotations
         $classHeaders = ['headers' => []];
@@ -69,19 +73,19 @@ class RestClientGenerator
             $classHeaders = $this->headersAnnotation($classAnnotation, $classHeaders);
         }
 
-
         // loop over class methods
         $methods = [];
         foreach ($reflectionClass->getMethods() as $index => $classMethod) {
+            $parsedMethod = $parsedMethods[$index];
             $parameters = $classMethod->getParameters();
 
             // initialize data array
             $method = [
-                'name' => $classMethod->getShortName(),
+                'name' => $parserAdapater->getMethodName($parsedMethod),
+                'methodDeclaration' => $parserAdapater->getMethodDeclaration($parsedMethod),
                 'type' => '',
                 'path' => '',
                 'return' => 'array',
-                'methodDeclaration' => '',
                 'options' => [],
                 'parts' => [],
                 'query' => [],
@@ -92,8 +96,6 @@ class RestClientGenerator
 
             // loop through method annotations
             foreach ($reader->getMethodAnnotations($classMethod) as $methodAnnotation) {
-                $method = $this->getMethodDeclaration($method, $fileName);
-
                 // check each annotation type expected
                 $method = $this->httpRequestAnnotation($methodAnnotation, $method, $parameters);
                 $method = $this->configureMethod($methodAnnotation, $method, $parameters, '\Tebru\Retrofit\Annotation\Query', 'query');
@@ -124,29 +126,11 @@ class RestClientGenerator
         $template = $this->twig->loadTemplate('service.php.twig');
 
         return $template->render([
-            'uses' => $useStatements,
-            'className' => $className,
-            'interfaceName' => $interfaceName,
+            'uses' => $parserAdapater->getUseStatements(),
+            'className' => md5($parserAdapater->getInterfaceNameFull()),
+            'interfaceName' => $parserAdapater->getInterfaceNameFull(),
             'methods' => $methods,
         ]);
-    }
-
-    /**
-     * Add method declaration to array
-     *
-     * @param array $method
-     * @param string $fileName
-     * @return array
-     */
-    private function getMethodDeclaration(array $method, $fileName)
-    {
-        $regex = sprintf('/^.*(?:function %s[\s]?\().*/m', $method['name']);
-        preg_match($regex, file_get_contents($fileName), $methodDeclaration);
-        $methodDeclaration = $methodDeclaration[0];
-        $methodDeclaration = str_replace(';', '', $methodDeclaration);
-        $method['methodDeclaration'] = trim($methodDeclaration);
-
-        return $method;
     }
 
     /**

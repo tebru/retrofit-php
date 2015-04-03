@@ -19,7 +19,7 @@ class RestAdapter
     /**
      * Generated class name
      */
-    const SERVICE_NAME = '\\Tebru\\Retrofit\\Service\\NSGenerated_%s\\Generated_%s';
+    const SERVICE_NAME = '\\Tebru\\Retrofit\\Service\\Generated_%s\\Generated_%s';
 
     /**
      * @var string $baseUrl

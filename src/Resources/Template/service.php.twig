@@ -1,5 +1,5 @@
 
-namespace {{ 'Tebru\\Retrofit\\Service\\NS' ~ className }}
+namespace {{ 'Tebru\\Retrofit\\Service\\Generated_' ~ className }}
 {
     use GuzzleHttp\ClientInterface;
     use JMS\Serializer\SerializerInterface;
@@ -7,7 +7,7 @@ namespace {{ 'Tebru\\Retrofit\\Service\\NS' ~ className }}
     {{ use }}
 {% endfor %}
 
-    class {{ className }} implements \{{ interfaceName }}
+    class {{ 'Generated_' ~ className }} implements \{{ interfaceName }}
     {
         private $baseUrl;
         private $client;
