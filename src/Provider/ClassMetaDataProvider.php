@@ -1,11 +1,13 @@
 <?php
 /**
- * File PhpParserAdapter.php
+ * File ClassMetaDataProvider.php
  */
 
-namespace Tebru\Retrofit\Adapter\PhpParser;
+namespace Tebru\Retrofit\Provider;
 
+use Doctrine\Common\Annotations\AnnotationReader;
 use LogicException;
+use PhpParser\Lexer;
 use PhpParser\Node;
 use PhpParser\Node\Name;
 use PhpParser\Node\Param;
@@ -15,18 +17,36 @@ use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Interface_;
 use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\Node\Stmt\Use_;
+use PhpParser\Parser;
+use ReflectionClass;
+use ReflectionMethod;
 use Tebru;
 
 /**
- * Class PhpParserAdapter
+ * Class ClassMetaDataProvider
  *
  * This class adapts the PHP parser array after it parses the interface.  It expects
  * the result of parsing a full interface file.
  *
- * @author Nate Brunette <nbrunett@nerdery.com>
+ * @author Nate Brunette <n@tebru.net>
  */
-class PhpParserAdapter
+class ClassMetaDataProvider
 {
+    /**
+     * A reflection class based on class name provider
+     *
+     * @var ReflectionClass
+     */
+    private $reflectionClass;
+
+    /**
+     * An instance of the doctrine annotation reader to provider
+     * information about annotations
+     *
+     * @var AnnotationReader
+     */
+    private $annotationReader;
+
     /**
      * The namespace statement
      *
@@ -85,14 +105,52 @@ class PhpParserAdapter
      *
      * We expect $statements to be an array with 1 node that is a namespace type
      *
-     * @param array $statements
+     * @param string $interfaceName
      */
-    public function __construct(array $statements)
+    public function __construct($interfaceName)
     {
+        $this->reflectionClass = new ReflectionClass($interfaceName);
+        $this->annotationReader = new AnnotationReader();
+
+        // use the php parser internally to cache the class data
+        $this->namespace = $this->parse();
+    }
+
+    /**
+     * Takes an interface name and stores the output of the php parser
+     *
+     * @return Namespace_
+     */
+    private function parse()
+    {
+        $file = file_get_contents($this->reflectionClass->getFileName());
+        $parser = new Parser(new Lexer());
+        $statements = $parser->parse($file);
+
         Tebru\assert(1 === count($statements), new LogicException('$statements must be an array with one element'));
         Tebru\assert($statements[0] instanceof Namespace_, new LogicException('Expecting Namespace_ statement'));
 
-        $this->namespace = $statements[0];
+        $namespace = $statements[0];
+
+        return $namespace;
+    }
+
+    public function getClassAnnotations()
+    {
+        return $this->annotationReader->getClassAnnotations($this->reflectionClass);
+    }
+
+    public function getMethodAnnotations(ReflectionMethod $reflectionMethod)
+    {
+        return $this->annotationReader->getMethodAnnotations($reflectionMethod);
+    }
+
+    /**
+     * @return ReflectionMethod[]
+     */
+    public function getReflectionMethods()
+    {
+        return $this->reflectionClass->getMethods();
     }
 
     /**
@@ -206,7 +264,7 @@ class PhpParserAdapter
      * @param ClassMethod $classMethod
      * @return string
      */
-    public function getMethodParameterString(ClassMethod $classMethod)
+    public function getMethodParameters(ClassMethod $classMethod)
     {
         $methodParams = $classMethod->params;
 
@@ -217,27 +275,6 @@ class PhpParserAdapter
         }
 
         return implode(', ', $params);
-    }
-
-    /**
-     * Given a class method, return an array of parameters
-     *
-     * This is only the name of the variable with a dollar sign.  For example,
-     * The return of this method would be: ['classMethod']
-     *
-     * @param ClassMethod $classMethod
-     * @return array
-     */
-    public function getMethodParameterNames(ClassMethod $classMethod)
-    {
-        $methodParams = $classMethod->params;
-        /** @var Param $methodParam */
-        $params = [];
-        foreach ($methodParams as $methodParam) {
-            $params[] = $methodParam->name;
-        }
-
-        return $params;
     }
 
     /**
@@ -252,7 +289,7 @@ class PhpParserAdapter
         $isStatic = ($staticTypeId === $classMethod->type) ? true : false;
         $staticModifier = ($isStatic) ? 'static ' : '';
 
-        return sprintf('%spublic function %s(%s)', $staticModifier, $this->getMethodName($classMethod), $this->getMethodParameterString($classMethod));
+        return sprintf('%spublic function %s(%s)', $staticModifier, $this->getMethodName($classMethod), $this->getMethodParameters($classMethod));
     }
 
     /**

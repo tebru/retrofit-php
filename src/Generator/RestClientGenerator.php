@@ -5,12 +5,9 @@
 
 namespace Tebru\Retrofit\Generator;
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use LogicException;
 use PhpParser\Lexer;
-use PhpParser\Parser;
-use ReflectionClass;
-use Tebru\Retrofit\Adapter\PhpParser\PhpParserAdapter;
+use Tebru\Retrofit\Provider\ClassMetaDataProvider;
 use Tebru\Retrofit\Annotation\Body;
 use Tebru\Retrofit\Annotation\Headers;
 use Tebru\Retrofit\Annotation\JsonBody;
@@ -47,42 +44,30 @@ class RestClientGenerator
     /**
      * Generate a REST client based on an interface
      *
-     * @param string $interface
+     * @param ClassMetaDataProvider $classMetaDataProvider
      * @return string
      */
-    public function generate($interface)
+    public function generate(ClassMetaDataProvider $classMetaDataProvider)
     {
-        // use reflection to inspect the interface
-        $reader = new AnnotationReader();
-        $reflectionClass = new ReflectionClass($interface);
-
-        // parse file
-        $file = file_get_contents($reflectionClass->getFileName());
-        $parser = new Parser(new Lexer());
-        $statements = $parser->parse($file);
-
-        // create adapter
-        $parserAdapater = new PhpParserAdapter($statements);
-
         // get interface methods
-        $parsedMethods = $parserAdapater->getInterfaceMethods();
+        $parsedMethods = $classMetaDataProvider->getInterfaceMethods();
 
         // loop through class annotations
         $classHeaders = ['headers' => []];
-        foreach ($reader->getClassAnnotations($reflectionClass) as $classAnnotation) {
+        foreach ($classMetaDataProvider->getClassAnnotations() as $classAnnotation) {
             $classHeaders = $this->headersAnnotation($classAnnotation, $classHeaders);
         }
 
         // loop over class methods
         $methods = [];
-        foreach ($reflectionClass->getMethods() as $index => $classMethod) {
+        foreach ($classMetaDataProvider->getReflectionMethods() as $index => $classMethod) {
             $parsedMethod = $parsedMethods[$index];
             $parameters = $classMethod->getParameters();
 
             // initialize data array
             $method = [
-                'name' => $parserAdapater->getMethodName($parsedMethod),
-                'methodDeclaration' => $parserAdapater->getMethodDeclaration($parsedMethod),
+                'name' => $classMetaDataProvider->getMethodName($parsedMethod),
+                'methodDeclaration' => $classMetaDataProvider->getMethodDeclaration($parsedMethod),
                 'type' => '',
                 'path' => '',
                 'return' => 'array',
@@ -95,7 +80,7 @@ class RestClientGenerator
             ];
 
             // loop through method annotations
-            foreach ($reader->getMethodAnnotations($classMethod) as $methodAnnotation) {
+            foreach ($classMetaDataProvider->getMethodAnnotations($classMethod) as $methodAnnotation) {
                 // check each annotation type expected
                 $method = $this->httpRequestAnnotation($methodAnnotation, $method, $parameters);
                 $method = $this->configureMethod($methodAnnotation, $method, $parameters, '\Tebru\Retrofit\Annotation\Query', 'query');
@@ -126,9 +111,9 @@ class RestClientGenerator
         $template = $this->twig->loadTemplate('service.php.twig');
 
         return $template->render([
-            'uses' => $parserAdapater->getUseStatements(),
-            'className' => md5($parserAdapater->getInterfaceNameFull()),
-            'interfaceName' => $parserAdapater->getInterfaceNameFull(),
+            'uses' => $classMetaDataProvider->getUseStatements(),
+            'className' => md5($classMetaDataProvider->getInterfaceNameFull()),
+            'interfaceName' => $classMetaDataProvider->getInterfaceNameFull(),
             'methods' => $methods,
         ]);
     }

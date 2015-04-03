@@ -6,6 +6,7 @@
 namespace Tebru\Retrofit;
 
 use Symfony\Component\Filesystem\LockHandler;
+use Tebru\Retrofit\Provider\ClassMetaDataProvider;
 use Tebru\Retrofit\Cache\CacheWriter;
 use Tebru\Retrofit\Finder\ServiceResolver;
 use Tebru\Retrofit\Generator\RestClientGenerator;
@@ -151,22 +152,13 @@ class Retrofit
 
         // loop through registered services and write to file
         foreach ($this->services as $service) {
-            $this->cacheWriter->write($this->getClass($service));
+            $classMetaDataProvider = new ClassMetaDataProvider($service);
+            $class = $this->restClientGenerator->generate($classMetaDataProvider);
+            $this->cacheWriter->write($class);
         }
 
         $lockHandler->release();
 
         return count($this->services);
-    }
-
-    /**
-     * Compiles a class from an interface name
-     *
-     * @param string $interfaceName
-     * @return string
-     */
-    private function getClass($interfaceName)
-    {
-        return $this->restClientGenerator->generate($interfaceName);
     }
 }
