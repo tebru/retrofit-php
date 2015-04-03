@@ -32,6 +32,13 @@ abstract class AnnotationToVariableMap
     private $value;
 
     /**
+     * Name of variable without '$'
+     *
+     * @var string
+     */
+    private $name;
+
+    /**
      * Constructor
      *
      * @param array $params
@@ -44,10 +51,12 @@ abstract class AnnotationToVariableMap
         }
 
         // will prepend '$' to either the original value or the 'var' key, if set
-        $value = '$' . (isset($params['var']) ? $params['var'] : $params['value']);
+        $name = (isset($params['var']) ? $params['var'] : $params['value']);
+        $value = '$' . $name;
 
         $this->key = $params['value'];
         $this->value = $value;
+        $this->name = $name;
     }
 
     /**
@@ -61,12 +70,22 @@ abstract class AnnotationToVariableMap
     }
 
     /**
-     * Get the variable name
+     * Get the variable name with '$'
      *
-     * @return string
+     * @return string|array
      */
     public function getValue()
     {
         return $this->value;
+    }
+
+    /**
+     * Get the variable name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 }

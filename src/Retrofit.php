@@ -6,6 +6,7 @@
 namespace Tebru\Retrofit;
 
 use Symfony\Component\Filesystem\LockHandler;
+use Tebru\Retrofit\Factory\AnnotationHandlerFactory;
 use Tebru\Retrofit\Provider\ClassMetaDataProvider;
 use Tebru\Retrofit\Cache\CacheWriter;
 use Tebru\Retrofit\Finder\ServiceResolver;
@@ -67,7 +68,7 @@ class Retrofit
     {
         $twig = $this->getTwig();
         $this->cacheWriter = new CacheWriter($cacheDir);
-        $this->restClientGenerator = new RestClientGenerator($twig);
+        $this->restClientGenerator = new RestClientGenerator($twig, new AnnotationHandlerFactory());
         $this->serviceResolver = new ServiceResolver();
     }
 

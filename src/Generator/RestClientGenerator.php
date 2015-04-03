@@ -7,12 +7,13 @@ namespace Tebru\Retrofit\Generator;
 
 use LogicException;
 use PhpParser\Lexer;
+use ReflectionParameter;
+use Tebru;
+use Tebru\Retrofit\Factory\AnnotationHandlerFactory;
+use Tebru\Retrofit\Model\ClassModel;
+use Tebru\Retrofit\Model\Method;
 use Tebru\Retrofit\Provider\ClassMetaDataProvider;
-use Tebru\Retrofit\Annotation\Body;
 use Tebru\Retrofit\Annotation\Headers;
-use Tebru\Retrofit\Annotation\JsonBody;
-use Tebru\Retrofit\Annotation\QueryMap;
-use Tebru\Retrofit\Annotation\Returns;
 use Tebru\Retrofit\Annotation\AnnotationToVariableMap;
 use Tebru\Retrofit\Annotation\HttpRequest;
 use Tebru\Retrofit\Provider\GeneratedClassMetaDataProvider;
@@ -33,13 +34,22 @@ class RestClientGenerator
     private $twig;
 
     /**
+     * Creates an annotation handler
+     *
+     * @var AnnotationHandlerFactory
+     */
+    private $annotationHandlerFactory;
+
+    /**
      * Constructor
      *
      * @param Twig_Environment $twig
+     * @param AnnotationHandlerFactory $annotationHandlerFactory
      */
-    public function __construct(Twig_Environment $twig)
+    public function __construct(Twig_Environment $twig, AnnotationHandlerFactory $annotationHandlerFactory)
     {
         $this->twig = $twig;
+        $this->annotationHandlerFactory = $annotationHandlerFactory;
     }
 
     /**
@@ -55,58 +65,48 @@ class RestClientGenerator
         $parsedMethods = $classMetaDataProvider->getInterfaceMethods();
 
         // loop through class annotations
-        $classHeaders = ['headers' => []];
+        $class = new ClassModel();
         foreach ($classMetaDataProvider->getClassAnnotations() as $classAnnotation) {
-            $classHeaders = $this->headersAnnotation($classAnnotation, $classHeaders);
+            if ($classAnnotation instanceof Headers) {
+                $class->addHeaders($classAnnotation->getHeaders());
+            }
         }
 
         // loop over class methods
-        $methods = [];
         foreach ($classMetaDataProvider->getReflectionMethods() as $index => $classMethod) {
             $parsedMethod = $parsedMethods[$index];
             $parameters = $classMethod->getParameters();
 
-            // initialize data array
-            $method = [
-                'name' => $classMetaDataProvider->getMethodName($parsedMethod),
-                'methodDeclaration' => $classMetaDataProvider->getMethodDeclaration($parsedMethod),
-                'type' => '',
-                'path' => '',
-                'return' => 'array',
-                'options' => [],
-                'parts' => [],
-                'query' => [],
-                'queryMap' => [],
-                'headers' => [],
-                'jsonBody' => false,
-            ];
+            $method = new Method();
+            $method->setName($classMetaDataProvider->getMethodName($parsedMethod));
+            $method->setDeclaration($classMetaDataProvider->getMethodDeclaration($parsedMethod));
 
             // loop through method annotations
             foreach ($classMetaDataProvider->getMethodAnnotations($classMethod) as $methodAnnotation) {
-                // check each annotation type expected
-                $method = $this->httpRequestAnnotation($methodAnnotation, $method, $parameters);
-                $method = $this->configureMethod($methodAnnotation, $method, $parameters, '\Tebru\Retrofit\Annotation\Query', 'query');
-                $method = $this->configureMethod($methodAnnotation, $method, $parameters, '\Tebru\Retrofit\Annotation\Part', 'parts');
-                $method = $this->configureMethod($methodAnnotation, $method, $parameters, '\Tebru\Retrofit\Annotation\Header', 'headers');
-                $method = $this->bodyAnnotation($methodAnnotation, $method, $parameters);
-                $method = $this->queryMapAnnotation($methodAnnotation, $method, $parameters);
-                $method = $this->headersAnnotation($methodAnnotation, $method);
-                $method = $this->returnsAnnotation($methodAnnotation, $method);
-                $method = $this->jsonBodyAnnotation($methodAnnotation, $method);
+                if ($methodAnnotation instanceof HttpRequest) {
+                    foreach ($methodAnnotation->getParameters() as $parameter) {
+                        $this->assertParameter($parameters, $parameter);
+                    }
+                }
+
+                if ($methodAnnotation instanceof AnnotationToVariableMap) {
+                    $this->assertParameter($parameters, $methodAnnotation->getName());
+                }
+
+                $handler = $this->annotationHandlerFactory->make($methodAnnotation);
+                $handler->handle($method, $methodAnnotation);
+
             }
 
-            // merge class headers array with method headers
-            $method['headers'] = array_merge($classHeaders['headers'], $method['headers']);
+            $methodOptions = $method->getOptions();
+            $methodParts = $method->getParts();
+            Tebru\assert(null !== $method->getType(), new LogicException('Request method must be set'));
+            Tebru\assert(
+                empty($methodOptions['body']) || empty($methodParts),
+                new LogicException('Body and part cannot both be set')
+            );
 
-            if (empty($method['type'])) {
-                throw new LogicException('Request method must be set');
-            }
-
-            if (!empty($method['options']['body']) && !empty($method['parts'])) {
-                throw new LogicException('Body and part cannot both be set');
-            }
-
-            $methods[$index] = $method;
+            $class->addMethod($method);
         }
 
         // render class as string
@@ -117,156 +117,8 @@ class RestClientGenerator
             'namespace' => $generatedClassMetaDataProvider->getNamespaceFull(),
             'className' => $classMetaDataProvider->getInterfaceNameShort(),
             'interfaceName' => $classMetaDataProvider->getInterfaceNameFull(),
-            'methods' => $methods,
+            'methods' => $class->getMethods(),
         ]);
-    }
-
-    /**
-     * Configures array for http request annotations
-     *
-     * @param mixed $annotation
-     * @param array $method
-     * @param array $parameters
-     * @return array
-     */
-    private function httpRequestAnnotation($annotation, array $method, array $parameters)
-    {
-        if (!$annotation instanceof HttpRequest) {
-            return $method;
-        }
-
-        foreach ($annotation->getParameters() as $parameter) {
-            $this->assertParameter($parameters, $parameter);
-        }
-
-        $method['type'] = $annotation->getType();
-        $method['path'] = $annotation->getPath();
-        $method['query'] = array_merge($method['query'], $annotation->getQueries());
-
-        return $method;
-    }
-
-    /**
-     * Generic method to configure the method array
-     * @param mixed $annotation
-     * @param array $method
-     * @param array $methodParameters
-     * @param $expectedAnnotation
-     * @param string $key
-     * @return array
-     */
-    private function configureMethod($annotation, array $method, array $methodParameters, $expectedAnnotation, $key)
-    {
-        if (!$annotation instanceof $expectedAnnotation) {
-            return $method;
-        }
-
-        /** @var AnnotationToVariableMap $annotation */
-        $paramName = substr($annotation->getValue(), 1);
-        $this->assertParameter($methodParameters, $paramName);
-
-        $method[$key][$annotation->getKey()] = $annotation->getValue();
-
-        return $method;
-    }
-
-    /**
-     * Configures array for body annotation
-     *
-     * @param mixed $annotation
-     * @param array $method
-     * @param array $methodParameters
-     * @return array
-     */
-    private function bodyAnnotation($annotation, array $method, array $methodParameters)
-    {
-        if (!$annotation instanceof Body) {
-            return $method;
-        }
-
-        $paramName = substr($annotation->getValue(), 1);
-        $this->assertParameter($methodParameters, $paramName);
-
-        $method['options']['body'] = $annotation->getValue();
-
-        return $method;
-    }
-
-    /**
-     * Configure array for query map
-     *
-     * @param mixed $methodAnnotation
-     * @param array $method
-     * @param array $parameters
-     * @return array
-     */
-    private function queryMapAnnotation($methodAnnotation, array $method, array $parameters)
-    {
-        if (!$methodAnnotation instanceof QueryMap) {
-            return $method;
-        }
-
-        $paramName = substr($methodAnnotation->getValue(), 1);
-        $this->assertParameter($parameters, $paramName);
-
-        $method['query'][] = $methodAnnotation->getValue();
-
-        return $method;
-    }
-
-    /**
-     * Configures array for headers annotation
-     *
-     * @param mixed $methodAnnotation
-     * @param array $method
-     * @return array
-     */
-    private function headersAnnotation($methodAnnotation, array $method)
-    {
-        if (!$methodAnnotation instanceof Headers) {
-            return $method;
-        }
-
-        // merge headers with existing headers
-        $method['headers'] = array_merge($method['headers'], $methodAnnotation->getHeaders());
-
-        return $method;
-    }
-
-    /**
-     * Configures method for returns annotation
-     *
-     * @param mixed $methodAnnotation
-     * @param array $method
-     * @return array
-     */
-    private function returnsAnnotation($methodAnnotation, array $method)
-    {
-        if (!$methodAnnotation instanceof Returns) {
-            return $method;
-        }
-
-        $method['return'] = $methodAnnotation->getReturn();
-
-        return $method;
-    }
-
-    /**
-     * Sets json body to true if annotation exists
-     *
-     * @param mixed $methodAnnotation
-     * @param array $method
-     * @return array
-     */
-    private function jsonBodyAnnotation($methodAnnotation, array $method)
-    {
-        if (!$methodAnnotation instanceof JsonBody) {
-            return $method;
-        }
-
-        $method['jsonBody'] = true;
-
-        return $method;
     }
 
     /**
@@ -278,7 +130,7 @@ class RestClientGenerator
      */
     private function assertParameter(array $parameters, $name)
     {
-        /** @var \ReflectionParameter $parameter */
+        /** @var ReflectionParameter $parameter */
         foreach ($parameters as $parameter) {
             if ($parameter->getName() === $name) {
                 return null;

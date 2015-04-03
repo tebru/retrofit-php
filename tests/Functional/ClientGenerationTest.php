@@ -13,6 +13,7 @@ use Mockery;
 use PHPUnit_Framework_TestCase;
 use Tebru\Retrofit\Adapter\Rest\RestAdapter;
 use Tebru\Retrofit\Test\Functional\Mock\MockService;
+use Tebru\Retrofit\Test\Functional\Mock\MockServiceHeaders;
 use Tebru\Retrofit\Test\Functional\Mock\MockSimpleService;
 use Tebru\Retrofit\Test\Functional\Mock\MockUser;
 
@@ -191,6 +192,21 @@ class ClientGenerationTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($this->getUser(), $user);
     }
 
+    public function testNoHeader()
+    {
+        $this->createClient(MockServiceHeaders::class, 'GET', '/get', [], [], ['foo' => 'bar', 'baz' => 'buzz'])->noHeaders();
+    }
+
+    public function testOneHeader()
+    {
+        $this->createClient(MockServiceHeaders::class, 'GET', '/get', [], [], ['foo' => 'bar', 'baz' => 'buzz', 'kit' => 'kat'])->oneHeader('kat');
+    }
+
+    public function testHeaderOverwrite()
+    {
+        $this->createClient(MockServiceHeaders::class, 'GET', '/get', [], [], ['foo' => 'foo', 'baz' => 'buzz', 'kit' => 'kat'])->headerOverwrite('foo', 'kat');
+    }
+
     /**
      * @param $service
      * @param $method
@@ -198,7 +214,7 @@ class ClientGenerationTest extends PHPUnit_Framework_TestCase
      * @param array $options
      * @param array $query
      * @param array $headers
-     * @return MockService|MockSimpleService
+     * @return MockService|MockSimpleService|MockServiceHeaders
      */
     private function createClient($service, $method, $path, $options = [], $query = [], $headers = [])
     {
