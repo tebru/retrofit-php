@@ -2,3 +2,4 @@
 /vendor
 /bin/composer.phar
 /cache
+*.iml
