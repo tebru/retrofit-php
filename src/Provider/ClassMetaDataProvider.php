@@ -19,6 +19,7 @@ use PhpParser\Node\Stmt\Interface_;
 use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\Node\Stmt\Use_;
 use PhpParser\Parser;
+use PhpParser\PrettyPrinter\Standard;
 use ReflectionClass;
 use ReflectionMethod;
 use Tebru;
@@ -47,6 +48,13 @@ class ClassMetaDataProvider
      * @var AnnotationReader
      */
     private $annotationReader;
+
+    /**
+     * Used to print out default values
+     *
+     * @var Standard
+     */
+    private $prettyPrinter;
 
     /**
      * The namespace statement
@@ -112,6 +120,7 @@ class ClassMetaDataProvider
     {
         $this->reflectionClass = new ReflectionClass($interfaceName);
         $this->annotationReader = new AnnotationReader();
+        $this->prettyPrinter = new Standard();
 
         // use the php parser internally to cache the class data
         $this->namespace = $this->parse();
@@ -185,7 +194,7 @@ class ClassMetaDataProvider
             return $this->namespaceName;
         }
 
-        $this->namespaceName = $this->createClassName($this->namespace);
+        $this->namespaceName = $this->getName($this->namespace);
 
         return $this->namespaceName;
     }
@@ -208,7 +217,7 @@ class ClassMetaDataProvider
         /** @var Use_ $useStatement */
         foreach ($useStatements as $useStatement) {
             foreach ($useStatement->uses as $use) {
-                $classname = $this->createClassName($use);
+                $classname = $this->getName($use);
                 $this->useStatements[] = sprintf('use %s as %s;', $classname, $use->alias);
             }
         }
@@ -263,7 +272,9 @@ class ClassMetaDataProvider
         }
 
         $interface = $this->getInterface();
-        $this->interfaceMethods = $interface->stmts;
+        $this->interfaceMethods = array_filter($interface->stmts, function ($element) {
+            return $element instanceof ClassMethod;
+        });
 
         return $this->interfaceMethods;
     }
@@ -316,10 +327,10 @@ class ClassMetaDataProvider
     /**
      * Get the name of a statement that has the name property
      *
-     * @param Stmt $statement
+     * @param mixed $statement
      * @return string
      */
-    private function createClassName(Stmt $statement)
+    private function getName($statement)
     {
         Tebru\assert(property_exists($statement, 'name'), new LogicException('Object must have a public name property'));
         Tebru\assert($statement->name instanceof Name, new LogicException('Name property must be instance of PhpParser\Node\Name'));
@@ -361,11 +372,26 @@ class ClassMetaDataProvider
     {
         $type = $param->type;
         $name = $param->name;
+        $default = $param->default;
 
         $paramString = (null !== $type) ? sprintf('%s ', $type) : '';
         $paramString .= sprintf('$%s', $name);
+        $paramString .= (null !== $default) ? sprintf(' = %s', $this->getDefaultValue($default)) : '';
 
         return $paramString;
     }
 
+    /**
+     * Get the default value from a method parameter
+     *
+     * @param mixed $default
+     * @return string
+     */
+    private function getDefaultValue($default)
+    {
+        $default = $this->prettyPrinter->prettyPrint([$default]);
+        $default = str_replace(';', '', $default);
+
+        return $default;
+    }
 }

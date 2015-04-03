@@ -13,6 +13,7 @@ use JMS\Serializer\SerializerBuilder;
 use Mockery;
 use PHPUnit_Framework_TestCase;
 use Tebru\Retrofit\Adapter\Rest\RestAdapter;
+use Tebru\Retrofit\Test\Mock\MockDefaultParamTest;
 use Tebru\Retrofit\Test\Mock\MockService;
 use Tebru\Retrofit\Test\Mock\MockServiceHeaders;
 use Tebru\Retrofit\Test\Mock\MockSimpleService;
@@ -215,6 +216,11 @@ class ClientGenerationTest extends PHPUnit_Framework_TestCase
         $this->createClient(MockServiceHeaders::class, 'GET', '/get', [], [], ['foo' => 'foo', 'baz' => 'buzz', 'kit' => 'kat'])->headerOverwrite('foo', 'kat');
     }
 
+    public function testDefaultParameters()
+    {
+        $this->createClient(MockDefaultParamTest::class, 'GET', '/get', [], ['foo' => null, 'bar' => 1, 'baz' => '', 'buzz' => [], 'kit' => true, 'kat' => 1])->defaultParams();
+    }
+
     /**
      * @param $service
      * @param $method
@@ -223,7 +229,7 @@ class ClientGenerationTest extends PHPUnit_Framework_TestCase
      * @param array $query
      * @param array $headers
      * @param bool $jsonBody
-     * @return MockService|MockServiceHeaders|MockSimpleService
+     * @return MockService|MockServiceHeaders|MockSimpleService|MockDefaultParamTest
      * @throws \InvalidArgumentException
      */
     private function createClient($service, $method, $path, $options = [], $query = [], $headers = [], $jsonBody = false)

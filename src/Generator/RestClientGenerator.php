@@ -75,7 +75,7 @@ class RestClientGenerator
 
         // loop over class methods
         foreach ($classMetaDataProvider->getReflectionMethods() as $index => $classMethod) {
-            $parsedMethod = $parsedMethods[$index];
+            $parsedMethod = array_shift($parsedMethods);
             $parameters = $classMethod->getParameters();
 
             $method = new Method();
