@@ -1,3 +1,4 @@
 /.idea
 /vendor
 /bin/composer.phar
+/cache

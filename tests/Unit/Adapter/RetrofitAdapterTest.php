@@ -11,7 +11,6 @@ use Mockery;
 use PHPUnit_Framework_TestCase;
 use stdClass;
 use Tebru\Retrofit\Adapter\Rest\RestAdapter;
-use Tebru\Retrofit\Service\Generated_8b6b4182e9c7c326764c6adad40eef2a\Generated_8b6b4182e9c7c326764c6adad40eef2a;
 use Tebru\Retrofit\Test\Functional\Mock\MockService;
 
 /**
@@ -57,7 +56,7 @@ class RetrofitAdapterTest extends PHPUnit_Framework_TestCase
         $httpClient = Mockery::mock(Client::class);
         $serializer = Mockery::mock(Serializer::class);
         $adapter = RestAdapter::builder()->setBaseUrl('')->setHttpClient($httpClient)->setSerializer($serializer)->build();
-        $generatedClass = new Generated_8b6b4182e9c7c326764c6adad40eef2a('', $httpClient, $serializer);
+        $generatedClass = new \Tebru\Retrofit\Service\Tebru\Retrofit\Test\Functional\Mock\MockService('', $httpClient, $serializer);
         $service = $adapter->create(MockService::class);
 
         $this->assertEquals($generatedClass, $service);

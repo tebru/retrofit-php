@@ -8,6 +8,7 @@ namespace Tebru\Retrofit\Adapter\Rest;
 use GuzzleHttp\ClientInterface;
 use InvalidArgumentException;
 use JMS\Serializer\SerializerInterface;
+use Tebru\Retrofit\Provider\GeneratedClassMetaDataProvider;
 
 /**
  * Class RestAdapter
@@ -16,11 +17,6 @@ use JMS\Serializer\SerializerInterface;
  */
 class RestAdapter
 {
-    /**
-     * Generated class name
-     */
-    const SERVICE_NAME = '\\Tebru\\Retrofit\\Service\\Generated_%s\\Generated_%s';
-
     /**
      * @var string $baseUrl
      */
@@ -83,8 +79,7 @@ class RestAdapter
         if (class_exists($service)) {
             $class = $service;
         } elseif (interface_exists($service)) {
-            $className = md5($service);
-            $class = sprintf(self::SERVICE_NAME, $className, $className);
+            $class = GeneratedClassMetaDataProvider::NAMESPACE_PREFIX . '\\' . $service;
         } else {
             throw new InvalidArgumentException('String argument passed to create() must be a class or interface');
         }

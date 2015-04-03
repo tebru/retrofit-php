@@ -123,7 +123,7 @@ class ClassMetaDataProvider
      */
     private function parse()
     {
-        $file = file_get_contents($this->reflectionClass->getFileName());
+        $file = file_get_contents($this->getFilename());
         $parser = new Parser(new Lexer());
         $statements = $parser->parse($file);
 
@@ -135,11 +135,31 @@ class ClassMetaDataProvider
         return $namespace;
     }
 
+    /**
+     * Returns the reflection class' filename
+     *
+     * @return string
+     */
+    public function getFilename()
+    {
+        return $this->reflectionClass->getFileName();
+    }
+
+    /**
+     * Uses the annotation reader to get the reflection class' annotations
+     *
+     * @return array
+     */
     public function getClassAnnotations()
     {
         return $this->annotationReader->getClassAnnotations($this->reflectionClass);
     }
 
+    /**
+     * Uses the annotation reader to get the reflection class method's annotations
+     * @param ReflectionMethod $reflectionMethod
+     * @return array
+     */
     public function getMethodAnnotations(ReflectionMethod $reflectionMethod)
     {
         return $this->annotationReader->getMethodAnnotations($reflectionMethod);

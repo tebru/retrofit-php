@@ -6,6 +6,7 @@
 namespace Tebru\Retrofit\Cache;
 
 use Symfony\Component\Filesystem\Filesystem;
+use Tebru\Retrofit\Provider\GeneratedClassMetaDataProvider;
 
 /**
  * Class CacheWriter
@@ -14,12 +15,10 @@ use Symfony\Component\Filesystem\Filesystem;
  */
 class CacheWriter
 {
-    /**#@+
-     * Cache constants
+    /**
+     * Retrofit cache directory name
      */
     const RETROFIT_CACHE_DIR = 'retrofit';
-    const RETROFIT_CACHE_FILE = 'php_retrofit_cache.php';
-    /**#@-*/
 
     /**
      * Cache directory
@@ -43,59 +42,28 @@ class CacheWriter
     public function __construct($cacheDir)
     {
         if (null === $cacheDir) {
-            $cacheDir = sprintf('/tmp/%s', self::RETROFIT_CACHE_DIR);
+            $cacheDir = sys_get_temp_dir();
         }
 
         $this->filesystem = new Filesystem();
-        $this->cacheDir = $cacheDir;
+        $this->cacheDir = $cacheDir . DIRECTORY_SEPARATOR . self::RETROFIT_CACHE_DIR;
 
-        $this->configureCache();
-    }
-
-    /**
-     * Configures caches
-     */
-    private function configureCache()
-    {
-        $this->filesystem->mkdir($this->getRetrofitCacheDir());
-    }
-
-    /**
-     * Get cache directory for retrofit
-     *
-     * @return string
-     */
-    public function getRetrofitCacheDir()
-    {
-        return sprintf('%s/%s', $this->cacheDir, self::RETROFIT_CACHE_DIR);
-    }
-
-    /**
-     * Get retrofit cache filename
-     *
-     * @return string
-     */
-    public function getRetrofitCacheFile()
-    {
-        return sprintf('%s/%s', $this->getRetrofitCacheDir(), self::RETROFIT_CACHE_FILE);
+        $this->filesystem->mkdir($this->cacheDir);
     }
 
     /**
      * Write to retrofit cache
      *
+     * @param GeneratedClassMetaDataProvider $generatedClassMetaDataProvider
      * @param string $contents
-     * @param int $append
      */
-    public function write($contents, $append = FILE_APPEND)
+    public function write(GeneratedClassMetaDataProvider $generatedClassMetaDataProvider, $contents)
     {
-        file_put_contents($this->getRetrofitCacheFile(), $contents, $append);
-    }
+        $contents = "<?php\n" . $contents;
+        $path = $this->cacheDir . DIRECTORY_SEPARATOR . $generatedClassMetaDataProvider->getFilePath();
+        $filename = $path . DIRECTORY_SEPARATOR . $generatedClassMetaDataProvider->getFilenameShort();
 
-    /**
-     * Reset content in cache file
-     */
-    public function clean()
-    {
-        $this->write("<?php\n", null);
+        $this->filesystem->mkdir($path);
+        $this->filesystem->dumpFile($filename, $contents);
     }
 }

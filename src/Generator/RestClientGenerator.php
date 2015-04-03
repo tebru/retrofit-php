@@ -15,6 +15,7 @@ use Tebru\Retrofit\Annotation\QueryMap;
 use Tebru\Retrofit\Annotation\Returns;
 use Tebru\Retrofit\Annotation\AnnotationToVariableMap;
 use Tebru\Retrofit\Annotation\HttpRequest;
+use Tebru\Retrofit\Provider\GeneratedClassMetaDataProvider;
 use Twig_Environment;
 
 /**
@@ -45,9 +46,10 @@ class RestClientGenerator
      * Generate a REST client based on an interface
      *
      * @param ClassMetaDataProvider $classMetaDataProvider
+     * @param GeneratedClassMetaDataProvider $generatedClassMetaDataProvider
      * @return string
      */
-    public function generate(ClassMetaDataProvider $classMetaDataProvider)
+    public function generate(ClassMetaDataProvider $classMetaDataProvider, GeneratedClassMetaDataProvider $generatedClassMetaDataProvider)
     {
         // get interface methods
         $parsedMethods = $classMetaDataProvider->getInterfaceMethods();
@@ -112,7 +114,8 @@ class RestClientGenerator
 
         return $template->render([
             'uses' => $classMetaDataProvider->getUseStatements(),
-            'className' => md5($classMetaDataProvider->getInterfaceNameFull()),
+            'namespace' => $generatedClassMetaDataProvider->getNamespaceFull(),
+            'className' => $classMetaDataProvider->getInterfaceNameShort(),
             'interfaceName' => $classMetaDataProvider->getInterfaceNameFull(),
             'methods' => $methods,
         ]);

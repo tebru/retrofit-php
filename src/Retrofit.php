@@ -10,6 +10,7 @@ use Tebru\Retrofit\Provider\ClassMetaDataProvider;
 use Tebru\Retrofit\Cache\CacheWriter;
 use Tebru\Retrofit\Finder\ServiceResolver;
 use Tebru\Retrofit\Generator\RestClientGenerator;
+use Tebru\Retrofit\Provider\GeneratedClassMetaDataProvider;
 use Tebru\Retrofit\Twig\PrintArrayFunction;
 use Twig_Environment;
 use Twig_Loader_Filesystem;
@@ -107,27 +108,18 @@ class Retrofit
     }
 
     /**
-     * Loads cached class file into memory
-     */
-    public function load()
-    {
-        require_once $this->cacheWriter->getRetrofitCacheFile();
-    }
-
-    /**
      * Use the service resolver to find all the services dynamically
      *
      * If debug is false, it will only create the cache file if it doesn't already exist
      *
      * @param string $srcDir
-     * @param bool $debug
      * @return int Number of services cached
      */
-    public function cacheAll($srcDir, $debug = true)
+    public function cacheAll($srcDir)
     {
         $this->services = $this->serviceResolver->findServices($srcDir);
 
-        return $this->createCache($debug);
+        return $this->createCache();
     }
 
     /**
@@ -135,26 +127,20 @@ class Retrofit
      *
      * If debug is false, it will only create the cache file if it doesn't already exist
      *
-     * @param bool $debug
      * @return int Number of services cached
      */
-    public function createCache($debug = true)
+    public function createCache()
     {
-        if (false === $debug && file_exists($this->cacheWriter->getRetrofitCacheFile())) {
-            return null;
-        }
-
         $lockHandler = new LockHandler(self::RETROFIT_LOCK_FILE);
         $lockHandler->lock(true);
-
-        // blank file
-        $this->cacheWriter->clean();
 
         // loop through registered services and write to file
         foreach ($this->services as $service) {
             $classMetaDataProvider = new ClassMetaDataProvider($service);
-            $class = $this->restClientGenerator->generate($classMetaDataProvider);
-            $this->cacheWriter->write($class);
+            $generatedClassMetaDataProvider = new GeneratedClassMetaDataProvider($classMetaDataProvider);
+            $generatedClass = $this->restClientGenerator->generate($classMetaDataProvider, $generatedClassMetaDataProvider);
+
+            $this->cacheWriter->write($generatedClassMetaDataProvider, $generatedClass);
         }
 
         $lockHandler->release();
