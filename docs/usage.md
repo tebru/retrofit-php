@@ -192,3 +192,12 @@ There are two methods `addSerializerSubscriber` and `addSerializerSubscribingHan
 $builder->addSerializerSubscriber(new MyEventSubscriber());
 $builder->addSerializerSubscribingHandler(new MySubscribingHandler());
 ```
+
+Command
+-------
+
+Use the included command to generate the cache files
+
+```
+vendor/bin/retrofit <path/to/src/dir> <path/to/cache/dir>
+```
