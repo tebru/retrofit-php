@@ -135,12 +135,19 @@ class ClientGenerationTest extends PHPUnit_Framework_TestCase
 
     public function testPostWithJsonBody()
     {
-        $this->createClient(MockService::class, 'POST', '/post', ['json' => ['foo' => 'bar']], [], [])->postWithJsonBody(['foo' => 'bar']);
+        $this->createClient(MockService::class, 'POST', '/post', ['json' => ['foo' => 'bar']], [], [], true)->postWithJsonBody(['foo' => 'bar']);
     }
 
     public function testPartWithJsonBody()
     {
-        $this->createClient(MockService::class, 'POST', '/post', ['json' => ['foo' => 'bar', 'baz' => 'buzz']], [], [])->postWithJsonBodyParts('bar', 'buzz');
+        $this->createClient(MockService::class, 'POST', '/post', ['json' => ['foo' => 'bar', 'baz' => 'buzz']], [], [], true)->postWithJsonBodyParts('bar', 'buzz');
+    }
+
+    public function testJsonBodyWithObject()
+    {
+        $user = $this->getUser();
+        $jsonUser = $this->serializeUser($user);
+        $this->createClient(MockService::class, 'POST', '/post', ['body' => $jsonUser], [], [], true)->postWithJsonBodyObject($user);
     }
 
     public function testGetWithHeader()
@@ -214,9 +221,11 @@ class ClientGenerationTest extends PHPUnit_Framework_TestCase
      * @param array $options
      * @param array $query
      * @param array $headers
-     * @return MockService|MockSimpleService|MockServiceHeaders
+     * @param bool $jsonBody
+     * @return MockService|MockServiceHeaders|MockSimpleService
+     * @throws \InvalidArgumentException
      */
-    private function createClient($service, $method, $path, $options = [], $query = [], $headers = [])
+    private function createClient($service, $method, $path, $options = [], $query = [], $headers = [], $jsonBody = false)
     {
         $request = Mockery::mock(RequestInterface::class);
 
@@ -226,6 +235,11 @@ class ClientGenerationTest extends PHPUnit_Framework_TestCase
 
         if (!empty($headers)) {
             $request->shouldReceive('addHeaders')->times(1)->with($headers)->andReturnNull();
+        }
+
+        if (true === $jsonBody) {
+            $request->shouldReceive('hasHeader')->times(1)->with('Content-Type')->andReturn(false);
+            $request->shouldReceive('setHeader')->times(1)->with('Content-Type', 'application/json')->andReturnNull();
         }
 
         $response = Mockery::mock(ResponseInterface::class);

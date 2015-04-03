@@ -28,10 +28,13 @@ class {{ className }} implements \{{ interfaceName }}
 {% set bodyKey = (method.jsonBody) ? 'json' : 'body' %}
 {% if method.options.body is not empty %}
         if (is_object({{ method.options.body }})) {
-            $options['{{ bodyKey }}'] = $this->serializer->serialize({{ method.options.body }}, 'json');
-        } else {
+            $options['body'] = $this->serializer->serialize({{ method.options.body }}, 'json');
+        } elseif (is_array({{ method.options.body }})) {
             $options['{{ bodyKey }}'] = {{ method.options.body }};
+        } else {
+            $options['body'] = {{ method.options.body }};
         }
+
         $request = $this->client->createRequest('{{ methodType }}', $this->baseUrl . "{{ path }}", $options);
 {% elseif method.parts is not empty %}
         $request = $this->client->createRequest('{{ methodType }}', $this->baseUrl . "{{ path }}", ['{{ bodyKey }}' => {{ print_array(method.parts)|raw }}]);
@@ -44,6 +47,13 @@ class {{ className }} implements \{{ interfaceName }}
 {% if method.headers is not empty %}
         $request->addHeaders({{ print_array(method.headers)|raw }});
 {% endif %}
+{% if 'json' == bodyKey %}
+
+        if (!$request->hasHeader('Content-Type')) {
+            $request->setHeader('Content-Type', 'application/json');
+        }
+{% endif %}
+
         $response = $this->client->send($request);
 
 {% if 'raw' == method.return %}

@@ -103,6 +103,13 @@ interface MockService
     public function postWithJsonBodyParts($foo, $baz);
 
     /**
+     * @Rest\POST("/post")
+     * @Rest\Body("user")
+     * @Rest\JsonBody
+     */
+    public function postWithJsonBodyObject(MockUser $user);
+
+    /**
      * @Rest\GET("/get")
      * @Rest\Header("foo")
      */
