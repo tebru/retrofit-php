@@ -1,6 +1,7 @@
 <?php
-/**
- * File MockSimpleService.php
+/*
+ * Copyright (c) 2015 Nate Brunette.
+ * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
 namespace Tebru\Retrofit\Test\Mock;
