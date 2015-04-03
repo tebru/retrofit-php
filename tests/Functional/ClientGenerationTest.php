@@ -13,6 +13,7 @@ use Mockery;
 use PHPUnit_Framework_TestCase;
 use Tebru\Retrofit\Adapter\Rest\RestAdapter;
 use Tebru\Retrofit\Test\Functional\Mock\MockService;
+use Tebru\Retrofit\Test\Functional\Mock\MockSimpleService;
 use Tebru\Retrofit\Test\Functional\Mock\MockUser;
 
 /**
@@ -31,174 +32,175 @@ class ClientGenerationTest extends PHPUnit_Framework_TestCase
 
     public function testSimpleGet()
     {
-        $this->createClient('GET', '/get')->simpleGet();
+        $this->createClient(MockSimpleService::class, 'GET', '/get')->simpleGet();
     }
 
     public function testSimplePost()
     {
-        $this->createClient('POST', '/post')->simplePost();
+        $this->createClient(MockSimpleService::class, 'POST', '/post')->simplePost();
     }
 
     public function testSimplePut()
     {
-        $this->createClient('PUT', '/put')->simplePut();
+        $this->createClient(MockSimpleService::class, 'PUT', '/put')->simplePut();
     }
 
     public function testSimpleDelete()
     {
-        $this->createClient('DELETE', '/delete')->simpleDelete();
+        $this->createClient(MockSimpleService::class, 'DELETE', '/delete')->simpleDelete();
     }
 
     public function testSimpleHead()
     {
-        $this->createClient('HEAD', '/head')->simpleHead();
+        $this->createClient(MockSimpleService::class, 'HEAD', '/head')->simpleHead();
     }
 
     public function testSimpleOptions()
     {
-        $this->createClient('OPTIONS', '/options')->simpleOptions();
+        $this->createClient(MockSimpleService::class, 'OPTIONS', '/options')->simpleOptions();
     }
 
     public function testSimplePatch()
     {
-        $this->createClient('PATCH', '/patch')->simplePatch();
+        $this->createClient(MockSimpleService::class, 'PATCH', '/patch')->simplePatch();
     }
 
     public function testGetWithVar()
     {
-        $this->createClient('GET', '/get/1')->getWithVar(1);
+        $this->createClient(MockService::class, 'GET', '/get/1')->getWithVar(1);
     }
 
     public function testGetWithQuery()
     {
-        $this->createClient('GET', '/get', [], ['foo' => 'bar'])->getWithQuery();
+        $this->createClient(MockService::class, 'GET', '/get', [], ['foo' => 'bar'])->getWithQuery();
     }
 
     public function testGetWithQueryDynamic()
     {
-        $this->createClient('GET', '/get', [], ['foo' => 'bar', 'baz' => 'buzz'])->getWithQueryDynamic('buzz');
+        $this->createClient(MockService::class, 'GET', '/get', [], ['foo' => 'bar', 'baz' => 'buzz'])->getWithQueryDynamic('buzz');
     }
 
     public function testCanChangeQueryVar()
     {
-        $this->createClient('GET', '/get', [], ['foo' => 'bar', 'baz' => 'buzz'])->canChangeQueryVar('buzz');
+        $this->createClient(MockService::class, 'GET', '/get', [], ['foo' => 'bar', 'baz' => 'buzz'])->canChangeQueryVar('buzz');
     }
 
     public function testGetWithQueryMap()
     {
-        $this->createClient('GET', '/get', [], ['foo' => 'bar', 'baz' => 'buzz', ['bing' => 'bong']])->getWithQueryMap('buzz', ['bing' => 'bong']);
+        $this->createClient(MockService::class, 'GET', '/get', [], ['foo' => 'bar', 'baz' => 'buzz', ['bing' => 'bong']])->getWithQueryMap('buzz', ['bing' => 'bong']);
     }
 
     public function testGetWithQueryMapNested()
     {
-        $this->createClient('GET', '/get', [], ['foo' => 'bar', 'baz' => 'buzz', ['map' => ['bing' => 'bong'], 'bloop' => 'loop']])->getWithQueryMapNested('buzz', ['map' => ['bing' => 'bong'], 'bloop' => 'loop']);
+        $this->createClient(MockService::class, 'GET', '/get', [], ['foo' => 'bar', 'baz' => 'buzz', ['map' => ['bing' => 'bong'], 'bloop' => 'loop']])->getWithQueryMapNested('buzz', ['map' => ['bing' => 'bong'], 'bloop' => 'loop']);
     }
 
     public function testCanChangeQueryMapVar()
     {
-        $this->createClient('GET', '/get', [], ['foo' => 'bar', 'baz' => 'buzz', ['bing' => 'bong']])->canChangeQueryMapVar('buzz', ['bing' => 'bong']);
+        $this->createClient(MockService::class, 'GET', '/get', [], ['foo' => 'bar', 'baz' => 'buzz', ['bing' => 'bong']])->canChangeQueryMapVar('buzz', ['bing' => 'bong']);
     }
 
     public function testPostWithSimpleBody()
     {
-        $this->createClient('POST', '/post', ['body' => ['foo' => 'bar']], [], [])->postWithSimpleBody(['foo' => 'bar']);
+        $this->createClient(MockService::class, 'POST', '/post', ['body' => ['foo' => 'bar']], [], [])->postWithSimpleBody(['foo' => 'bar']);
     }
 
     public function testCanChangeBodyVar()
     {
-        $this->createClient('POST', '/post', ['body' => ['foo' => 'bar']], [], [])->canChangeBodyVar(['foo' => 'bar']);
+        $this->createClient(MockService::class, 'POST', '/post', ['body' => ['foo' => 'bar']], [], [])->canChangeBodyVar(['foo' => 'bar']);
     }
 
     public function testPostWithObjectBody()
     {
         $user = $this->getUser();
         $jsonUser = $this->serializeUser($user);
-        $this->createClient('POST', '/post', ['body' => $jsonUser], [], [])->postWithObjectBody($user);
+        $this->createClient(MockService::class, 'POST', '/post', ['body' => $jsonUser], [], [])->postWithObjectBody($user);
     }
 
     public function testPostWithPart()
     {
-        $this->createClient('POST', '/post', ['body' => ['foo' => 'bar']], [], [])->postWithPart('bar');
+        $this->createClient(MockService::class, 'POST', '/post', ['body' => ['foo' => 'bar']], [], [])->postWithPart('bar');
     }
 
     public function testPostWithMultipleParts()
     {
-        $this->createClient('POST', '/post', ['body' => ['foo' => 'bar', 'baz' => 'buzz']], [], [])->postWithMultipleParts('bar', 'buzz');
+        $this->createClient(MockService::class, 'POST', '/post', ['body' => ['foo' => 'bar', 'baz' => 'buzz']], [], [])->postWithMultipleParts('bar', 'buzz');
     }
 
     public function testCanChangePartVar()
     {
-        $this->createClient('POST', '/post', ['body' => ['foo' => 'bar']], [], [])->canChangePartVar('bar');
+        $this->createClient(MockService::class, 'POST', '/post', ['body' => ['foo' => 'bar']], [], [])->canChangePartVar('bar');
     }
 
     public function testPostWithJsonBody()
     {
-        $this->createClient('POST', '/post', ['json' => ['foo' => 'bar']], [], [])->postWithJsonBody(['foo' => 'bar']);
+        $this->createClient(MockService::class, 'POST', '/post', ['json' => ['foo' => 'bar']], [], [])->postWithJsonBody(['foo' => 'bar']);
     }
 
     public function testPartWithJsonBody()
     {
-        $this->createClient('POST', '/post', ['json' => ['foo' => 'bar', 'baz' => 'buzz']], [], [])->postWithJsonBodyParts('bar', 'buzz');
+        $this->createClient(MockService::class, 'POST', '/post', ['json' => ['foo' => 'bar', 'baz' => 'buzz']], [], [])->postWithJsonBodyParts('bar', 'buzz');
     }
 
     public function testGetWithHeader()
     {
-        $this->createClient('GET', '/get', [], [], ['foo' => 'bar'])->getWithHeader('bar');
+        $this->createClient(MockService::class, 'GET', '/get', [], [], ['foo' => 'bar'])->getWithHeader('bar');
     }
 
     public function testCanChangeHeaderVar()
     {
-        $this->createClient('GET', '/get', [], [], ['foo' => 'bar'])->canChangeHeaderVar('bar');
+        $this->createClient(MockService::class, 'GET', '/get', [], [], ['foo' => 'bar'])->canChangeHeaderVar('bar');
     }
 
     public function testGetWithMultipleHeaders()
     {
-        $this->createClient('GET', '/get', [], [], ['foo' => 'bar', 'baz' => 'buzz'])->getWithMultipleHeaders('bar', 'buzz');
+        $this->createClient(MockService::class, 'GET', '/get', [], [], ['foo' => 'bar', 'baz' => 'buzz'])->getWithMultipleHeaders('bar', 'buzz');
     }
 
     public function testGetWithStaticHeaders()
     {
-        $this->createClient('GET', '/get', [], [], ['Foo' => 'bar'])->getWithStaticHeaders();
+        $this->createClient(MockService::class, 'GET', '/get', [], [], ['Foo' => 'bar'])->getWithStaticHeaders();
     }
 
     public function testGetWithStaticHeadersList()
     {
-        $this->createClient('GET', '/get', [], [], ['Foo' => 'bar', 'Baz' => 'buzz'])->getWithStaticHeadersList();
+        $this->createClient(MockService::class, 'GET', '/get', [], [], ['Foo' => 'bar', 'Baz' => 'buzz'])->getWithStaticHeadersList();
     }
 
     public function testRawReturn()
     {
-        $user = $this->createClient('GET', '/get')->getRawReturn();
+        $user = $this->createClient(MockService::class, 'GET', '/get')->getRawReturn();
         $this->assertSame($this->serializeUser($this->getUser()), $user);
     }
 
     public function testArrayReturn()
     {
-        $user = $this->createClient('GET', '/get')->getArrayReturn();
+        $user = $this->createClient(MockService::class, 'GET', '/get')->getArrayReturn();
         $this->assertSame(['id' => 1, 'name' => 'Nate'], $user);
     }
 
     public function testDefaultReturnIsArray()
     {
-        $user = $this->createClient('GET', '/get')->getDefaultReturnIsArray();
+        $user = $this->createClient(MockService::class, 'GET', '/get')->getDefaultReturnIsArray();
         $this->assertSame(['id' => 1, 'name' => 'Nate'], $user);
     }
 
     public function testDeserializedReturn()
     {
-        $user = $this->createClient('GET', '/get')->getDeserializedReturn();
+        $user = $this->createClient(MockService::class, 'GET', '/get')->getDeserializedReturn();
         $this->assertEquals($this->getUser(), $user);
     }
 
     /**
+     * @param $service
      * @param $method
      * @param $path
      * @param array $options
      * @param array $query
      * @param array $headers
-     * @return MockService
+     * @return MockService|MockSimpleService
      */
-    private function createClient($method, $path, $options = [], $query = [], $headers = [])
+    private function createClient($service, $method, $path, $options = [], $query = [], $headers = [])
     {
         $request = Mockery::mock(RequestInterface::class);
 
@@ -228,7 +230,7 @@ class ClientGenerationTest extends PHPUnit_Framework_TestCase
         $builder->setHttpClient($httpClient);
         $restAdapter = $builder->build();
 
-        return $restAdapter->create(MockService::class);
+        return $restAdapter->create($service);
     }
     private function getUser()
     {
