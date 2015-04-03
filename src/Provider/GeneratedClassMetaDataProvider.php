@@ -11,7 +11,7 @@ namespace Tebru\Retrofit\Provider;
  * This class will use a ClassMetaDataProvider instance and format the data
  * for use with a generated file.
  *
- * @author Nate Brunette <nbrunett@nerdery.com>
+ * @author Nate Brunette <n@tebru.net>
  */
 class GeneratedClassMetaDataProvider
 {
