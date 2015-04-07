@@ -45,7 +45,7 @@ abstract class HttpRequest
      */
     public function __construct(array $params)
     {
-        $path = $params['value'];
+        $path = (isset($params['value'])) ? $params['value'] : '';
 
         // check if url contains {}
         $matchesFound = preg_match_all('/{(.+?)}/', $path, $pathMatches);
