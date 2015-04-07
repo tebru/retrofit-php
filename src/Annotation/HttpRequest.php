@@ -41,12 +41,10 @@ abstract class HttpRequest
      * Constructor
      *
      * @param array $params
-     * @throws Exception if path is not set
+     * @throws OutOfRangeException if path is not set
      */
     public function __construct(array $params)
     {
-        Tebru\assert(isset($params['value']), new OutOfRangeException(sprintf('A "%s" annotation must have an argument.  None found.', get_class($this))));
-
         $path = $params['value'];
 
         // check if url contains {}

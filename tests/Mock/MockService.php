@@ -169,4 +169,11 @@ interface MockService
      * @Rest\Returns("Tebru\Retrofit\Test\Mock\MockUser")
      */
     public function getDeserializedReturn();
+
+    /**
+     * @Rest\GET()
+     * @Rest\Url("baseUrl")
+     * @Rest\Header("foo")
+     */
+    public function baseUrl($baseUrl, $foo);
 }

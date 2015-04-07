@@ -7,6 +7,7 @@
 namespace Tebru\Retrofit\Factory;
 
 use Tebru\Retrofit\Annotation\HttpRequest;
+use Tebru\Retrofit\Annotation\Url;
 use Tebru\Retrofit\Handler\BodyHandler;
 use Tebru\Retrofit\Handler\HeaderHandler;
 use Tebru\Retrofit\Handler\HeadersHandler;
@@ -16,6 +17,7 @@ use Tebru\Retrofit\Handler\PartHandler;
 use Tebru\Retrofit\Handler\QueryHandler;
 use Tebru\Retrofit\Handler\QueryMapHandler;
 use Tebru\Retrofit\Handler\ReturnsHandler;
+use Tebru\Retrofit\Handler\UrlHandler;
 use UnexpectedValueException;
 
 /**
@@ -26,6 +28,7 @@ use UnexpectedValueException;
 class AnnotationHandlerFactory
 {
     const CLASS_HTTP_REQUEST = 'Tebru\Retrofit\Annotation\HttpRequest';
+    const CLASS_URL = 'Tebru\Retrofit\Annotation\Url';
     const CLASS_QUERY = 'Tebru\Retrofit\Annotation\Query';
     const CLASS_QUERY_MAP = 'Tebru\Retrofit\Annotation\QueryMap';
     const CLASS_PART = 'Tebru\Retrofit\Annotation\Part';
@@ -47,6 +50,9 @@ class AnnotationHandlerFactory
         switch (get_class($annotation)) {
             case ($annotation instanceof HttpRequest):
                 return new HttpRequestHandler();
+                break;
+            case ($annotation instanceof Url):
+                return new UrlHandler();
                 break;
             case self::CLASS_QUERY:
                 $handler = new QueryHandler();

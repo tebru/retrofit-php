@@ -7,6 +7,23 @@ Annotations determine how the REST client will function
 Each method must have a request method defined.  `GET`, `POST`, `PUT`, `DELETE`,
 `HEAD`, `PATCH`, and `OPTIONS` come out of the box.
 
+The value, if provided, represents the path that will be appended to the base url.
+
+### Override Base Url
+Occasionally an API will specify the exact url to make a request.  This can be handled
+using the `@Url` annotation.
+
+```php
+/**
+ * @GET()
+ * @Url("url")
+ */
+public function listRepos($url);
+```
+
+If the `@Url` annotation is specified, the request will be made to that exact url.  Any
+value passed to `@GET` will be discarded.
+
 ### URL Manipulation
 As seen before, parameters can be defined by inserting curly braces into the url
 path.

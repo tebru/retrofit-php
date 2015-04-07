@@ -35,6 +35,13 @@ class Method
     private $type = null;
 
     /**
+     * A url override
+     *
+     * @var string
+     */
+    private $url = null;
+
+    /**
      * Url path for endpoint
      *
      * @var string
@@ -94,6 +101,7 @@ class Method
             'name' => $this->getName(),
             'methodDeclaration' => $this->getDeclaration(),
             'type' => $this->getType(),
+            'url' => $this->getUrl(),
             'path' => $this->getPath(),
             'return' => $this->getReturn(),
             'options' => $this->getOptions(),
@@ -150,6 +158,22 @@ class Method
     public function setType($type)
     {
         $this->type = $type;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param string $url
+     */
+    public function setUrl($url)
+    {
+        $this->url = $url;
     }
 
     /**

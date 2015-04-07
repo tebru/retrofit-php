@@ -221,6 +221,11 @@ class ClientGenerationTest extends PHPUnit_Framework_TestCase
         $this->createClient(MockDefaultParamTest::class, 'GET', '/get', [], ['foo' => null, 'bar' => 1, 'baz' => '', 'buzz' => [], 'kit' => true, 'kat' => 1])->defaultParams();
     }
 
+    public function testBaseUrl()
+    {
+        $this->createClient(MockService::class, 'GET', 'http://example.com?test=1', [], [], ['foo' => 'bar'], false, true)->baseUrl('http://example.com?test=1', 'bar');
+    }
+
     /**
      * @param $service
      * @param $method
@@ -232,7 +237,7 @@ class ClientGenerationTest extends PHPUnit_Framework_TestCase
      * @return MockService|MockServiceHeaders|MockSimpleService|MockDefaultParamTest
      * @throws \InvalidArgumentException
      */
-    private function createClient($service, $method, $path, $options = [], $query = [], $headers = [], $jsonBody = false)
+    private function createClient($service, $method, $path, $options = [], $query = [], $headers = [], $jsonBody = false, $baseUrl = false)
     {
         $request = Mockery::mock(RequestInterface::class);
 
@@ -254,9 +259,10 @@ class ClientGenerationTest extends PHPUnit_Framework_TestCase
 
         $httpClient = Mockery::mock(ClientInterface::class);
 
+        $requestUrl = ($baseUrl) ? $path : self::BASE_URL . $path;
         $httpClient->shouldReceive('createRequest')
             ->times(1)
-            ->with($method, self::BASE_URL . $path, $options)
+            ->with($method, $requestUrl, $options)
             ->andReturn($request);
         $httpClient->shouldReceive('send')
             ->times(1)

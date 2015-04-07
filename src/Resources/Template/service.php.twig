@@ -26,6 +26,7 @@ class {{ className }} implements \{{ interfaceName }}
 {% set methodType = method.type|upper %}
 {% set path = method.path %}
 {% set bodyKey = (method.jsonBody) ? 'json' : 'body' %}
+        $requestUrl = {% if method.url is null %}$this->baseUrl . "{{ path }}"{% else %}{{ method.url }}{% endif %};
 {% if method.options.body is not empty %}
         if (is_object({{ method.options.body }})) {
             $options['body'] = $this->serializer->serialize({{ method.options.body }}, 'json');
@@ -35,11 +36,11 @@ class {{ className }} implements \{{ interfaceName }}
             $options['body'] = {{ method.options.body }};
         }
 
-        $request = $this->client->createRequest('{{ methodType }}', $this->baseUrl . "{{ path }}", $options);
+        $request = $this->client->createRequest('{{ methodType }}', $requestUrl, $options);
 {% elseif method.parts is not empty %}
-        $request = $this->client->createRequest('{{ methodType }}', $this->baseUrl . "{{ path }}", ['{{ bodyKey }}' => {{ print_array(method.parts)|raw }}]);
+        $request = $this->client->createRequest('{{ methodType }}', $requestUrl, ['{{ bodyKey }}' => {{ print_array(method.parts)|raw }}]);
 {% else %}
-        $request = $this->client->createRequest('{{ methodType }}', $this->baseUrl . "{{ path }}", []);
+        $request = $this->client->createRequest('{{ methodType }}', $requestUrl, []);
 {% endif %}
 {% if method.query is not empty %}
         $request->setQuery({{ print_array(method.query)|raw }});
