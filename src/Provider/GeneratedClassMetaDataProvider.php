@@ -102,7 +102,7 @@ class GeneratedClassMetaDataProvider
         $path = explode('\\', $classNamespace);
         $path = implode(DIRECTORY_SEPARATOR, $path);
 
-        return $path;
+        return DIRECTORY_SEPARATOR . $path;
     }
 
     /**

@@ -12,7 +12,9 @@ use GuzzleHttp\Message\ResponseInterface;
 use JMS\Serializer\SerializerBuilder;
 use Mockery;
 use PHPUnit_Framework_TestCase;
+use Symfony\Component\Filesystem\Filesystem;
 use Tebru\Retrofit\Adapter\Rest\RestAdapter;
+use Tebru\Retrofit\Retrofit;
 use Tebru\Retrofit\Test\Mock\MockDefaultParamTest;
 use Tebru\Retrofit\Test\Mock\MockService;
 use Tebru\Retrofit\Test\Mock\MockServiceHeaders;
@@ -27,6 +29,22 @@ use Tebru\Retrofit\Test\Mock\MockUser;
 class ClientGenerationTest extends PHPUnit_Framework_TestCase
 {
     const BASE_URL = 'http://mockservice.com';
+
+    public static function setUpBeforeClass()
+    {
+        parent::setUpBeforeClass();
+
+        $retrofit = new Retrofit(TEST_DIR . '/../cache/tests');
+        $retrofit->cacheAll(TEST_DIR . '/Mock');
+    }
+
+    public static function tearDownAfterClass()
+    {
+        parent::tearDownAfterClass();
+
+        $filesystem = new Filesystem();
+        $filesystem->remove(TEST_DIR . '/../cache/tests');
+    }
 
     protected function tearDown()
     {

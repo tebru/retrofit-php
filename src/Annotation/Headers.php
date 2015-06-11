@@ -33,7 +33,7 @@ class Headers
      * Constructor
      *
      * @param array $params
-     * @throws Exception
+     * @throws OutOfRangeException
      */
     public function __construct(array $params)
     {

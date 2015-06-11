@@ -40,7 +40,7 @@ class CacheWriter
      *
      * @param string $cacheDir
      */
-    public function __construct($cacheDir)
+    public function __construct($cacheDir = null)
     {
         if (null === $cacheDir) {
             $cacheDir = sys_get_temp_dir();
@@ -61,7 +61,7 @@ class CacheWriter
     public function write(GeneratedClassMetaDataProvider $generatedClassMetaDataProvider, $contents)
     {
         $contents = "<?php\n" . $contents;
-        $path = $this->cacheDir . DIRECTORY_SEPARATOR . $generatedClassMetaDataProvider->getFilePath();
+        $path = $this->cacheDir . $generatedClassMetaDataProvider->getFilePath();
         $filename = $path . DIRECTORY_SEPARATOR . $generatedClassMetaDataProvider->getFilenameShort();
 
         $this->filesystem->mkdir($path);

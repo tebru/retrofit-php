@@ -4,14 +4,16 @@
  * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
-namespace Tebru\Retrofit\Test\Unit\Adapter;
+namespace Tebru\Retrofit\Test\Unit\Adapter\Rest;
 
 use GuzzleHttp\Client;
 use JMS\Serializer\Serializer;
 use Mockery;
 use PHPUnit_Framework_TestCase;
 use stdClass;
+use Symfony\Component\Filesystem\Filesystem;
 use Tebru\Retrofit\Adapter\Rest\RestAdapter;
+use Tebru\Retrofit\Retrofit;
 use Tebru\Retrofit\Test\Mock\MockService;
 
 /**
@@ -29,6 +31,22 @@ class RetrofitAdapterTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->adapter = RestAdapter::builder()->setBaseUrl('')->build();
+    }
+
+    public static function setUpBeforeClass()
+    {
+        parent::setUpBeforeClass();
+
+        $retrofit = new Retrofit(TEST_DIR . '/../cache/tests');
+        $retrofit->cacheAll(TEST_DIR . '/Mock');
+    }
+
+    public static function tearDownAfterClass()
+    {
+        parent::tearDownAfterClass();
+
+        $filesystem = new Filesystem();
+        $filesystem->remove(TEST_DIR . '/../cache/tests');
     }
 
     protected function tearDown()

@@ -30,11 +30,11 @@ class Returns
      * Constructor
      *
      * @param array $params
-     * @throws Exception
+     * @throws OutOfRangeException
      */
     public function __construct(array $params)
     {
-        Tebru\assert(isset($params['value']), new OutOfRangeException('@Return expects an argument, none found.'));
+        Tebru\assert(isset($params['value']), new OutOfRangeException('@Returns expects an argument, none found.'));
 
         $this->return = $params['value'];
     }

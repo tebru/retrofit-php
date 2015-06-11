@@ -6,6 +6,7 @@
 
 namespace Tebru\Retrofit\Annotation;
 
+use Exception;
 use OutOfRangeException;
 use Tebru;
 
