@@ -56,9 +56,7 @@ $repos = $gitHubService->listRepos('octocat');
 Installation & Usage
 --------------------
 
-This library is still under development.  Please install from dev-master.
-
-    composer require tebru/retrofit-php:dev-master
+    composer require tebru/retrofit-php:~1.0
 
 
 ### Documentation 
