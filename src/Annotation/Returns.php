@@ -19,6 +19,7 @@ use Tebru\Retrofit\Exception\AnnotationConditionMissingException;
  *
  * @author Nate Brunette <n@tebru.net>
  * @Annotation
+ * @Target("METHOD")
  */
 class Returns
 {

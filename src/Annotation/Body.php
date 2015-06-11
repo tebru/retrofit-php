@@ -6,6 +6,8 @@
 
 namespace Tebru\Retrofit\Annotation;
 
+use Doctrine\Common\Annotations\Annotation\Target;
+
 /**
  * Define the body of the HTTP request.
  * 
@@ -15,6 +17,7 @@ namespace Tebru\Retrofit\Annotation;
  *
  * @author Nate Brunette <n@tebru.net>
  * @Annotation
+ * @Target("METHOD")
  */
 class Body extends AnnotationToVariableMap
 {

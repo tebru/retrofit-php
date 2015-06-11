@@ -9,6 +9,11 @@ namespace Tebru\Retrofit\Test\Mock;
 use Tebru\Retrofit\Annotation as Rest;
 use Tebru\Retrofit\Test\Mock\MockUser;
 
+/**
+ * Interface MockService
+ *
+ * @author Nate Brunette <n@tebru.net>
+ */
 interface MockService
 {
     /**

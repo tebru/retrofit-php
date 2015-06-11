@@ -20,13 +20,6 @@ use Tebru\Retrofit\Exception\AnnotationConditionMissingException;
 abstract class AnnotationToVariableMap
 {
     /**
-     * Annotation key mapped to variable
-     *
-     * @var string $key
-     */
-    private $key;
-
-    /**
      * Variable name prefixed with '$'
      *
      * @var string $value
@@ -34,11 +27,11 @@ abstract class AnnotationToVariableMap
     private $value;
 
     /**
-     * Name of variable without '$'
+     * An alias for the variable name
      *
-     * @var string
+     * @var string $var
      */
-    private $name;
+    private $var;
 
     /**
      * Constructor
@@ -50,13 +43,11 @@ abstract class AnnotationToVariableMap
     {
         Tebru\assert(isset($params['value']), new AnnotationConditionMissingException(sprintf('An argument was not passed to a "%s" annotation.', get_class($this))));
 
-        // will prepend '$' to either the original value or the 'var' key, if set
-        $name = (isset($params['var']) ? $params['var'] : $params['value']);
-        $value = '$' . $name;
+        $this->value = $params['value'];
 
-        $this->key = $params['value'];
-        $this->value = $value;
-        $this->name = $name;
+        if (isset($params['var'])) {
+            $this->var = $params['var'];
+        }
     }
 
     /**
@@ -66,7 +57,7 @@ abstract class AnnotationToVariableMap
      */
     public function getKey()
     {
-        return $this->key;
+        return $this->value;
     }
 
     /**
@@ -76,7 +67,7 @@ abstract class AnnotationToVariableMap
      */
     public function getValue()
     {
-        return $this->value;
+        return '$' . $this->getName();
     }
 
     /**
@@ -86,6 +77,6 @@ abstract class AnnotationToVariableMap
      */
     public function getName()
     {
-        return $this->name;
+        return (null !== $this->var) ? $this->var : $this->value;
     }
 }

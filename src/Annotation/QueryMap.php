@@ -28,6 +28,7 @@ namespace Tebru\Retrofit\Annotation;
  *
  * @author Nate Brunette <n@tebru.net>
  * @Annotation
+ * @Target("METHOD")
  */
 class QueryMap extends AnnotationToVariableMap
 {

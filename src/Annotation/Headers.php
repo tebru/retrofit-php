@@ -21,6 +21,7 @@ use Tebru\Retrofit\Exception\AnnotationConditionMissingException;
  *
  * @author Nate Brunette <n@tebru.net>
  * @Annotation
+ * @Target({"CLASS", "METHOD"})
  */
 class Headers
 {
