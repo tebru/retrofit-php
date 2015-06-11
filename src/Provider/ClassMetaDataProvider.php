@@ -7,7 +7,6 @@
 namespace Tebru\Retrofit\Provider;
 
 use Doctrine\Common\Annotations\AnnotationReader;
-use LogicException;
 use PhpParser\Lexer;
 use PhpParser\Node;
 use PhpParser\Node\Name;
@@ -23,6 +22,7 @@ use PhpParser\PrettyPrinter\Standard;
 use ReflectionClass;
 use ReflectionMethod;
 use Tebru;
+use Tebru\Retrofit\Exception\ClassParsingException;
 
 /**
  * Class ClassMetaDataProvider
@@ -137,8 +137,8 @@ class ClassMetaDataProvider
         $parser = new Parser(new Lexer());
         $statements = $parser->parse($file);
 
-        Tebru\assert(1 === count($statements), new LogicException('$statements must be an array with one element'));
-        Tebru\assert($statements[0] instanceof Namespace_, new LogicException('Expecting Namespace_ statement'));
+        Tebru\assert(1 === count($statements), new ClassParsingException('Could not parse class. $statements must be an array with one element'));
+        Tebru\assert($statements[0] instanceof Namespace_, new ClassParsingException('Expecting Namespace_ statement'));
 
         $namespace = $statements[0];
 
@@ -332,8 +332,8 @@ class ClassMetaDataProvider
      */
     private function getName($statement)
     {
-        Tebru\assert(property_exists($statement, 'name'), new LogicException('Object must have a public name property'));
-        Tebru\assert($statement->name instanceof Name, new LogicException('Name property must be instance of PhpParser\Node\Name'));
+        Tebru\assert(property_exists($statement, 'name'), new ClassParsingException('Could not retrieve class name. Object must have a public name property'));
+        Tebru\assert($statement->name instanceof Name, new ClassParsingException('Name property must be instance of PhpParser\Node\Name'));
 
         return (string)$statement->name;
     }
@@ -353,7 +353,7 @@ class ClassMetaDataProvider
             return $element instanceof Interface_;
         });
 
-        Tebru\assert(1 === count($interface), new LogicException('$interface must be an array with one element'));
+        Tebru\assert(1 === count($interface), new ClassParsingException('Could not get interface. $interface must be an array with one element'));
 
         $this->interface = array_shift($interface);
 

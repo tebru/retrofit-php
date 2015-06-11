@@ -10,8 +10,8 @@ use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use JMS\Serializer\SerializerBuilder;
 use JMS\Serializer\SerializerInterface;
-use LogicException;
 use Tebru;
+use Tebru\Retrofit\Exception\BaseUrlMissingException;
 
 /**
  * Class RestAdapterBuilder
@@ -80,10 +80,11 @@ class RestAdapterBuilder
      * Build the rest adapter
      *
      * @return RestAdapter
+     * @throws BaseUrlMissingException
      */
     public function build()
     {
-        Tebru\assert(null !== $this->baseUrl, new LogicException(sprintf('Base URL may not be null.  Please specify before calling build().')));
+        Tebru\assert(null !== $this->baseUrl, new BaseUrlMissingException(sprintf('Could not build RestAdapter with null $baseUrl')));
 
         if (null === $this->httpClient) {
             $this->httpClient = new Client();

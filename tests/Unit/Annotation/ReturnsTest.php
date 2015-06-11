@@ -6,7 +6,6 @@
 
 namespace Tebru\Retrofit\Test\Unit\Annotation;
 
-use OutOfRangeException;
 use PHPUnit_Framework_TestCase;
 use Tebru\Retrofit\Annotation\Returns;
 
@@ -18,7 +17,7 @@ use Tebru\Retrofit\Annotation\Returns;
 class ReturnsTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @expectedException OutOfRangeException
+     * @expectedException \Tebru\Retrofit\Exception\AnnotationConditionMissingException
      */
     public function testConstructorThrowsException()
     {

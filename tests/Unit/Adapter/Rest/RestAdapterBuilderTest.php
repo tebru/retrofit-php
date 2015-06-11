@@ -26,7 +26,7 @@ class RestAdapterBuilderTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \LogicException
+     * @expectedException \Tebru\Retrofit\Exception\BaseUrlMissingException
      */
     public function testNoBaseUrlThrowsException()
     {

@@ -6,7 +6,6 @@
 
 namespace Tebru\Retrofit\Test\Unit\Annotation;
 
-use LogicException;
 use PHPUnit_Framework_TestCase;
 use Tebru\Retrofit\Annotation\Headers;
 
@@ -18,7 +17,7 @@ use Tebru\Retrofit\Annotation\Headers;
 class HeadersTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @expectedException \OutOfRangeException
+     * @expectedException \Tebru\Retrofit\Exception\AnnotationConditionMissingException
      */
     public function testConstructorThrowsException()
     {
@@ -40,7 +39,7 @@ class HeadersTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException LogicException
+     * @expectedException \Tebru\Retrofit\Exception\AnnotationConditionMissingException
      */
     public function testBadlyFormattedHeaderThrowsException()
     {

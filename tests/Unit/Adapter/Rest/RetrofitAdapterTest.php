@@ -82,7 +82,7 @@ class RetrofitAdapterTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \InvalidArgumentException
+     * @expectedException \Tebru\Retrofit\Exception\InvalidServiceTypeException
      */
     public function testWillThrowExceptionOnInvalidParameter()
     {
@@ -90,7 +90,7 @@ class RetrofitAdapterTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \InvalidArgumentException
+     * @expectedException \Tebru\Retrofit\Exception\InvalidServiceTypeException
      */
     public function testWillThrowExceptionOnInvalidClass()
     {

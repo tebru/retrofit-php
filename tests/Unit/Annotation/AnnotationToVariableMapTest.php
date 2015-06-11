@@ -25,7 +25,7 @@ class AnnotationToVariableMapTest extends PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider provideAnnotationToVariableMapAnnotations
-     * @expectedException \OutOfRangeException
+     * @expectedException \Tebru\Retrofit\Exception\AnnotationConditionMissingException
      */
     public function testConstructorWillThrowException($class)
     {

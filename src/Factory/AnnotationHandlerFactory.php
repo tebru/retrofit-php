@@ -8,6 +8,7 @@ namespace Tebru\Retrofit\Factory;
 
 use Tebru\Retrofit\Annotation\HttpRequest;
 use Tebru\Retrofit\Annotation\Url;
+use Tebru\Retrofit\Exception\UnknownAnnotationHandlerException;
 use Tebru\Retrofit\Handler\BodyHandler;
 use Tebru\Retrofit\Handler\HeaderHandler;
 use Tebru\Retrofit\Handler\HeadersHandler;
@@ -18,7 +19,6 @@ use Tebru\Retrofit\Handler\QueryHandler;
 use Tebru\Retrofit\Handler\QueryMapHandler;
 use Tebru\Retrofit\Handler\ReturnsHandler;
 use Tebru\Retrofit\Handler\UrlHandler;
-use UnexpectedValueException;
 
 /**
  * Class AnnotationHandlerFactory
@@ -43,6 +43,7 @@ class AnnotationHandlerFactory
      *
      * @param $annotation
      * @return null|BodyHandler|HeaderHandler|HeadersHandler|HttpRequestHandler|PartHandler|QueryHandler|QueryMapHandler
+     * @throws UnknownAnnotationHandlerException
      */
     public function make($annotation)
     {
@@ -79,7 +80,7 @@ class AnnotationHandlerFactory
                 $handler = new ReturnsHandler();
                 break;
             default:
-                throw new UnexpectedValueException(sprintf('Attempted to create annotation handler but did not understand annotation.  Got annotation of type "%s"', get_class($annotation)));
+                throw new UnknownAnnotationHandlerException(sprintf('Attempted to create annotation handler but did not understand annotation.  Got annotation of type "%s"', get_class($annotation)));
                 break;
         }
 

@@ -8,6 +8,7 @@ namespace Tebru\Retrofit\Annotation;
 
 use OutOfRangeException;
 use Tebru;
+use Tebru\Retrofit\Exception\AnnotationConditionMissingException;
 
 /**
  * Defines what type of object a request returns, so that it may be deserialized.
@@ -34,7 +35,7 @@ class Returns
      */
     public function __construct(array $params)
     {
-        Tebru\assert(isset($params['value']), new OutOfRangeException('@Returns expects an argument, none found.'));
+        Tebru\assert(isset($params['value']), new AnnotationConditionMissingException(sprintf('An argument was not passed to a "%s" annotation.', get_class($this))));
 
         $this->return = $params['value'];
     }

@@ -34,7 +34,6 @@ use Tebru\Retrofit\Handler\QueryHandler;
 use Tebru\Retrofit\Handler\QueryMapHandler;
 use Tebru\Retrofit\Handler\ReturnsHandler;
 use Tebru\Retrofit\Handler\UrlHandler;
-use UnexpectedValueException;
 
 /**
  * Class AnnotationHandlerFactoryTest
@@ -57,7 +56,7 @@ class AnnotationHandlerFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException UnexpectedValueException
+     * @expectedException \Tebru\Retrofit\Exception\UnknownAnnotationHandlerException
      */
     public function testFactoryThrowsException()
     {

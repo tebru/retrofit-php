@@ -7,8 +7,8 @@
 namespace Tebru\Retrofit\Annotation;
 
 use Exception;
-use OutOfRangeException;
 use Tebru;
+use Tebru\Retrofit\Exception\AnnotationConditionMissingException;
 
 /**
  * Class AnnotationToVariableMap
@@ -48,7 +48,7 @@ abstract class AnnotationToVariableMap
      */
     public function __construct(array $params)
     {
-        Tebru\assert(isset($params['value']), new OutOfRangeException(sprintf('A "%s" annotation must have an argument.  None found.', get_class($this))));
+        Tebru\assert(isset($params['value']), new AnnotationConditionMissingException(sprintf('An argument was not passed to a "%s" annotation.', get_class($this))));
 
         // will prepend '$' to either the original value or the 'var' key, if set
         $name = (isset($params['var']) ? $params['var'] : $params['value']);

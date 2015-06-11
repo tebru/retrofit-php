@@ -6,10 +6,10 @@
 
 namespace Tebru\Retrofit\Generator;
 
-use LogicException;
 use PhpParser\Lexer;
 use ReflectionParameter;
 use Tebru;
+use Tebru\Retrofit\Exception\GenerationException;
 use Tebru\Retrofit\Factory\AnnotationHandlerFactory;
 use Tebru\Retrofit\Model\ClassModel;
 use Tebru\Retrofit\Model\Method;
@@ -101,10 +101,10 @@ class RestClientGenerator
 
             $methodOptions = $method->getOptions();
             $methodParts = $method->getParts();
-            Tebru\assert(null !== $method->getType(), new LogicException('Request method must be set'));
+            Tebru\assert(null !== $method->getType(), new GenerationException('During Generation, the http method annotation was not found.'));
             Tebru\assert(
                 empty($methodOptions['body']) || empty($methodParts),
-                new LogicException('Body and part cannot both be set')
+                new GenerationException(sprintf('During Generation, both a @Body and @Part annotation were found on method "%s"', $method->getName()))
             );
 
             $class->addMethod($method);
@@ -128,6 +128,7 @@ class RestClientGenerator
      * @param array $parameters
      * @param string $name
      * @return null
+     * @throws GenerationException
      */
     private function assertParameter(array $parameters, $name)
     {
@@ -138,6 +139,6 @@ class RestClientGenerator
             }
         }
 
-        throw new LogicException(sprintf('Could not find parameter "%s" for method.', $name));
+        throw new GenerationException(sprintf('During generation, the parameter "%s" was not found in the method signature.', $name));
     }
 }
