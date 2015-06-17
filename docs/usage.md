@@ -191,23 +191,16 @@ $httpCient->getEmiter()->on('complete', function (CompleteEvent $event) {
 Interoperability
 ----------------
 
-The two main technologies backing Retrofit are Guzzle and JMS Serializer.  We aim to provide enough integration points with these libraries so you can use them as you're accustom.
+The two main technologies backing Retrofit are Guzzle and JMS Serializer.
 
+Use the `setHttpClient` or `setSerializer` methods on the builder to use a custom configured version of either.
 
-### Guzzle
-There is a method `addHttpClientSubscriber` on the builder that allows you to add a subscriber to the Guzzle client.
-
-```php
-$builder->addHttpClientSubscriber(new LogSubscriber());
-```
-
-
-### JMS Serializer
-There are two methods `addSerializerSubscriber` and `addSerializerSubscribingHandler` on the builder that allows you add a subscriber or subscribing handler to the serializer.
+There are two methods `setSerializationContext` and `setDeserializationContext` on the builder that allow you add
+JMS serializer contexts that will be used in during serialization/deserialization.
 
 ```php
-$builder->addSerializerSubscriber(new MyEventSubscriber());
-$builder->addSerializerSubscribingHandler(new MySubscribingHandler());
+$builder->setSerializationContext(SerializationContext::create());
+$builder->setDeserializationContext(DeserializationContext::create());
 ```
 
 Command
@@ -216,5 +209,5 @@ Command
 Use the included command to generate the cache files
 
 ```
-vendor/bin/retrofit <path/to/src/dir> <path/to/cache/dir>
+vendor/bin/retrofit compile <path/to/src/dir> <path/to/cache/dir>
 ```
