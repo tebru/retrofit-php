@@ -2,6 +2,8 @@
 namespace {{ namespace }};
 
 use GuzzleHttp\ClientInterface;
+use JMS\Serializer\DeserializationContext;
+use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 {% for use in uses %}
 {{ use }}
@@ -12,12 +14,20 @@ class {{ className }} implements \{{ interfaceName }}
     private $baseUrl;
     private $client;
     private $serializer;
+    private $serializationContext;
 
-    public function __construct($baseUrl, ClientInterface $client, SerializerInterface $serializer)
-    {
+    public function __construct(
+        $baseUrl,
+        ClientInterface $client,
+        SerializerInterface $serializer,
+        SerializationContext $serializationContext = null,
+        DeserializationContext $deserializationContext = null
+    ) {
         $this->baseUrl = $baseUrl;
         $this->client = $client;
         $this->serializer = $serializer;
+        $this->serializationContext = $serializationContext;
+        $this->deserializationContext = $deserializationContext;
     }
 {% for method in methods %}
 
@@ -29,7 +39,7 @@ class {{ className }} implements \{{ interfaceName }}
         $requestUrl = {% if method.url is null %}$this->baseUrl . "{{ path }}"{% else %}{{ method.url }}{% endif %};
 {% if method.options.body is not empty %}
         if (is_object({{ method.options.body }})) {
-            $options['body'] = $this->serializer->serialize({{ method.options.body }}, 'json');
+            $options['body'] = $this->serializer->serialize({{ method.options.body }}, 'json', $this->serializationContext);
         } elseif (is_array({{ method.options.body }})) {
             $options['{{ bodyKey }}'] = {{ method.options.body }};
         } else {
@@ -62,7 +72,7 @@ class {{ className }} implements \{{ interfaceName }}
 {% elseif 'array' == method.return %}
         return json_decode((string)$response->getBody(), true);
 {% else %}
-        return $this->serializer->deserialize((string)$response->getBody(), '{{ method.return|raw }}', 'json');
+        return $this->serializer->deserialize((string)$response->getBody(), '{{ method.return|raw }}', 'json', $this->deserializationContext);
 {% endif %}
     }
 {% endfor %}

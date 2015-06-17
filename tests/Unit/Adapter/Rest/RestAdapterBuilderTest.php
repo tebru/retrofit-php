@@ -7,9 +7,12 @@
 namespace Tebru\Retrofit\Test\Unit\Adapter\Rest;
 
 use GuzzleHttp\Client;
+use JMS\Serializer\DeserializationContext;
+use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerBuilder;
 use PHPUnit_Framework_TestCase;
 use Tebru\Retrofit\Adapter\Rest\RestAdapter;
+use Tebru\Retrofit\Adapter\Rest\RestAdapterBuilder;
 
 /**
  * Class RestAdapterBuilderTest
@@ -49,6 +52,25 @@ class RestAdapterBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertAttributeEquals($serializer, 'serializer', $restAdapter);
     }
 
+    public function testWillUseSerializationContext()
+    {
+        $context = SerializationContext::create();
+        $restAdapter = $this->getRestAdapterBuilder()->setSerializationContext($context);
+
+        $this->assertAttributeEquals($context, 'serializationContext', $restAdapter);
+    }
+
+    public function testWillUseDeserializationContext()
+    {
+        $context = DeserializationContext::create();
+        $restAdapter = $this->getRestAdapterBuilder()->setDeserializationContext($context);
+
+        $this->assertAttributeEquals($context, 'deserializationContext', $restAdapter);
+    }
+
+    /**
+     * @return RestAdapterBuilder
+     */
     private function getRestAdapterBuilder()
     {
         return RestAdapter::builder()->setBaseUrl('http://example.com');
