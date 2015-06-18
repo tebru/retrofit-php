@@ -39,6 +39,7 @@ class {{ className }} implements \{{ interfaceName }}
         $requestUrl = {% if method.url is null %}$this->baseUrl . "{{ path }}"{% else %}{{ method.url }}{% endif %};
 {% if method.options.body is not empty %}
         if (is_object({{ method.options.body }})) {
+{% if method.serializationContext is not empty %}
             $serializationContext = new SerializationContext();
 {% if method.serializationContext.groups %}
             $serializationContext->setGroups({{ print_array(method.serializationContext.groups)|raw }});
@@ -56,6 +57,9 @@ class {{ className }} implements \{{ interfaceName }}
 {% endfor %}
 {% endif %}
             $options['body'] = $this->serializer->serialize({{ method.options.body }}, 'json', $serializationContext);
+{% else %}
+            $options['body'] = $this->serializer->serialize({{ method.options.body }}, 'json', $this->serializationContext);
+{% endif %}
         } elseif (is_array({{ method.options.body }})) {
             $options['{{ bodyKey }}'] = {{ method.options.body }};
         } else {
