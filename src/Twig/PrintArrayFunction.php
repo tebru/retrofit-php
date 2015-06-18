@@ -28,7 +28,7 @@ class PrintArrayFunction
         $array = stripslashes($array);
         $array = str_replace(' ', '', $array);
 
-        // changes array() to [] notation
+        // converts to array literal notation
         $array = str_replace('array', '', $array);
         $array = str_replace('(', '[', $array);
         $array = str_replace(')', ']', $array);
