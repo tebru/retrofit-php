@@ -18,7 +18,7 @@ use Tebru\Retrofit\Handler\PartHandler;
 use Tebru\Retrofit\Handler\QueryHandler;
 use Tebru\Retrofit\Handler\QueryMapHandler;
 use Tebru\Retrofit\Handler\ReturnsHandler;
-use Tebru\Retrofit\Handler\SerializationContextHandler;
+use Tebru\Retrofit\Handler\Serializer\SerializationContextHandler;
 use Tebru\Retrofit\Handler\UrlHandler;
 
 /**
@@ -38,7 +38,7 @@ class AnnotationHandlerFactory
     const CLASS_BODY = 'Tebru\Retrofit\Annotation\Body';
     const CLASS_JSON_BODY = 'Tebru\Retrofit\Annotation\JsonBody';
     const CLASS_RETURNS = 'Tebru\Retrofit\Annotation\Returns';
-    const CLASS_SERIALIZATION_CONTEXT = 'Tebru\Retrofit\Annotation\SerializationContext';
+    const CLASS_SERIALIZATION_CONTEXT = 'Tebru\Retrofit\Annotation\Serializer\SerializationContext';
 
     /**
      * Create an annotation handler

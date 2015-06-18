@@ -4,9 +4,10 @@
  * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
  
-namespace Tebru\Retrofit\Handler;
+namespace Tebru\Retrofit\Handler\Serializer;
 
-use Tebru\Retrofit\Annotation\SerializationContext;
+use Tebru\Retrofit\Annotation\Serializer\SerializationContext;
+use Tebru\Retrofit\Handler\AnnotationHandler;
 use Tebru\Retrofit\Model\Method;
 
 /**

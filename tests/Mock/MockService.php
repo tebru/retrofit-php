@@ -179,7 +179,7 @@ interface MockService
      * @Rest\POST("/post")
      * @Rest\Body("user")
      * @Rest\JsonBody()
-     * @Rest\SerializationContext(groups={"test", "foo", "bar"}, serializeNull=true, version=1, foo="bar")
+     * @Rest\Serializer\SerializationContext(groups={"test", "foo", "bar"}, serializeNull=true, version=1, foo="bar")
      */
     public function postSerializationContext(MockUser $user);
 
