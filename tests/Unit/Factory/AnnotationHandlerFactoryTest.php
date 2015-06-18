@@ -22,6 +22,7 @@ use Tebru\Retrofit\Annotation\PUT;
 use Tebru\Retrofit\Annotation\Query;
 use Tebru\Retrofit\Annotation\QueryMap;
 use Tebru\Retrofit\Annotation\Returns;
+use Tebru\Retrofit\Annotation\Serializer\SerializationContext;
 use Tebru\Retrofit\Annotation\Url;
 use Tebru\Retrofit\Factory\AnnotationHandlerFactory;
 use Tebru\Retrofit\Handler\BodyHandler;
@@ -33,6 +34,7 @@ use Tebru\Retrofit\Handler\PartHandler;
 use Tebru\Retrofit\Handler\QueryHandler;
 use Tebru\Retrofit\Handler\QueryMapHandler;
 use Tebru\Retrofit\Handler\ReturnsHandler;
+use Tebru\Retrofit\Handler\Serializer\SerializationContextHandler;
 use Tebru\Retrofit\Handler\UrlHandler;
 
 /**
@@ -83,6 +85,7 @@ class AnnotationHandlerFactoryTest extends PHPUnit_Framework_TestCase
             [Body::class, BodyHandler::class],
             [JsonBody::class, JsonBodyHandler::class],
             [Returns::class, ReturnsHandler::class],
+            [SerializationContext::class, SerializationContextHandler::class],
         ];
     }
 }

@@ -18,6 +18,7 @@ use Tebru\Retrofit\Handler\PartHandler;
 use Tebru\Retrofit\Handler\QueryHandler;
 use Tebru\Retrofit\Handler\QueryMapHandler;
 use Tebru\Retrofit\Handler\ReturnsHandler;
+use Tebru\Retrofit\Handler\Serializer\SerializationContextHandler;
 use Tebru\Retrofit\Handler\UrlHandler;
 use Tebru\Retrofit\Model\Method;
 
@@ -146,6 +147,25 @@ class AnnotationHandlerTest extends PHPUnit_Framework_TestCase
         $method->shouldReceive('setUrl')->times(1)->with('value')->andReturnNull();
 
         $handler = new UrlHandler();
+        $handler->handle($method, $annotation);
+    }
+
+    public function testSerializationContextHandler()
+    {
+        $annotation = Mockery::mock(Body::class);
+        $annotation->shouldReceive('getGroups')->times(1)->withNoArgs()->andReturn(['foo']);
+        $annotation->shouldReceive('getSerializeNull')->times(1)->withNoArgs()->andReturn(true);
+        $annotation->shouldReceive('getVersion')->times(1)->withNoArgs()->andReturn(1);
+        $annotation->shouldReceive('getAttributes')->times(1)->withNoArgs()->andReturn(['bar' => 'baz']);
+        $method = Mockery::mock(Method::class);
+        $method->shouldReceive('setSerializationContext')->times(1)->with([
+            'groups' => ['foo'],
+            'serializeNull' => true,
+            'version' => 1,
+            'attributes' => ['bar' => 'baz'],
+        ])->andReturnNull();
+
+        $handler = new SerializationContextHandler();
         $handler->handle($method, $annotation);
     }
 }
