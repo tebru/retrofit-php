@@ -1,6 +1,8 @@
 /.idea
 /vendor
-/bin/composer.phar
+/bin
+!/bin/composer
+!/bin/retrofit
 /cache
 *.iml
 /build
