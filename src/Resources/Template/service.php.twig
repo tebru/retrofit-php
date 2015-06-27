@@ -91,6 +91,32 @@ class {{ className }} implements \{{ interfaceName }}
         return (string)$response->getBody();
 {% elseif 'array' == method.return %}
         return json_decode((string)$response->getBody(), true);
+{% elseif method.deserializationContext is not empty %}
+        $deserializationContext = new DeserializationContext();
+{% if method.deserializationContext.depth %}
+        while ($deserializationContext->getDepth() > {{ method.deserializationContext.depth }}) {
+            $deserializationContext->decreaseDepth();
+        }
+        while ($deserializationContext->getDepth() < {{ method.deserializationContext.depth }}) {
+            $deserializationContext->increaseDepth();
+        }
+{% endif %}
+{% if method.deserializationContext.groups %}
+        $deserializationContext->setGroups({{ print_array(method.deserializationContext.groups)|raw }});
+{% endif %}
+{% if method.deserializationContext.serializeNull is defined %}
+{% set serializeNull = (method.deserializationContext.serializeNull) ? 'true' : 'false' %}
+        $deserializationContext->setSerializeNull({{ serializeNull }});
+{% endif %}
+{% if method.deserializationContext.version %}
+        $deserializationContext->setVersion({{ method.deserializationContext.version }});
+{% endif %}
+{% if method.deserializationContext.attributes is not empty %}
+{% for key, value in method.deserializationContext.attributes %}
+        $deserializationContext->setAttribute('{{ key }}', '{{ value }}');
+{% endfor %}
+{% endif %}
+        return $this->serializer->deserialize((string)$response->getBody(), '{{ method.return|raw }}', 'json', $deserializationContext);
 {% else %}
         return $this->serializer->deserialize((string)$response->getBody(), '{{ method.return|raw }}', 'json', $this->deserializationContext);
 {% endif %}

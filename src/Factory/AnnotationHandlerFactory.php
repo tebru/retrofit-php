@@ -18,6 +18,7 @@ use Tebru\Retrofit\Handler\PartHandler;
 use Tebru\Retrofit\Handler\QueryHandler;
 use Tebru\Retrofit\Handler\QueryMapHandler;
 use Tebru\Retrofit\Handler\ReturnsHandler;
+use Tebru\Retrofit\Handler\Serializer\DeserializationContextHandler;
 use Tebru\Retrofit\Handler\Serializer\SerializationContextHandler;
 use Tebru\Retrofit\Handler\UrlHandler;
 
@@ -39,6 +40,7 @@ class AnnotationHandlerFactory
     const CLASS_JSON_BODY = 'Tebru\Retrofit\Annotation\JsonBody';
     const CLASS_RETURNS = 'Tebru\Retrofit\Annotation\Returns';
     const CLASS_SERIALIZATION_CONTEXT = 'Tebru\Retrofit\Annotation\Serializer\SerializationContext';
+    const CLASS_DESERIALIZATION_CONTEXT = 'Tebru\Retrofit\Annotation\Serializer\DeserializationContext';
 
     /**
      * Create an annotation handler
@@ -83,6 +85,9 @@ class AnnotationHandlerFactory
                 break;
             case self::CLASS_SERIALIZATION_CONTEXT:
                 $handler = new SerializationContextHandler();
+                break;
+            case self::CLASS_DESERIALIZATION_CONTEXT:
+                $handler = new DeserializationContextHandler();
                 break;
             default:
                 throw new UnknownAnnotationHandlerException(sprintf('Attempted to create annotation handler but did not understand annotation.  Got annotation of type "%s"', get_class($annotation)));
