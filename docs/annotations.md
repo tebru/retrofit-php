@@ -112,3 +112,16 @@ Any extra values will be added as attributes to the context.
 	@Serializer\SerializationContext(attr="value", foo="bar")
 
 Using this annotation will create it's own context and not use the context provided to the builder.
+
+`@Serializer\DeserializationContext`
+------------------------------------
+
+Defines the DeserializationContext to use for the response.
+
+	@Serializer\DeserializationContext(depth=4, groups={"Default", "extra"}, serializeNull=true, version=1)
+	
+Any extra values will be added as attributes to the context.
+
+	@Serializer\DeserializationContext(attr="value", foo="bar")
+	
+Using this annotation will create it's own context and not use the context provided to the builder.
