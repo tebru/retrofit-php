@@ -93,6 +93,16 @@ class Method
     private $jsonBody = false;
 
     /**
+     * @var array
+     */
+    private $serializationContext = [];
+
+    /**
+     * @var array
+     */
+    private $deserializationContext = [];
+
+    /**
      * @return array
      */
     public function toArray()
@@ -109,6 +119,8 @@ class Method
             'query' => $this->getQueries(),
             'headers' => $this->getHeaders(),
             'jsonBody' => $this->isJsonBody(),
+            'serializationContext' => $this->getSerializationContext(),
+            'deserializationContext' => $this->getDeserializationContext(),
         ];
     }
 
@@ -294,5 +306,44 @@ class Method
     public function setJsonBody($jsonBody)
     {
         $this->jsonBody = $jsonBody;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSerializationContext()
+    {
+        return $this->serializationContext;
+    }
+
+    /**
+     * @param array $serializationContext
+     */
+    public function setSerializationContext(array $serializationContext)
+    {
+        $this->serializationContext = $serializationContext;
+    }
+
+    /**
+     * Get DeserializationContext
+     *
+     * @return array
+     */
+    public function getDeserializationContext()
+    {
+        return $this->deserializationContext;
+    }
+
+    /**
+     * Set DeserializationContext
+     *
+     * @param array $deserializationContext
+     *
+     * @return Method
+     */
+    public function setDeserializationContext(array $deserializationContext)
+    {
+        $this->deserializationContext = $deserializationContext;
+        return $this;
     }
 }
