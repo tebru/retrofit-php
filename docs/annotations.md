@@ -99,3 +99,16 @@ Each of these can be used to specify a path relative to the base URL defined
 in the rest adapter.
 
     @POST('/books')
+
+`@Serializer\SerializationContext`
+----------------------------------
+
+Defines the SerializationContext to use for the request.
+
+	@Serializer\SerializationContext(groups={"Default", "extra"}, serializeNull=true, version=1)
+
+Any extra values will be added as attributes to the context.
+
+	@Serializer\SerializationContext(attr="value", foo="bar")
+
+Using this annotation will create it's own context and not use the context provided to the builder.
