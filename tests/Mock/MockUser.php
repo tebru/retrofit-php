@@ -26,6 +26,12 @@ class MockUser implements JsonSerializable
      */
     public $name;
 
+    /**
+     * @JMS\Type("string")
+     * @JMS\Groups({"Default", "test"})
+     */
+    public $email;
+
     function jsonSerialize()
     {
         return [
