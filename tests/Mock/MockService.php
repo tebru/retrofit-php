@@ -179,7 +179,9 @@ interface MockService
      * @Rest\POST("/post")
      * @Rest\Body("user")
      * @Rest\JsonBody()
+     * @Rest\Returns("Tebru\Retrofit\Test\Mock\MockUser")
      * @Rest\Serializer\SerializationContext(groups={"Default", "test"}, serializeNull=true, version=1, foo="bar")
+     * @Rest\Serializer\DeserializationContext(depth=4, foo="bar")
      */
     public function postSerializationContext(MockUser $user);
 

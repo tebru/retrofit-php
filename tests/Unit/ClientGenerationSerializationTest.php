@@ -9,6 +9,7 @@ namespace Tebru\Retrofit\Test\Unit;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Message\RequestInterface;
 use GuzzleHttp\Message\ResponseInterface;
+use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerBuilder;
 use Mockery;
@@ -71,7 +72,7 @@ class ClientGenerationSerializationTest extends PHPUnit_Framework_TestCase
         $serializationContext->setAttribute('foo', 'bar');
     }
 
-    public function testCustomSerializationContextIsUsedWithAnnotation()
+    public function testCustomSerializationContextIfAnnotation()
     {
         $serializationContext = SerializationContext::create();
 
@@ -88,6 +89,44 @@ class ClientGenerationSerializationTest extends PHPUnit_Framework_TestCase
         $service->postSerializationContext($this->getUser());
 
         $serializationContext->setAttribute('foo', 'bar');
+    }
+
+    public function testClassDeserializationContextIfNoAnnotation()
+    {
+        $deserializationContext = DeserializationContext::create();
+
+        $builder = $this->createBuilder('GET', '/get');
+        $builder->setDeserializationContext($deserializationContext);
+
+        $adapter = $builder->build();
+        /** @var MockService $service */
+        $service = $adapter->create(MockService::class);
+
+        $user = $service->getDeserializedReturn();
+        $this->assertEquals($this->getUser(), $user);
+
+        $this->setExpectedException('LogicException', 'This context was already initialized and is immutable');
+        $deserializationContext->setAttribute('foo', 'bar');
+    }
+
+    public function testCustomDeserializationContextIfAnnotation()
+    {
+        $deserializationContext = DeserializationContext::create();
+
+        $user = $this->getUser();
+        $jsonUser = $this->serializeUser($user, ['Default', 'test']);
+
+        $builder = $this->createBuilder('POST', '/post', ['body' => $jsonUser], [], [], true);
+        $builder->setDeserializationContext($deserializationContext);
+
+        $adapter = $builder->build();
+        /** @var MockService $service */
+        $service = $adapter->create(MockService::class);
+
+        $user = $service->postSerializationContext($this->getUser());
+        $this->assertEquals($this->getUser(), $user);
+
+        $deserializationContext->setAttribute('foo', 'bar');
     }
 
     /**
