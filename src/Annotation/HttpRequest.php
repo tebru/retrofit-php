@@ -71,7 +71,9 @@ abstract class HttpRequest
             // convert string to array and set to $stringAsArray
             parse_str($queryString, $stringAsArray);
 
-            $this->queries = $stringAsArray;
+            if (null !== $stringAsArray) {
+                $this->queries = $stringAsArray;
+            }
         }
 
         $this->path = $path;

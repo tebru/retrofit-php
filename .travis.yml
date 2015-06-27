@@ -4,3 +4,6 @@ php:
 
 before_script:
   - composer install
+
+after_script:
+  - php vendor/bin/coveralls

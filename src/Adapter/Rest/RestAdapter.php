@@ -74,7 +74,7 @@ class RestAdapter
      *
      * @return RestAdapterBuilder
      */
-    static public function builder()
+    public static function builder()
     {
         return new RestAdapterBuilder();
     }

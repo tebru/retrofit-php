@@ -51,14 +51,11 @@ class AnnotationHandlerFactory
      */
     public function make($annotation)
     {
-        $handler = null;
         switch (get_class($annotation)) {
             case ($annotation instanceof HttpRequest):
                 return new HttpRequestHandler();
-                break;
             case ($annotation instanceof Url):
                 return new UrlHandler();
-                break;
             case self::CLASS_QUERY:
                 $handler = new QueryHandler();
                 break;
@@ -91,7 +88,6 @@ class AnnotationHandlerFactory
                 break;
             default:
                 throw new UnknownAnnotationHandlerException(sprintf('Attempted to create annotation handler but did not understand annotation.  Got annotation of type "%s"', get_class($annotation)));
-                break;
         }
 
         return $handler;

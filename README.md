@@ -2,6 +2,8 @@ Retrofit PHP
 ============
 
 [![Build Status](https://travis-ci.org/tebru/retrofit-php.svg?branch=master)](https://travis-ci.org/tebru/retrofit-php)
+[![Coverage Status](https://coveralls.io/repos/tebru/retrofit-php/badge.svg?branch=master)](https://coveralls.io/r/tebru/retrofit-php?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/tebru/retrofit-php/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/tebru/retrofit-php/?branch=master)
 
 This library aims to ease creation of REST clients.  It is blatantly stolen from
 [square/retrofit][retrofit]  and implemented in PHP.
