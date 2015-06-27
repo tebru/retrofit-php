@@ -3,6 +3,12 @@ Change Log
 
 This document keeps track of important changes between releases of the library.
 
+1.2.0
+------------------
+
+* Added annotation for JMS serialization contexts
+
+
 1.1.0
 ------------------
 
