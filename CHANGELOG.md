@@ -3,6 +3,17 @@ Change Log
 
 This document keeps track of important changes between releases of the library.
 
+2.0.0
+------------------
+
+* Removed composer wrapper
+* Upgraded guzzle to v6
+
+1.2.1
+------------------
+
+* Upgraded twig to resolve security vulnerability
+
 1.2.0
 ------------------
 
