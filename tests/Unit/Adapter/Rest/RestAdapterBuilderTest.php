@@ -6,7 +6,7 @@
 
 namespace Tebru\Retrofit\Test\Unit\Adapter\Rest;
 
-use GuzzleHttp\Client;
+use Guzzle\Http\Client;
 use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerBuilder;

@@ -6,7 +6,7 @@
 
 namespace Tebru\Retrofit\Test\Unit\Adapter\Rest;
 
-use GuzzleHttp\Client;
+use Guzzle\Http\Client;
 use JMS\Serializer\Serializer;
 use Mockery;
 use PHPUnit_Framework_TestCase;

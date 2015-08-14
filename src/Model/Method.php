@@ -249,7 +249,7 @@ class Method
      */
     public function addParts(array $parts)
     {
-        $this->parts = array_merge($parts, $this->parts);
+        $this->parts = array_merge($this->parts, $parts);
     }
 
     /**
@@ -265,7 +265,7 @@ class Method
      */
     public function addQueries(array $queries)
     {
-        $this->queries = array_merge($queries, $this->queries);
+        $this->queries = array_merge($this->queries, $queries);
     }
 
     /**
@@ -289,7 +289,15 @@ class Method
      */
     public function addHeaders(array $headers)
     {
-        $this->headers = array_merge($headers, $this->headers);
+        $this->headers = array_merge($this->headers, $headers);
+    }
+
+    /**
+     * @param array $headers
+     */
+    public function setHeaders(array $headers)
+    {
+        $this->headers = $headers;
     }
 
     /**

@@ -60,7 +60,8 @@ class ClassModel
      */
     public function addMethod(Method $method)
     {
-        $method->addHeaders($this->getHeaders());
+        $headers = array_merge($this->getHeaders(), $method->getHeaders());
+        $method->setHeaders($headers);
         $this->methods[] = $method->toArray();
     }
 }

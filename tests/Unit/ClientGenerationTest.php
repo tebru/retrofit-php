@@ -6,9 +6,9 @@
 
 namespace Tebru\Retrofit\Test;
 
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Message\RequestInterface;
-use GuzzleHttp\Message\ResponseInterface;
+use Guzzle\Http\ClientInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use JMS\Serializer\SerializerBuilder;
 use Mockery;
 use PHPUnit_Framework_TestCase;
@@ -259,10 +259,6 @@ class ClientGenerationTest extends PHPUnit_Framework_TestCase
     {
         $request = Mockery::mock(RequestInterface::class);
 
-        if (!empty($query)) {
-            $request->shouldReceive('setQuery')->times(1)->with($query)->andReturnNull();
-        }
-
         if (!empty($headers)) {
             $request->shouldReceive('addHeaders')->times(1)->with($headers)->andReturnNull();
         }
@@ -278,6 +274,11 @@ class ClientGenerationTest extends PHPUnit_Framework_TestCase
         $httpClient = Mockery::mock(ClientInterface::class);
 
         $requestUrl = ($baseUrl) ? $path : self::BASE_URL . $path;
+
+        if (!empty($query)) {
+            $requestUrl .= '?' . http_build_query($query);
+        }
+
         $httpClient->shouldReceive('createRequest')
             ->times(1)
             ->with($method, $requestUrl, $options)
