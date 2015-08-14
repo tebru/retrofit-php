@@ -31,5 +31,8 @@
             "Tebru\\Retrofit\\Test\\": "tests/"
         }
     },
-    "bin": ["bin/retrofit"]
+    "bin": ["bin/retrofit"],
+    "config": {
+        "bin-dir": "bin"
+    }
 }

@@ -15,7 +15,7 @@
  * @author Maxwell Vandervelde <Max@MaxVandervelde.com>
  */
 $composerExecutable = __DIR__ . '/composer.phar';
-$composerUrl = 'https://getcomposer.org/download/1.0.0-alpha9/composer.phar';
+$composerUrl = 'https://getcomposer.org/download/1.0.0-alpha10/composer.phar';
 if (false === file_exists($composerExecutable)) {
     $fileName = basename($composerExecutable);
     echo "> $fileName not found, attempting to download...\r\n";
