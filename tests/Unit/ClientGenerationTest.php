@@ -7,8 +7,8 @@
 namespace Tebru\Retrofit\Test;
 
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Message\RequestInterface;
-use GuzzleHttp\Message\ResponseInterface;
+use Psr\Http\Message\RequestInterface;
+use Guzzle\Http\Message\Response;
 use JMS\Serializer\SerializerBuilder;
 use Mockery;
 use PHPUnit_Framework_TestCase;
@@ -272,7 +272,7 @@ class ClientGenerationTest extends PHPUnit_Framework_TestCase
             $request->shouldReceive('setHeader')->times(1)->with('Content-Type', 'application/json')->andReturnNull();
         }
 
-        $response = Mockery::mock(ResponseInterface::class);
+        $response = Mockery::mock(Response::class);
         $response->shouldReceive('getBody')->times(1)->withNoArgs()->andReturn($this->serializeUser($this->getUser()));
 
         $httpClient = Mockery::mock(ClientInterface::class);
