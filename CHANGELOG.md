@@ -8,6 +8,9 @@ This document keeps track of important changes between releases of the library.
 
 * Removed composer wrapper
 * Upgraded guzzle to v6
+* Abstracted class generation
+* Fixed issue with query map
+* Fixed issue with interface inheritance 
 
 1.2.1
 ------------------
