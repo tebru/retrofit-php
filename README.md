@@ -58,8 +58,13 @@ $repos = $gitHubService->listRepos('octocat');
 Installation & Usage
 --------------------
 
-    composer require tebru/retrofit-php:~1.0
+For PHP >= 5.5
 
+    composer require tebru/retrofit-php:~2.0
+
+For PHP >= 5.4
+
+    composer require tebru/retrofit-php:~1.0
 
 ### Documentation 
 
