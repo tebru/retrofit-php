@@ -7,12 +7,10 @@
 namespace Tebru\Retrofit\Adapter\Rest;
 
 use Guzzle\Http\ClientInterface;
-use JMS\Serializer\DeserializationContext;
-use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Tebru;
-use Tebru\Retrofit\Exception\InvalidServiceTypeException;
-use Tebru\Retrofit\Provider\GeneratedClassMetaDataProvider;
+use Tebru\Retrofit\Exception\RetrofitException;
+use Tebru\Retrofit\Retrofit;
 
 /**
  * Class RestAdapter
@@ -37,36 +35,16 @@ class RestAdapter
     private $serializer;
 
     /**
-     * @var SerializationContext
-     */
-    private $serializationContext;
-
-    /**
-     * @var DeserializationContext
-     */
-    private $deserializationContext;
-
-    /**
      * Constructor
      *
      * @param string $baseUrl
      * @param ClientInterface $httpClient
      * @param SerializerInterface $serializer
-     * @param SerializationContext $serializationContext
-     * @param DeserializationContext $deserializationContext
      */
-    public function __construct(
-        $baseUrl,
-        ClientInterface $httpClient,
-        SerializerInterface $serializer,
-        SerializationContext $serializationContext = null,
-        DeserializationContext $deserializationContext = null
-    ) {
+    public function __construct($baseUrl, ClientInterface $httpClient, SerializerInterface $serializer) {
         $this->baseUrl = $baseUrl;
         $this->httpClient = $httpClient;
         $this->serializer = $serializer;
-        $this->serializationContext = $serializationContext;
-        $this->deserializationContext = $deserializationContext;
     }
 
     /**
@@ -84,7 +62,7 @@ class RestAdapter
      *
      * @param string|object $service
      * @return object $service
-     * @throws InvalidServiceTypeException
+     * @throws RetrofitException
      */
     public function create($service)
     {
@@ -94,24 +72,20 @@ class RestAdapter
         }
 
         // if it's not a string, we don't know how to handle this type
-        Tebru\assert(is_string($service), new InvalidServiceTypeException(sprintf('Could not create client. Expected object or string, got "%s"', gettype($service))));
+        if (!is_string($service)) {
+            throw new RetrofitException(sprintf('Could not create client. Expected object or string, got "%s"', gettype($service)));
+        }
 
         // get the class as a string
         // if $service is already a class, use that, otherwise,
         if (class_exists($service)) {
             $class = $service;
         } elseif (interface_exists($service)) {
-            $class = GeneratedClassMetaDataProvider::NAMESPACE_PREFIX . '\\' . $service;
+            $class = Retrofit::NAMESPACE_PREFIX . '\\' . $service;
         } else {
-            throw new InvalidServiceTypeException(sprintf('Could not create client. "%s" should be a class or interface.', $service));
+            throw new RetrofitException(sprintf('Could not create client. "%s" should be a class or interface.', $service));
         }
 
-        return new $class(
-            $this->baseUrl,
-            $this->httpClient,
-            $this->serializer,
-            $this->serializationContext,
-            $this->deserializationContext
-        );
+        return new $class($this->baseUrl, $this->httpClient, $this->serializer);
     }
 }

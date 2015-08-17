@@ -6,31 +6,17 @@
 
 namespace Tebru\Retrofit;
 
-use Symfony\Component\Filesystem\LockHandler;
-use Tebru\Retrofit\Factory\AnnotationHandlerFactory;
-use Tebru\Retrofit\Provider\ClassMetaDataProvider;
-use Tebru\Retrofit\Cache\CacheWriter;
+use Tebru\Dynamo\Generator;
 use Tebru\Retrofit\Finder\ServiceResolver;
-use Tebru\Retrofit\Generator\RestClientGenerator;
-use Tebru\Retrofit\Provider\GeneratedClassMetaDataProvider;
-use Tebru\Retrofit\Twig\PrintArrayFunction;
-use Twig_Environment;
-use Twig_Loader_Filesystem;
-use Twig_SimpleFunction;
 
 /**
  * Class Retrofit
- *
- * Façade that manages registered services
  *
  * @author Nate Brunette <n@tebru.net>
  */
 class Retrofit
 {
-    /**
-     * Lock file filename
-     */
-    const RETROFIT_LOCK_FILE = 'php_retrofit_cache.lock';
+    const NAMESPACE_PREFIX = 'Tebru\Retrofit\Generated';
 
     /**
      * Registered services
@@ -40,20 +26,6 @@ class Retrofit
     private $services = [];
 
     /**
-     * Writes class to file
-     *
-     * @var CacheWriter $cacheWriter
-     */
-    private $cacheWriter;
-
-    /**
-     * Generates a rest client
-     *
-     * @var RestClientGenerator $restClientGenerator
-     */
-    private $restClientGenerator;
-
-    /**
      * Finds all services in a given source directory
      *
      * @var ServiceResolver $serviceResolver
@@ -61,30 +33,32 @@ class Retrofit
     private $serviceResolver;
 
     /**
+     * Converts an interface to a class
+     *
+     * @var Generator
+     */
+    private $generator;
+
+    /**
      * Constructor
      *
-     * @param string $cacheDir Location of cache directory
+     * @param ServiceResolver $serviceResolver Finds service classes
+     * @param Generator $generator
      */
-    public function __construct($cacheDir = null)
+    public function __construct(ServiceResolver $serviceResolver, Generator $generator)
     {
-        $twig = $this->getTwig();
-        $this->cacheWriter = new CacheWriter($cacheDir);
-        $this->restClientGenerator = new RestClientGenerator($twig, new AnnotationHandlerFactory());
-        $this->serviceResolver = new ServiceResolver();
+        $this->serviceResolver = $serviceResolver;
+        $this->generator = $generator;
     }
 
     /**
-     * Set up twig environment
+     * Create a new builder
      *
-     * @return Twig_Environment
+     * @return RetrofitBuilder
      */
-    private function getTwig()
+    public static function builder()
     {
-        $loader = new Twig_Loader_Filesystem(__DIR__ . '/Resources/Template');
-        $twig = new Twig_Environment($loader);
-        $twig->addFunction(new Twig_SimpleFunction('print_array', new PrintArrayFunction()));
-
-        return $twig;
+        return new RetrofitBuilder();
     }
 
     /**
@@ -112,8 +86,6 @@ class Retrofit
     /**
      * Use the service resolver to find all the services dynamically
      *
-     * If debug is false, it will only create the cache file if it doesn't already exist
-     *
      * @param string $srcDir
      * @return int Number of services cached
      */
@@ -125,27 +97,15 @@ class Retrofit
     }
 
     /**
-     * Creates cache file based on registered services
-     *
-     * If debug is false, it will only create the cache file if it doesn't already exist
+     * Creates cache files based on registered services
      *
      * @return int Number of services cached
      */
     public function createCache()
     {
-        $lockHandler = new LockHandler(self::RETROFIT_LOCK_FILE);
-        $lockHandler->lock(true);
-
-        // loop through registered services and write to file
         foreach ($this->services as $service) {
-            $classMetaDataProvider = new ClassMetaDataProvider($service);
-            $generatedClassMetaDataProvider = new GeneratedClassMetaDataProvider($classMetaDataProvider);
-            $generatedClass = $this->restClientGenerator->generate($classMetaDataProvider, $generatedClassMetaDataProvider);
-
-            $this->cacheWriter->write($generatedClassMetaDataProvider, $generatedClass);
+            $this->generator->createAndWrite($service);
         }
-
-        $lockHandler->release();
 
         return count($this->services);
     }

@@ -6,26 +6,25 @@
 
 namespace Tebru\Retrofit\Test\Unit\Annotation;
 
-use PHPUnit_Framework_TestCase;
-use Tebru\Retrofit\Annotation\AnnotationToVariableMap;
+use Tebru\Retrofit\Annotation\VariableMapper;
 use Tebru\Retrofit\Annotation\Body;
 use Tebru\Retrofit\Annotation\Header;
 use Tebru\Retrofit\Annotation\Part;
 use Tebru\Retrofit\Annotation\Query;
 use Tebru\Retrofit\Annotation\QueryMap;
-use Tebru\Retrofit\Annotation\Url;
+use Tebru\Retrofit\Annotation\BaseUrl;
+use Tebru\Retrofit\Test\MockeryTestCase;
 
 /**
  * Class AnnotationToVariableMapTest
  *
  * @author Nate Brunette <n@tebru.net>
  */
-class AnnotationToVariableMapTest extends PHPUnit_Framework_TestCase
+class AnnotationToVariableMapTest extends MockeryTestCase
 {
-
     /**
      * @dataProvider provideAnnotationToVariableMapAnnotations
-     * @expectedException \Tebru\Retrofit\Exception\AnnotationConditionMissingException
+     * @expectedException \LogicException
      */
     public function testConstructorWillThrowException($class)
     {
@@ -37,12 +36,12 @@ class AnnotationToVariableMapTest extends PHPUnit_Framework_TestCase
      */
     public function testSimple($class)
     {
-        /** @var AnnotationToVariableMap $annotation */
+        /** @var VariableMapper $annotation */
         $annotation = new $class(['value' => 'foo']);
 
-        $this->assertEquals('foo', $annotation->getName());
-        $this->assertEquals('foo', $annotation->getKey());
-        $this->assertEquals('$foo', $annotation->getValue());
+        $this->assertEquals('foo', $annotation->getVariableName());
+        $this->assertEquals('foo', $annotation->getRequestKey());
+        $this->assertEquals('$foo', $annotation->getVariable());
     }
 
     /**
@@ -50,12 +49,12 @@ class AnnotationToVariableMapTest extends PHPUnit_Framework_TestCase
      */
     public function testOverrideName($class)
     {
-        /** @var AnnotationToVariableMap $annotation */
+        /** @var VariableMapper $annotation */
         $annotation = new $class(['value' => 'foo', 'var' => 'bar']);
 
-        $this->assertEquals('bar', $annotation->getName());
-        $this->assertEquals('foo', $annotation->getKey());
-        $this->assertEquals('$bar', $annotation->getValue());
+        $this->assertEquals('bar', $annotation->getVariableName());
+        $this->assertEquals('foo', $annotation->getRequestKey());
+        $this->assertEquals('$bar', $annotation->getVariable());
     }
 
     public function provideAnnotationToVariableMapAnnotations()
@@ -66,7 +65,7 @@ class AnnotationToVariableMapTest extends PHPUnit_Framework_TestCase
             [Header::class],
             [Body::class],
             [Query::class],
-            [Url::class],
+            [BaseUrl::class],
         ];
     }
 }

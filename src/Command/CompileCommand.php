@@ -32,7 +32,9 @@ class CompileCommand extends Command
         $srcDir = $input->getArgument('sourceDirectory');
         $cacheDir = $input->getArgument('cacheDirectory');
 
-        $retrofit = new Retrofit($cacheDir);
+        $retrofit = Retrofit::builder()
+            ->setCacheDir($cacheDir)
+            ->build();
         $count = $retrofit->cacheAll($srcDir);
 
         $output->writeln(sprintf('<info>Compiled %s %s successfully</info>', $count, ($count === 1) ? 'class' : 'classes'));

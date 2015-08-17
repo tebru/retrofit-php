@@ -6,15 +6,15 @@
 
 namespace Tebru\Retrofit\Test\Unit\Annotation\Serializer;
 
-use PHPUnit_Framework_TestCase;
 use Tebru\Retrofit\Annotation\Serializer\DeserializationContext;
+use Tebru\Retrofit\Test\MockeryTestCase;
 
 /**
  * DeserializationContextTest
  *
  * @author Matthew Loberg <m@mloberg.com>
  */
-class DeserializationContextTest extends PHPUnit_Framework_TestCase
+class DeserializationContextTest extends MockeryTestCase
 {
     public function testSimple()
     {

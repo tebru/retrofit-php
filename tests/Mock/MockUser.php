@@ -7,14 +7,13 @@
 namespace Tebru\Retrofit\Test\Mock;
 
 use JMS\Serializer\Annotation as JMS;
-use JsonSerializable;
 
 /**
  * Class MockUser
  *
  * @author Nate Brunette <nbrunett@nerdery.com>
  */
-class MockUser implements JsonSerializable
+class MockUser
 {
     /**
      * @JMS\Type("integer")
@@ -31,12 +30,4 @@ class MockUser implements JsonSerializable
      * @JMS\Groups({"Default", "test"})
      */
     public $email;
-
-    function jsonSerialize()
-    {
-        return [
-            'id' => $this->id,
-            'name' => $this->name,
-        ];
-    }
 }

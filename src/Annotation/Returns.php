@@ -6,9 +6,9 @@
 
 namespace Tebru\Retrofit\Annotation;
 
-use OutOfRangeException;
+use JMS\Serializer\Exception\LogicException;
 use Tebru;
-use Tebru\Retrofit\Exception\AnnotationConditionMissingException;
+use Tebru\Dynamo\Annotation\DynamoAnnotation;
 
 /**
  * Defines what type of object a request returns, so that it may be deserialized.
@@ -18,11 +18,14 @@ use Tebru\Retrofit\Exception\AnnotationConditionMissingException;
  * a string.
  *
  * @author Nate Brunette <n@tebru.net>
+ *
  * @Annotation
- * @Target("METHOD")
+ * @Target({"CLASS", "METHOD"})
  */
-class Returns
+class Returns implements DynamoAnnotation
 {
+    const NAME = 'returns';
+
     /**
      * @var string $return
      */
@@ -32,11 +35,11 @@ class Returns
      * Constructor
      *
      * @param array $params
-     * @throws OutOfRangeException
+     * @throws LogicException
      */
     public function __construct(array $params)
     {
-        Tebru\assert(isset($params['value']), new AnnotationConditionMissingException(sprintf('An argument was not passed to a "%s" annotation.', get_class($this))));
+        Tebru\assertThat(isset($params['value']), 'An argument was not passed to a "%s" annotation.', get_class($this));
 
         $this->return = $params['value'];
     }
@@ -47,5 +50,26 @@ class Returns
     public function getReturn()
     {
         return $this->return;
+    }
+
+    /**
+     * The name of the annotation or class of annotations
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return self::NAME;
+    }
+
+    /**
+     * Whether or not multiple annotations of this type can
+     * be added to a method
+     *
+     * @return bool
+     */
+    public function allowMultiple()
+    {
+        return false;
     }
 }

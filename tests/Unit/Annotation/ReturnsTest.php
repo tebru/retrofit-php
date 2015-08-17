@@ -6,18 +6,19 @@
 
 namespace Tebru\Retrofit\Test\Unit\Annotation;
 
-use PHPUnit_Framework_TestCase;
 use Tebru\Retrofit\Annotation\Returns;
+use Tebru\Retrofit\Test\MockeryTestCase;
 
 /**
  * Class ReturnsTest
  *
  * @author Nate Brunette <n@tebru.net>
  */
-class ReturnsTest extends PHPUnit_Framework_TestCase
+class ReturnsTest extends MockeryTestCase
 {
     /**
-     * @expectedException \Tebru\Retrofit\Exception\AnnotationConditionMissingException
+     * @expectedException \LogicException
+     * @expectedExceptionMessage An argument was not passed to a "Tebru\Retrofit\Annotation\Returns" annotation.
      */
     public function testConstructorThrowsException()
     {

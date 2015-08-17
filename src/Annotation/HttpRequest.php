@@ -6,18 +6,21 @@
 
 namespace Tebru\Retrofit\Annotation;
 
-use OutOfRangeException;
+use JMS\Serializer\Exception\LogicException;
 use Tebru;
+use Tebru\Dynamo\Annotation\DynamoAnnotation;
 
 /**
  * Parent class for Http request annotations.
  *
  * @author Nate Brunette <n@tebru.net>
  */
-abstract class HttpRequest
+abstract class HttpRequest implements DynamoAnnotation
 {
+    const NAME = 'request';
+    
     /**
-     * Url path
+     * BaseUrl path
      *
      * @var string $path
      */
@@ -41,11 +44,13 @@ abstract class HttpRequest
      * Constructor
      *
      * @param array $params
-     * @throws OutOfRangeException if path is not set
+     * @throws LogicException if path is not set
      */
     public function __construct(array $params)
     {
-        $path = (isset($params['value'])) ? $params['value'] : '';
+        Tebru\assertThat(isset($params['value']), 'Request method "%s" must have path', get_class($this));
+
+        $path = $params['value'];
 
         // check if url contains {}
         $matchesFound = preg_match_all('/{(.+?)}/', $path, $pathMatches);
@@ -114,5 +119,26 @@ abstract class HttpRequest
     public function getQueries()
     {
         return $this->queries;
+    }
+
+    /**
+     * The name of the annotation or class of annotations
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return self::NAME;
+    }
+
+    /**
+     * Whether or not multiple annotations of this type can
+     * be added to a method
+     *
+     * @return bool
+     */
+    public function allowMultiple()
+    {
+        return false;
     }
 }

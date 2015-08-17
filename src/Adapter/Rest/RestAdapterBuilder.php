@@ -8,12 +8,10 @@ namespace Tebru\Retrofit\Adapter\Rest;
 
 use Guzzle\Http\Client;
 use Guzzle\Http\ClientInterface;
-use JMS\Serializer\DeserializationContext;
-use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerBuilder;
 use JMS\Serializer\SerializerInterface;
 use Tebru;
-use Tebru\Retrofit\Exception\BaseUrlMissingException;
+use Tebru\Retrofit\Exception\RetrofitException;
 
 /**
  * Class RestAdapterBuilder
@@ -38,16 +36,6 @@ class RestAdapterBuilder
      * @var SerializerInterface $serializer
      */
     private $serializer;
-
-    /**
-     * @var SerializationContext $serializationContext
-     */
-    private $serializationContext;
-
-    /**
-     * @var DeserializationContext $deserializationContext
-     */
-    private $deserializationContext;
 
     /**
      * Sets the base url for the rest client
@@ -89,39 +77,16 @@ class RestAdapterBuilder
     }
 
     /**
-     * Set the jms serializer serialization context
-     * @param SerializationContext $serializationContext
-     * @return $this
-     */
-    public function setSerializationContext($serializationContext)
-    {
-        $this->serializationContext = $serializationContext;
-
-        return $this;
-    }
-
-    /**
-     * Set the jms serializer deserialization context
-     *
-     * @param DeserializationContext $deserializationContext
-     * @return $this
-     */
-    public function setDeserializationContext($deserializationContext)
-    {
-        $this->deserializationContext = $deserializationContext;
-
-        return $this;
-    }
-
-    /**
      * Build the rest adapter
      *
      * @return RestAdapter
-     * @throws BaseUrlMissingException
+     * @throws RetrofitException
      */
     public function build()
     {
-        Tebru\assert(null !== $this->baseUrl, new BaseUrlMissingException(sprintf('Could not build RestAdapter with null $baseUrl')));
+        if (null === $this->baseUrl) {
+            throw new RetrofitException('Could not build RestAdapter with null $baseUrl');
+        }
 
         if (null === $this->httpClient) {
             $this->httpClient = new Client();
@@ -131,13 +96,7 @@ class RestAdapterBuilder
             $this->serializer = SerializerBuilder::create()->build();
         }
 
-        $adapter = new RestAdapter(
-            $this->baseUrl,
-            $this->httpClient,
-            $this->serializer,
-            $this->serializationContext,
-            $this->deserializationContext
-        );
+        $adapter = new RestAdapter($this->baseUrl, $this->httpClient, $this->serializer);
 
         return $adapter;
     }

@@ -6,7 +6,6 @@
 
 namespace Tebru\Retrofit\Test\Unit\Annotation;
 
-use PHPUnit_Framework_TestCase;
 use Tebru\Retrofit\Annotation\DELETE;
 use Tebru\Retrofit\Annotation\GET;
 use Tebru\Retrofit\Annotation\HEAD;
@@ -15,18 +14,20 @@ use Tebru\Retrofit\Annotation\OPTIONS;
 use Tebru\Retrofit\Annotation\PATCH;
 use Tebru\Retrofit\Annotation\POST;
 use Tebru\Retrofit\Annotation\PUT;
+use Tebru\Retrofit\Test\MockeryTestCase;
 
 /**
  * Class HttpRequestTest
  *
  * @author Nate Brunette <n@tebru.net>
  */
-class HttpRequestTest extends PHPUnit_Framework_TestCase
+class HttpRequestTest extends MockeryTestCase
 {
     /**
      * @dataProvider provideHttpRequestAnnotations
+     * @expectedException \LogicException
      */
-    public function testBlankHttpRequest($class)
+    public function testBlankHttpRequestThrowsException($class)
     {
         /** @var HttpRequest $annotation */
         $annotation = new $class([]);
@@ -103,49 +104,49 @@ class HttpRequestTest extends PHPUnit_Framework_TestCase
 
     public function testGetType()
     {
-        $annotation = new GET([]);
+        $annotation = new GET(['value' => '/path']);
 
         $this->assertEquals('get', $annotation->getType());
     }
 
     public function testPostType()
     {
-        $annotation = new POST([]);
+        $annotation = new POST(['value' => '/path']);
 
         $this->assertEquals('post', $annotation->getType());
     }
 
     public function testPutType()
     {
-        $annotation = new PUT([]);
+        $annotation = new PUT(['value' => '/path']);
 
         $this->assertEquals('put', $annotation->getType());
     }
 
     public function testPatchType()
     {
-        $annotation = new PATCH([]);
+        $annotation = new PATCH(['value' => '/path']);
 
         $this->assertEquals('patch', $annotation->getType());
     }
 
     public function testDeleteType()
     {
-        $annotation = new DELETE([]);
+        $annotation = new DELETE(['value' => '/path']);
 
         $this->assertEquals('delete', $annotation->getType());
     }
 
     public function testHeadType()
     {
-        $annotation = new HEAD([]);
+        $annotation = new HEAD(['value' => '/path']);
 
         $this->assertEquals('head', $annotation->getType());
     }
 
     public function testOptionsType()
     {
-        $annotation = new OPTIONS([]);
+        $annotation = new OPTIONS(['value' => '/path']);
 
         $this->assertEquals('options', $annotation->getType());
     }

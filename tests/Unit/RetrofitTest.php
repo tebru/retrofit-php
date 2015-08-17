@@ -6,65 +6,76 @@
 
 namespace Tebru\Retrofit\Test\Unit;
 
-use PHPUnit_Framework_TestCase;
-use Symfony\Component\Filesystem\Filesystem;
+use Mockery;
+use Tebru\Dynamo\Generator;
+use Tebru\Retrofit\Finder\ServiceResolver;
 use Tebru\Retrofit\Retrofit;
-use Tebru\Retrofit\Test\Mock\MockService;
-use Tebru\Retrofit\Test\Mock\MockSimpleService;
+use Tebru\Retrofit\RetrofitBuilder;
+use Tebru\Retrofit\Test\Mock\Service\MockServiceBody;
+use Tebru\Retrofit\Test\Mock\Service\MockServiceUrlRequest;
+use Tebru\Retrofit\Test\MockeryTestCase;
 
 /**
  * Class RetrofitTest
  *
  * @author Nate Brunette <n@tebru.net>
  */
-class RetrofitTest extends PHPUnit_Framework_TestCase
+class RetrofitTest extends MockeryTestCase
 {
-    static private $cacheDir;
-
-    public static function setUpBeforeClass()
+    public function testCanCreate()
     {
-        parent::setUpBeforeClass();
+        $retrofit = new Retrofit(Mockery::mock(ServiceResolver::class), Mockery::mock(Generator::class));
 
-        self::$cacheDir = TEST_DIR . '/../cache/test_retrofit';
+        $this->assertInstanceOf(Retrofit::class, $retrofit);
     }
 
-    protected function tearDown()
+    public function testCanCreateBuilder()
     {
-        parent::tearDown();
+        $builder = Retrofit::builder();
 
-        $filesystem = new Filesystem();
-        $filesystem->remove(self::$cacheDir);
+        $this->assertInstanceOf(RetrofitBuilder::class, $builder);
     }
+
     public function testRegisterService()
     {
-        $retrofit = new Retrofit(self::$cacheDir);
-        $retrofit->registerService(MockService::class);
+        $retrofit = new Retrofit(Mockery::mock(ServiceResolver::class), Mockery::mock(Generator::class));
+        $retrofit->registerService(MockServiceUrlRequest::class);
 
-        $this->assertAttributeEquals([MockService::class], 'services', $retrofit);
+        $this->assertAttributeEquals([MockServiceUrlRequest::class], 'services', $retrofit);
     }
 
     public function testRegisterServices()
     {
-        $retrofit = new Retrofit(self::$cacheDir);
-        $retrofit->registerServices([MockService::class, MockSimpleService::class]);
+        $retrofit = new Retrofit(Mockery::mock(ServiceResolver::class), Mockery::mock(Generator::class));
+        $retrofit->registerServices([MockServiceUrlRequest::class, MockServiceBody::class]);
 
-        $this->assertAttributeEquals([MockService::class, MockSimpleService::class], 'services', $retrofit);
-    }
-
-    public function testCreateCache()
-    {
-        $retrofit = new Retrofit(self::$cacheDir);
-        $retrofit->registerServices([MockService::class, MockSimpleService::class]);
-        $numberCached = $retrofit->createCache();
-
-        $this->assertEquals(2, $numberCached);
+        $this->assertAttributeEquals([MockServiceUrlRequest::class, MockServiceBody::class], 'services', $retrofit);
     }
 
     public function testCacheAll()
     {
-        $retrofit = new Retrofit(self::$cacheDir);
-        $numberCached = $retrofit->cacheAll(TEST_DIR . '/Mock');
+        $serviceResolver = Mockery::mock(ServiceResolver::class);
 
-        $this->assertEquals(4, $numberCached);
+        $serviceResolver->shouldReceive('findServices')->times(1)->with('sourceDir')->andReturn([]);
+
+        $retrofit = new Retrofit($serviceResolver, Mockery::mock(Generator::class));
+        $numberCached = $retrofit->cacheAll('sourceDir');
+
+        $this->assertEquals(0, $numberCached);
+    }
+
+    public function testCreateCache()
+    {
+        $serviceResolver = Mockery::mock(ServiceResolver::class);
+        $generator = Mockery::mock(Generator::class);
+
+        $generator->shouldReceive('createAndWrite')->times(1)->with(MockServiceUrlRequest::class)->andReturnNull();
+        $generator->shouldReceive('createAndWrite')->times(1)->with(MockServiceBody::class)->andReturnNull();
+
+        $retrofit = new Retrofit($serviceResolver, $generator);
+        $retrofit->registerServices([MockServiceUrlRequest::class, MockServiceBody::class]);
+        $numberCached = $retrofit->createCache();
+
+        $this->assertEquals(2, $numberCached);
     }
 }

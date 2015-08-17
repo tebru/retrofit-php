@@ -10,6 +10,7 @@ namespace Tebru\Retrofit\Annotation;
  * Defines an HTTP GET request type to a REST path relative to base URL.
  *
  * @author Nate Brunette <n@tebru.net>
+ *
  * @Annotation
  * @Target("METHOD")
  */

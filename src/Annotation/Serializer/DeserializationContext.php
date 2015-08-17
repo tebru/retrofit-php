@@ -6,41 +6,27 @@
  
 namespace Tebru\Retrofit\Annotation\Serializer;
 
+use Tebru\Dynamo\Annotation\DynamoAnnotation;
+
 /**
  * DeserializationContext
  *
  * Define a context when deserializing an object from a response.
  *
  * @author Matthew Loberg <m@mloberg.com>
+ * @author Nate Brunette <n@tebru.net>
+ *
  * @Annotation
- * @Target("METHOD")
+ * @Target({"CLASS", "METHOD"})
  */
-class DeserializationContext
+class DeserializationContext extends JmsSerializerContext implements DynamoAnnotation
 {
+    const NAME = 'deserialization_context';
+
     /**
      * @var int
      */
     private $depth;
-
-    /**
-     * @var array|string
-     */
-    private $groups;
-
-    /**
-     * @var bool
-     */
-    private $serializeNull = false;
-
-    /**
-     * @var int
-     */
-    private $version;
-
-    /**
-     * @var array
-     */
-    private $attributes;
 
     /**
      * Constructor
@@ -49,27 +35,12 @@ class DeserializationContext
      */
     public function __construct(array $params)
     {
-        if (isset($params['groups'])) {
-            $this->groups = $params['groups'];
-            unset($params['groups']);
-        }
-
-        if (isset($params['serializeNull'])) {
-            $this->serializeNull = $params['serializeNull'];
-            unset($params['serializeNull']);
-        }
-
-        if (isset($params['version'])) {
-            $this->version = $params['version'];
-            unset($params['version']);
-        }
-
         if (isset($params['depth'])) {
             $this->depth = $params['depth'];
             unset($params['depth']);
         }
 
-        $this->attributes = $params;
+        parent::__construct($params);
     }
 
     /**
@@ -83,42 +54,23 @@ class DeserializationContext
     }
 
     /**
-     * Get Groups
+     * The name of the annotation or class of annotations
      *
-     * @return mixed
+     * @return string
      */
-    public function getGroups()
+    public function getName()
     {
-        return $this->groups;
+        return self::NAME;
     }
 
     /**
-     * Get SerializeNull
+     * Whether or not multiple annotations of this type can
+     * be added to a method
      *
-     * @return mixed
+     * @return bool
      */
-    public function getSerializeNull()
+    public function allowMultiple()
     {
-        return $this->serializeNull;
-    }
-
-    /**
-     * Get Version
-     *
-     * @return mixed
-     */
-    public function getVersion()
-    {
-        return $this->version;
-    }
-
-    /**
-     * Get Attributes
-     *
-     * @return mixed
-     */
-    public function getAttributes()
-    {
-        return $this->attributes;
+        return false;
     }
 }

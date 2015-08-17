@@ -6,23 +6,23 @@
 
 namespace Tebru\Retrofit\Test\Unit\Finder;
 
-use PHPUnit_Framework_TestCase;
 use Tebru\Retrofit\Finder\ServiceResolver;
-use Tebru\Retrofit\Test\ServiceResolver\MultipleInterfaces\MultipleBar;
-use Tebru\Retrofit\Test\ServiceResolver\MultipleInterfaces\MultipleFoo;
-use Tebru\Retrofit\Test\ServiceResolver\OneInterface\OneFoo;
+use Tebru\Retrofit\Test\Mock\ServiceResolver\MultipleInterfaces\MultipleBar;
+use Tebru\Retrofit\Test\Mock\ServiceResolver\MultipleInterfaces\MultipleFoo;
+use Tebru\Retrofit\Test\Mock\ServiceResolver\OneInterface\OneFoo;
+use Tebru\Retrofit\Test\MockeryTestCase;
 
 /**
  * Class ServiceResolverTest
  *
  * @author Nate Brunette <n@tebru.net>
  */
-class ServiceResolverTest extends PHPUnit_Framework_TestCase
+class ServiceResolverTest extends MockeryTestCase
 {
     public function testOneInterface()
     {
         $serviceResolver = new ServiceResolver();
-        $services = $serviceResolver->findServices(TEST_DIR . '/ServiceResolver/OneInterface');
+        $services = $serviceResolver->findServices(__DIR__ . '/../../Mock/ServiceResolver/OneInterface');
 
         $classes = $this->getClassNames([OneFoo::class]);
 
@@ -32,7 +32,7 @@ class ServiceResolverTest extends PHPUnit_Framework_TestCase
     public function testMultipleInterfaces()
     {
         $serviceResolver = new ServiceResolver();
-        $services = $serviceResolver->findServices(TEST_DIR . '/ServiceResolver/MultipleInterfaces');
+        $services = $serviceResolver->findServices(__DIR__ . '/../../Mock/ServiceResolver/MultipleInterfaces');
 
         $classes = $this->getClassNames([MultipleBar::class, MultipleFoo::class]);
 
@@ -42,7 +42,7 @@ class ServiceResolverTest extends PHPUnit_Framework_TestCase
     public function testNoPhpFiles()
     {
         $serviceResolver = new ServiceResolver();
-        $services = $serviceResolver->findServices(TEST_DIR . '/ServiceResolver/NoPhpFiles');
+        $services = $serviceResolver->findServices(__DIR__ . '/../../Mock/ServiceResolver/NoPhpFiles');
 
         $this->assertEquals([], $services);
     }
@@ -50,7 +50,7 @@ class ServiceResolverTest extends PHPUnit_Framework_TestCase
     public function testNoInterfaces()
     {
         $serviceResolver = new ServiceResolver();
-        $services = $serviceResolver->findServices(TEST_DIR . '/ServiceResolver/NoInterfaces');
+        $services = $serviceResolver->findServices(__DIR__ . '/../../Mock/ServiceResolver/NoInterfaces');
 
         $this->assertEquals([], $services);
     }
@@ -58,7 +58,7 @@ class ServiceResolverTest extends PHPUnit_Framework_TestCase
     public function testNoAnnotations()
     {
         $serviceResolver = new ServiceResolver();
-        $services = $serviceResolver->findServices(TEST_DIR . '/ServiceResolver/NoAnnotations');
+        $services = $serviceResolver->findServices(__DIR__ . '/../../Mock/ServiceResolver/NoAnnotations');
 
         $this->assertEquals([], $services);
     }

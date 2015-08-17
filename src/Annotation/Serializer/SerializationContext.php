@@ -6,99 +6,41 @@
  
 namespace Tebru\Retrofit\Annotation\Serializer;
 
+use Tebru\Dynamo\Annotation\DynamoAnnotation;
+
 /**
  * SerializationContext
  *
  * Define a context when serializing an object for a request.
  *
  * @author Matthew Loberg <m@mloberg.com>
+ * @author Nate Brunette <n@tebru.net>
+ *
  * @Annotation
- * @Target("METHOD")
+ * @Target({"CLASS", "METHOD"})
  */
-class SerializationContext
+class SerializationContext extends JmsSerializerContext implements DynamoAnnotation
 {
-    /**
-     * @var array|string
-     */
-    private $groups;
+    const NAME = 'serialization_context';
 
     /**
-     * @var bool
-     */
-    private $serializeNull = false;
-
-    /**
-     * @var int
-     */
-    private $version;
-
-    /**
-     * @var array
-     */
-    private $attributes;
-
-    /**
-     * Constructor
+     * The name of the annotation or class of annotations
      *
-     * @param array $params
+     * @return string
      */
-    public function __construct(array $params)
+    public function getName()
     {
-        if (isset($params['groups'])) {
-            $this->groups = $params['groups'];
-            unset($params['groups']);
-        }
-
-        if (isset($params['serializeNull'])) {
-            $this->serializeNull = $params['serializeNull'];
-            unset($params['serializeNull']);
-        }
-
-        if (isset($params['version'])) {
-            $this->version = $params['version'];
-            unset($params['version']);
-        }
-
-        $this->attributes = $params;
+        return self::NAME;
     }
 
     /**
-     * Get Groups
+     * Whether or not multiple annotations of this type can
+     * be added to a method
      *
-     * @return mixed
+     * @return bool
      */
-    public function getGroups()
+    public function allowMultiple()
     {
-        return $this->groups;
-    }
-
-    /**
-     * Get SerializeNull
-     *
-     * @return mixed
-     */
-    public function getSerializeNull()
-    {
-        return $this->serializeNull;
-    }
-
-    /**
-     * Get Version
-     *
-     * @return mixed
-     */
-    public function getVersion()
-    {
-        return $this->version;
-    }
-
-    /**
-     * Get Attributes
-     *
-     * @return mixed
-     */
-    public function getAttributes()
-    {
-        return $this->attributes;
+        return false;
     }
 }

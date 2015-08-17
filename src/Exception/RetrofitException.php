@@ -13,6 +13,6 @@ use Exception;
  *
  * @author Nate Brunette <n@tebru.net>
  */
-abstract class RetrofitException extends Exception
+class RetrofitException extends Exception
 {
 }

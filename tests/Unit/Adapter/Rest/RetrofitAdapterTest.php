@@ -9,19 +9,17 @@ namespace Tebru\Retrofit\Test\Unit\Adapter\Rest;
 use Guzzle\Http\Client;
 use JMS\Serializer\Serializer;
 use Mockery;
-use PHPUnit_Framework_TestCase;
 use stdClass;
-use Symfony\Component\Filesystem\Filesystem;
 use Tebru\Retrofit\Adapter\Rest\RestAdapter;
-use Tebru\Retrofit\Retrofit;
-use Tebru\Retrofit\Test\Mock\MockService;
+use Tebru\Retrofit\Test\Mock\Service\MockServiceUrlRequest;
+use Tebru\Retrofit\Test\MockeryTestCase;
 
 /**
  * Class RetrofitAdapterTest
  *
  * @author Nate Brunette <n@tebru.net>
  */
-class RetrofitAdapterTest extends PHPUnit_Framework_TestCase
+class RetrofitAdapterTest extends MockeryTestCase
 {
     /**
      * @var RestAdapter $adapter
@@ -30,28 +28,9 @@ class RetrofitAdapterTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
+        parent::setUp();
+
         $this->adapter = RestAdapter::builder()->setBaseUrl('')->build();
-    }
-
-    public static function setUpBeforeClass()
-    {
-        parent::setUpBeforeClass();
-
-        $retrofit = new Retrofit(TEST_DIR . '/../cache/tests');
-        $retrofit->cacheAll(TEST_DIR . '/Mock');
-    }
-
-    public static function tearDownAfterClass()
-    {
-        parent::tearDownAfterClass();
-
-        $filesystem = new Filesystem();
-        $filesystem->remove(TEST_DIR . '/../cache/tests');
-    }
-
-    protected function tearDown()
-    {
-        Mockery::close();
     }
 
     public function testWillUseObject()
@@ -75,14 +54,14 @@ class RetrofitAdapterTest extends PHPUnit_Framework_TestCase
         $httpClient = Mockery::mock(Client::class);
         $serializer = Mockery::mock(Serializer::class);
         $adapter = RestAdapter::builder()->setBaseUrl('')->setHttpClient($httpClient)->setSerializer($serializer)->build();
-        $generatedClass = new \Tebru\Retrofit\Service\Tebru\Retrofit\Test\Mock\MockService('', $httpClient, $serializer);
-        $service = $adapter->create(MockService::class);
+        $generatedClass = new \Tebru\Retrofit\Generated\Tebru\Retrofit\Test\Mock\Service\MockServiceUrlRequest('', $httpClient, $serializer);
+        $service = $adapter->create(MockServiceUrlRequest::class);
 
         $this->assertEquals($generatedClass, $service);
     }
 
     /**
-     * @expectedException \Tebru\Retrofit\Exception\InvalidServiceTypeException
+     * @expectedException \Tebru\Retrofit\Exception\RetrofitException
      */
     public function testWillThrowExceptionOnInvalidParameter()
     {
@@ -90,7 +69,7 @@ class RetrofitAdapterTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Tebru\Retrofit\Exception\InvalidServiceTypeException
+     * @expectedException \Tebru\Retrofit\Exception\RetrofitException
      */
     public function testWillThrowExceptionOnInvalidClass()
     {

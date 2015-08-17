@@ -6,18 +6,19 @@
 
 namespace Tebru\Retrofit\Test\Unit\Annotation;
 
-use PHPUnit_Framework_TestCase;
 use Tebru\Retrofit\Annotation\Headers;
+use Tebru\Retrofit\Test\MockeryTestCase;
 
 /**
  * Class HeadersTest
  *
  * @author Nate Brunette <n@tebru.net>
  */
-class HeadersTest extends PHPUnit_Framework_TestCase
+class HeadersTest extends MockeryTestCase
 {
     /**
-     * @expectedException \Tebru\Retrofit\Exception\AnnotationConditionMissingException
+     * @expectedException \LogicException
+     * @expectedExceptionMessage An argument was not passed to a "Tebru\Retrofit\Annotation\Headers" annotation.
      */
     public function testConstructorThrowsException()
     {
@@ -39,7 +40,8 @@ class HeadersTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Tebru\Retrofit\Exception\AnnotationConditionMissingException
+     * @expectedException \LogicException
+     * @expectedExceptionMessage Header in an incorrect format.  Expected "Name: value"
      */
     public function testBadlyFormattedHeaderThrowsException()
     {

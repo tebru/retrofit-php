@@ -6,6 +6,8 @@
 
 namespace Tebru\Retrofit\Annotation;
 
+use Tebru\Dynamo\Annotation\DynamoAnnotation;
+
 /**
  * Denotes a single part of a multi-part request.
  * 
@@ -19,9 +21,32 @@ namespace Tebru\Retrofit\Annotation;
  *     @Part("part2", var="foo")
  *
  * @author Nate Brunette <n@tebru.net>
+ *
  * @Annotation
  * @Target("METHOD")
  */
-class Part extends AnnotationToVariableMap
+class Part extends VariableMapper implements DynamoAnnotation
 {
+    const NAME = 'part';
+
+    /**
+     * The name of the annotation or class of annotations
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return self::NAME;
+    }
+
+    /**
+     * Whether or not multiple annotations of this type can
+     * be added to a method
+     *
+     * @return bool
+     */
+    public function allowMultiple()
+    {
+        return true;
+    }
 }

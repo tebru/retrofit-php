@@ -7,6 +7,7 @@
 namespace Tebru\Retrofit\Annotation;
 
 use Doctrine\Common\Annotations\Annotation\Target;
+use Tebru\Dynamo\Annotation\DynamoAnnotation;
 
 /**
  * Define the body of the HTTP request.
@@ -16,9 +17,32 @@ use Doctrine\Common\Annotations\Annotation\Target;
  * form-style request body).
  *
  * @author Nate Brunette <n@tebru.net>
+ *
  * @Annotation
  * @Target("METHOD")
  */
-class Body extends AnnotationToVariableMap
+class Body extends VariableMapper implements DynamoAnnotation
 {
+    const NAME = 'body';
+
+    /**
+     * The name of the annotation or class of annotations
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return self::NAME;
+    }
+
+    /**
+     * Whether or not multiple annotations of this type can
+     * be added to a method
+     *
+     * @return bool
+     */
+    public function allowMultiple()
+    {
+        return false;
+    }
 }

@@ -6,6 +6,8 @@
 
 namespace Tebru\Retrofit\Annotation;
 
+use Tebru\Dynamo\Annotation\DynamoAnnotation;
+
 /**
  * Query parameter appended to the URL.
  *
@@ -22,9 +24,32 @@ namespace Tebru\Retrofit\Annotation;
  *     @Query("page", var="inputPage")
  *
  * @author Nate Brunette <n@tebru.net>
+ *
  * @Annotation
  * @Target("METHOD")
  */
-class Query extends AnnotationToVariableMap
+class Query extends VariableMapper implements DynamoAnnotation
 {
+    const NAME = 'query';
+
+    /**
+     * The name of the annotation or class of annotations
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return self::NAME;
+    }
+
+    /**
+     * Whether or not multiple annotations of this type can
+     * be added to a method
+     *
+     * @return bool
+     */
+    public function allowMultiple()
+    {
+        return true;
+    }
 }

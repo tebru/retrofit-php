@@ -8,7 +8,7 @@ namespace Tebru\Retrofit\Annotation;
 
 use OutOfRangeException;
 use Tebru;
-use Tebru\Retrofit\Exception\AnnotationConditionMissingException;
+use Tebru\Dynamo\Annotation\DynamoAnnotation;
 
 /**
  * Adds headers literally supplied in the value.
@@ -20,11 +20,14 @@ use Tebru\Retrofit\Exception\AnnotationConditionMissingException;
  *     })
  *
  * @author Nate Brunette <n@tebru.net>
+ *
  * @Annotation
  * @Target({"CLASS", "METHOD"})
  */
-class Headers
+class Headers implements DynamoAnnotation
 {
+    const NAME = 'headers';
+
     /**
      * @var array $headers
      */
@@ -38,7 +41,7 @@ class Headers
      */
     public function __construct(array $params)
     {
-        Tebru\assert(isset($params['value']), new AnnotationConditionMissingException(sprintf('An argument was not passed to a "%s" annotation.', get_class($this))));
+        Tebru\assertThat(isset($params['value']), 'An argument was not passed to a "%s" annotation.', get_class($this));
 
         // convert to array
         if (!is_array($params['value'])) {
@@ -49,7 +52,7 @@ class Headers
         foreach ($params['value'] as $header) {
             $pos = strpos($header, ':');
 
-            Tebru\assert(false !== $pos, new AnnotationConditionMissingException('Header in an incorrect format.  Expected "Name: value"'));
+            Tebru\assertThat(false !== $pos, 'Header in an incorrect format.  Expected "Name: value"');
 
             $name = trim(substr($header, 0, $pos));
             $value = trim(substr($header, $pos + 1));
@@ -64,5 +67,26 @@ class Headers
     public function getHeaders()
     {
         return $this->headers;
+    }
+
+    /**
+     * The name of the annotation or class of annotations
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return self::NAME;
+    }
+
+    /**
+     * Whether or not multiple annotations of this type can
+     * be added to a method
+     *
+     * @return bool
+     */
+    public function allowMultiple()
+    {
+        return false;
     }
 }
