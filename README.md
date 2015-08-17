@@ -65,15 +65,15 @@ Installation & Usage
 
 #### Version 2.x
 
-- [Detailed Installation1]
-- [Usage1]
-- [Annotation Reference1]
+- [v2 Detailed Installation]
+- [v2 Usage]
+- [v2 Annotation Reference]
 
 #### Version 1.x
 
-- [Detailed Installation2]
-- [Usage2]
-- [Annotation Reference2]
+- [v1 Detailed Installation]
+- [v1 Usage]
+- [v1 Annotation Reference]
 
 License
 -------
@@ -84,10 +84,10 @@ for more information.
 
 [retrofit]: https://github.com/square/retrofit
 
-[detailed installation1]: docs/v1/installation.md
-[usage1]: docs/v1/usage.md
-[annotation reference1]: docs/v1/annotations.md
+[v1 detailed installation]: docs/v1/installation.md
+[v1 usage]: docs/v1/usage.md
+[v1 annotation reference]: docs/v1/annotations.md
 
-[detailed installation2]: docs/v2/installation.md
-[usage2]: docs/v2/usage.md
-[annotation reference2]: docs/v2/annotations.md
+[v2 detailed installation]: docs/v2/installation.md
+[v2 usage]: docs/v2/usage.md
+[v2 annotation reference]: docs/v2/annotations.md
