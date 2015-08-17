@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "35651d3b5de31af1abccfe4d1677d757",
+    "hash": "10a27f87d7eea7fcce860dad90453ccf",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -924,16 +924,16 @@
         },
         {
             "name": "tebru/dynamo",
-            "version": "dev-master",
+            "version": "v0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tebru/dynamo.git",
-                "reference": "844c3d1539e09ae801f9debaa15446133c825b51"
+                "reference": "7aff02fe6be5f9eb10367b45b06b65cb16f17708"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tebru/dynamo/zipball/844c3d1539e09ae801f9debaa15446133c825b51",
-                "reference": "844c3d1539e09ae801f9debaa15446133c825b51",
+                "url": "https://api.github.com/repos/tebru/dynamo/zipball/7aff02fe6be5f9eb10367b45b06b65cb16f17708",
+                "reference": "7aff02fe6be5f9eb10367b45b06b65cb16f17708",
                 "shasum": ""
             },
             "require": {
@@ -969,7 +969,7 @@
                 }
             ],
             "description": "Generates PHP classes from an interface based on doctrine annotations",
-            "time": "2015-08-17 03:26:35"
+            "time": "2015-08-17 21:20:16"
         }
     ],
     "packages-dev": [
@@ -2376,13 +2376,11 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "tebru/dynamo": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">= 5.5"
+        "php": ">= 5.5, <7"
     },
     "platform-dev": []
 }
