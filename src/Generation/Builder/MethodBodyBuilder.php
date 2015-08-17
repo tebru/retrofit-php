@@ -369,7 +369,7 @@ class MethodBodyBuilder
         }
 
         if (!empty($context['enableMaxDepthChecks'])) {
-            $body[] = sprintf('$context->enableMaxDepthChecks(%s);', (string)$context['enableMaxDepthChecks']);
+            $body[] = sprintf('$context->enableMaxDepthChecks();');
         }
 
         if (!empty($context['attributes'])) {

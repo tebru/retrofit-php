@@ -12,6 +12,8 @@ use Tebru\Retrofit\Annotation as Rest;
  * Interface MockServiceReturns
  *
  * @author Nate Brunette <n@tebru.net>
+ *
+ * @Rest\Serializer\DeserializationContext(depth=4, enableMaxDepthChecks=true, serializeNull=true)
  */
 interface MockServiceReturns
 {
