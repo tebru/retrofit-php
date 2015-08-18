@@ -205,6 +205,9 @@ The two main technologies backing Retrofit are Guzzle and JMS Serializer.
 
 Use the `setHttpClient` or `setSerializer` methods on the builder to use a custom configured version of either.
 
+An extremely rudimentary http client is included, however it is recommended to use guzzle.  Retrofit supports
+version 5 or 6.
+
 There are two methods `setSerializationContext` and `setDeserializationContext` on the builder that allow you add
 JMS serializer contexts that will be used in during serialization/deserialization.
 
