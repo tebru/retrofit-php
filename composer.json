@@ -28,5 +28,8 @@
             "Tebru\\Retrofit\\Test\\": "tests/"
         }
     },
+    "suggest": {
+        "guzzlehttp/guzzle": "Required to make requests"
+    },
     "bin": ["bin/retrofit"]
 }
