@@ -355,7 +355,7 @@ class MethodBodyBuilder
                 $body[] = sprintf('return $response->getBody();');
                 break;
             case 'array':
-                $body[] = sprintf('return json_decode($response->getBody());');
+                $body[] = sprintf('return json_decode($response->getBody(), true);');
                 break;
             default:
                 $body[] = sprintf('$context = \JMS\Serializer\DeserializationContext::create();');

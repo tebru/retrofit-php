@@ -28,7 +28,7 @@ class MethodBodyBuilderTest extends MockeryTestCase
         $builder->setReturnType('array');
 
         $response = $builder->build();
-        $expected = '$queryString = urldecode(http_build_query(["foo" => "bar"] + $map));$requestUrl = http://example.com . "/path?" . $queryString;$headers = [];$body = null;$response = $this->client->send("GET", $requestUrl, $headers, $body);return json_decode($response->getBody());';
+        $expected = '$queryString = urldecode(http_build_query(["foo" => "bar"] + $map));$requestUrl = http://example.com . "/path?" . $queryString;$headers = [];$body = null;$response = $this->client->send("GET", $requestUrl, $headers, $body);return json_decode($response->getBody(), true);';
 
         $this->assertSame($expected, $response);
     }
@@ -43,7 +43,7 @@ class MethodBodyBuilderTest extends MockeryTestCase
         $builder->setReturnType('array');
 
         $response = $builder->build();
-        $expected = '$queryString = urldecode(http_build_query($map));$requestUrl = http://example.com . "/path?" . $queryString;$headers = [];$body = null;$response = $this->client->send("GET", $requestUrl, $headers, $body);return json_decode($response->getBody());';
+        $expected = '$queryString = urldecode(http_build_query($map));$requestUrl = http://example.com . "/path?" . $queryString;$headers = [];$body = null;$response = $this->client->send("GET", $requestUrl, $headers, $body);return json_decode($response->getBody(), true);';
 
         $this->assertSame($expected, $response);
     }
@@ -58,7 +58,7 @@ class MethodBodyBuilderTest extends MockeryTestCase
         $builder->setReturnType('array');
 
         $response = $builder->build();
-        $expected = '$requestUrl = http://example.com . "/path" . "?foo=bar";$headers = [];$body = null;$response = $this->client->send("GET", $requestUrl, $headers, $body);return json_decode($response->getBody());';
+        $expected = '$requestUrl = http://example.com . "/path" . "?foo=bar";$headers = [];$body = null;$response = $this->client->send("GET", $requestUrl, $headers, $body);return json_decode($response->getBody(), true);';
 
         $this->assertSame($expected, $response);
     }
