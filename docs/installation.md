@@ -17,7 +17,7 @@ The easiest way to get setup is to add the psr-4 autoload location where you inc
 
 ```php
 $loader = require __DIR__ . '/vendor/autoload.php';
-$loader->addPsr4('Tebru\\Retrofit\\Service\\', __DIR__ . '</path/to/cache/dir>/retrofit');
+$loader->addPsr4('Tebru\\Retrofit\\Generated\\', __DIR__ . '</path/to/cache/dir>/retrofit');
 ```
 
 If you do not have environment specific cache directories, you could specify the psr-4 autoload location in your composer.json instead.
@@ -25,7 +25,7 @@ If you do not have environment specific cache directories, you could specify the
 ```json
     "autoload": {
         "psr-4": {
-            "Tebru\\Retrofit\\Service\\": "<path/to/cache/dir>/retrofit"
+            "Tebru\\Retrofit\\Generated\\": "<path/to/cache/dir>/retrofit"
         }
     }
 ```
