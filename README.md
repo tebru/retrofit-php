@@ -58,7 +58,11 @@ $repos = $gitHubService->listRepos('octocat');
 Installation & Usage
 --------------------
 
-    composer require tebru/retrofit-php:~2.0
+    composer require tebru/retrofit-php
+
+Please make sure you also install an http client. Currently guzzle is the only supported option
+
+    composer require guzzlehttp/guzzle
 
 ### Documentation 
 

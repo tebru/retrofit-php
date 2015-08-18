@@ -6,6 +6,10 @@ Installation with Composer
 
     composer require tebru/retrofit-php:~2.0
 
+Retrofit does not include an http client, please install guzzle. Additional clients will be supported in the future.
+
+    composer require guzzlehttp/guzzle
+
 Setup
 -----
 
