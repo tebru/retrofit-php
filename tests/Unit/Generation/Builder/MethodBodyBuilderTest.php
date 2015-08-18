@@ -90,6 +90,24 @@ class MethodBodyBuilderTest extends MockeryTestCase
         $this->assertSame($expected, $response);
     }
 
+    public function testJsonBody()
+    {
+        $builder = new MethodBodyBuilder();
+        $builder->setRequestMethod('POST');
+        $builder->setBaseUrl('http://example.com');
+        $builder->setUri('/path');
+        $builder->setBody('$body');
+        $builder->setBodyIsObject(false);
+        $builder->setBodyIsArray(true);
+        $builder->setJsonEncode(true);
+        $builder->setReturnType('raw');
+
+        $response = $builder->build();
+        $expected = '$requestUrl = http://example.com . "/path";$headers = [];$body = json_encode($body);$response = $this->client->send("POST", $requestUrl, $headers, $body);return $response->getBody();';
+
+        $this->assertSame($expected, $response);
+    }
+
     public function testSimpleBodyString()
     {
         $builder = new MethodBodyBuilder();

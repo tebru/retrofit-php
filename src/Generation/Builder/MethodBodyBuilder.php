@@ -84,6 +84,13 @@ class MethodBodyBuilder
     private $bodyIsArray = false;
 
     /**
+     * If we should json encode the body
+     *
+     * @var bool
+     */
+    private $jsonEncode = false;
+
+    /**
      * Method return type
      *
      * @var string
@@ -182,6 +189,14 @@ class MethodBodyBuilder
     public function setBodyIsArray($bodyIsArray)
     {
         $this->bodyIsArray = $bodyIsArray;
+    }
+
+    /**
+     * @param boolean $jsonEncode
+     */
+    public function setJsonEncode($jsonEncode)
+    {
+        $this->jsonEncode = $jsonEncode;
     }
 
     /**
@@ -300,11 +315,15 @@ class MethodBodyBuilder
             $body = $this->createContext($body, $this->serializationContext);
             $body[] = sprintf('$body = $this->serializer->serialize(%s, "json", $context);', $this->body);
         } elseif ($this->bodyIsArray) {
-            $body[] = sprintf('$body = http_build_query(%s);', $this->body);
+            $body[] = (true === $this->jsonEncode)
+                ? sprintf('$body = json_encode(%s);', $this->body)
+                : sprintf('$body = http_build_query(%s);', $this->body);
         } elseif (null !== $this->body) {
             $body[] = sprintf('$body = %s;', $this->body);
         } else {
-            $body[] = sprintf('$body = http_build_query(%s);', $this->arrayToString($this->bodyParts));
+            $body[] = (true === $this->jsonEncode)
+                ? sprintf('$body = json_encode(%s);', $this->arrayToString($this->bodyParts))
+                : sprintf('$body = http_build_query(%s);', $this->arrayToString($this->bodyParts));
         }
 
         return $body;

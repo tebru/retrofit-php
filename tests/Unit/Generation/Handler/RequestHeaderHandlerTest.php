@@ -61,6 +61,7 @@ class RequestHeaderHandlerTest extends MockeryTestCase
         $annotationCollection->shouldReceive('exists')->times(1)->with(JsonBody::NAME)->andReturn(true);
 
         $methodBodyBuilder->shouldReceive('setHeaders')->times(1)->with(['headerskey' => 'headersvalue', 'foo' => '$foo', 'Content-Type' => 'application/json'])->andReturnNull();
+        $methodBodyBuilder->shouldReceive('setJsonEncode')->times(1)->with(true)->andReturnNull();
 
         $handler = new RequestHeaderHandler($methodModel, $methodBodyBuilder, $annotationCollection);
 

@@ -81,6 +81,7 @@ class RequestHeaderHandler extends Handler
     private function setContentTypeHeader(array $headers)
     {
         if ($this->annotations->exists(JsonBody::NAME)) {
+            $this->methodBodyBuilder->setJsonEncode(true);
             $headers['Content-Type'] = 'application/json';
 
             return $headers;
