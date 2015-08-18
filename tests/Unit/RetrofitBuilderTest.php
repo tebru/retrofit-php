@@ -14,6 +14,7 @@ use Tebru\Dynamo\Generator;
 use Tebru\Retrofit\Finder\ServiceResolver;
 use Tebru\Retrofit\Generation\Listener\DynamoMethodListener;
 use Tebru\Retrofit\Generation\Listener\DynamoStartListener;
+use Tebru\Retrofit\HttpClient\ClientProvider;
 use Tebru\Retrofit\Retrofit;
 use Tebru\Retrofit\RetrofitBuilder;
 use Tebru\Retrofit\Test\MockeryTestCase;
@@ -27,7 +28,7 @@ class RetrofitBuilderTest extends MockeryTestCase
 {
     public function testCanCreateBuilder()
     {
-        $builder = new RetrofitBuilder();
+        $builder = new RetrofitBuilder(new ClientProvider());
 
         $this->assertInstanceOf(RetrofitBuilder::class, $builder);
     }

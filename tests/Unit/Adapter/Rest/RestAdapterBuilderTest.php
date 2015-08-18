@@ -7,7 +7,8 @@
 namespace Tebru\Retrofit\Test\Unit\Adapter\Rest;
 
 use JMS\Serializer\SerializerBuilder;
-use Tebru\Retrofit\Adapter\Http\RetrofitClientAdapter;
+use Mockery;
+use Tebru\Retrofit\Adapter\HttpClientAdapter;
 use Tebru\Retrofit\Adapter\Rest\RestAdapter;
 use Tebru\Retrofit\Adapter\Rest\RestAdapterBuilder;
 use Tebru\Retrofit\Test\MockeryTestCase;
@@ -34,14 +35,6 @@ class RestAdapterBuilderTest extends MockeryTestCase
         RestAdapter::builder()->build();
     }
 
-    public function testWillUseCustomHttpClient()
-    {
-        $client = new RetrofitClientAdapter();
-        $restAdapter = $this->getRestAdapterBuilder()->setHttpClient($client);
-
-        $this->assertAttributeEquals($client, 'httpClient', $restAdapter);
-    }
-
     public function testWillUseCustomSerializer()
     {
         $serializer = SerializerBuilder::create()->build();
@@ -55,6 +48,8 @@ class RestAdapterBuilderTest extends MockeryTestCase
      */
     private function getRestAdapterBuilder()
     {
-        return RestAdapter::builder()->setBaseUrl('http://example.com');
+        return RestAdapter::builder()
+            ->setBaseUrl('http://example.com')
+            ->setHttpClient(Mockery::mock(HttpClientAdapter::class));
     }
 }

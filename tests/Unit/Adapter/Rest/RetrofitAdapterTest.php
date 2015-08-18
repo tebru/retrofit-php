@@ -30,7 +30,10 @@ class RetrofitAdapterTest extends MockeryTestCase
     {
         parent::setUp();
 
-        $this->adapter = RestAdapter::builder()->setBaseUrl('')->build();
+        $this->adapter = RestAdapter::builder()
+            ->setBaseUrl('')
+            ->setHttpClient(Mockery::mock(HttpClientAdapter::class))
+            ->build();
     }
 
     public function testWillUseObject()

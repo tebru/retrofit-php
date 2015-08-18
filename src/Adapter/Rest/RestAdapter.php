@@ -10,6 +10,7 @@ use JMS\Serializer\SerializerInterface;
 use Tebru;
 use Tebru\Retrofit\Adapter\HttpClientAdapter;
 use Tebru\Retrofit\Exception\RetrofitException;
+use Tebru\Retrofit\HttpClient\ClientProvider;
 use Tebru\Retrofit\Retrofit;
 
 /**
@@ -54,7 +55,7 @@ class RestAdapter
      */
     public static function builder()
     {
-        return new RestAdapterBuilder();
+        return new RestAdapterBuilder(new ClientProvider());
     }
 
     /**

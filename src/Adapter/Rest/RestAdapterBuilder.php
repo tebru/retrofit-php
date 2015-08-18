@@ -5,17 +5,11 @@
  */
 
 namespace Tebru\Retrofit\Adapter\Rest;
-
-use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
 use JMS\Serializer\SerializerBuilder;
 use JMS\Serializer\SerializerInterface;
 use Tebru;
-use Tebru\Retrofit\Adapter\Guzzle\GuzzleV5ClientAdapter;
-use Tebru\Retrofit\Adapter\Guzzle\GuzzleV6ClientAdapter;
-use Tebru\Retrofit\Adapter\Http\RetrofitClientAdapter;
-use Tebru\Retrofit\Adapter\HttpClientAdapter;
 use Tebru\Retrofit\Exception\RetrofitException;
+use Tebru\Retrofit\HttpClient\ClientProvider;
 
 /**
  * Class RestAdapterBuilder
@@ -27,14 +21,26 @@ use Tebru\Retrofit\Exception\RetrofitException;
 class RestAdapterBuilder
 {
     /**
+     * Gets the http client that's available
+     *
+     * @var ClientProvider
+     */
+    private $clientProvider;
+
+    /**
+     * Constructor
+     *
+     * @param ClientProvider $clientProvider
+     */
+    public function __construct(ClientProvider $clientProvider)
+    {
+        $this->clientProvider = $clientProvider;
+    }
+
+    /**
      * @var string $baseUrl
      */
     private $baseUrl;
-
-    /**
-     * @var HttpClientAdapter $httpClient
-     */
-    private $httpClient;
 
     /**
      * @var SerializerInterface $serializer
@@ -57,12 +63,14 @@ class RestAdapterBuilder
     /**
      * Sets the http client used with rest client
      *
-     * @param HttpClientAdapter $httpClient
+     * Currently only supports guzzle clients
+     *
+     * @param mixed $httpClient
      * @return $this
      */
-    public function setHttpClient(HttpClientAdapter $httpClient)
+    public function setHttpClient($httpClient)
     {
-        $this->httpClient = $httpClient;
+        $this->clientProvider->setClient($httpClient);
 
         return $this;
     }
@@ -92,34 +100,12 @@ class RestAdapterBuilder
             throw new RetrofitException('Could not build RestAdapter with null $baseUrl');
         }
 
-        if (null === $this->httpClient) {
-            $this->httpClient = $this->getHttpClient();
-        }
-
         if (null === $this->serializer) {
             $this->serializer = SerializerBuilder::create()->build();
         }
 
-        $adapter = new RestAdapter($this->baseUrl, $this->httpClient, $this->serializer);
+        $adapter = new RestAdapter($this->baseUrl, $this->clientProvider->getClient(), $this->serializer);
 
         return $adapter;
-    }
-
-    private function getHttpClient()
-    {
-        if (!interface_exists('GuzzleHttp\ClientInterface')) {
-            return new RetrofitClientAdapter();
-        }
-
-        $version = (int)ClientInterface::VERSION;
-        if (5 === $version) {
-            return new GuzzleV5ClientAdapter(new Client());
-        }
-
-        if (6 === $version) {
-            return new GuzzleV6ClientAdapter(new Client());
-        }
-
-        throw new RetrofitException('Could not find an http client');
     }
 }
