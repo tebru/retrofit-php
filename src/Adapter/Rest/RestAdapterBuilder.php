@@ -107,7 +107,7 @@ class RestAdapterBuilder
 
     private function getHttpClient()
     {
-        if (!class_exists('GuzzleHttp\ClientInterface')) {
+        if (!interface_exists('GuzzleHttp\ClientInterface')) {
             return new RetrofitClientAdapter();
         }
 
