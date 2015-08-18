@@ -8,7 +8,7 @@
         "symfony/console": "^2.0.5",
         "tebru/assert": "^0.2",
         "tebru/dynamo": "^0.1",
-        "tebru/retrofit-http-clients": "dev-master"
+        "tebru/retrofit-http-clients": "^0.1.0"
     },
     "require-dev": {
         "mockery/mockery": "0.9.*",
