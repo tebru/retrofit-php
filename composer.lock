@@ -753,16 +753,16 @@
         },
         {
             "name": "tebru/retrofit-http-clients",
-            "version": "v0.2.0",
+            "version": "v0.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tebru/retrofit-http-clients.git",
-                "reference": "a556358eda762a687677e3eb23588b3bba7e61fd"
+                "reference": "2194fab707c9a1db9eefe9df2669bf33a2979b27"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tebru/retrofit-http-clients/zipball/a556358eda762a687677e3eb23588b3bba7e61fd",
-                "reference": "a556358eda762a687677e3eb23588b3bba7e61fd",
+                "url": "https://api.github.com/repos/tebru/retrofit-http-clients/zipball/2194fab707c9a1db9eefe9df2669bf33a2979b27",
+                "reference": "2194fab707c9a1db9eefe9df2669bf33a2979b27",
                 "shasum": ""
             },
             "require": {
@@ -789,7 +789,7 @@
                 }
             ],
             "description": "Retrofit for PHP - A PHP REST client.",
-            "time": "2015-08-18 13:44:30"
+            "time": "2015-08-18 18:24:44"
         }
     ],
     "packages-dev": [
