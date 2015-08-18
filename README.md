@@ -58,27 +58,13 @@ $repos = $gitHubService->listRepos('octocat');
 Installation & Usage
 --------------------
 
-For PHP >= 5.5
-
     composer require tebru/retrofit-php:~2.0
-
-For PHP >= 5.4
-
-    composer require tebru/retrofit-php:~1.0
 
 ### Documentation 
 
-#### Version 2.x
-
-- [v2 Detailed Installation]
-- [v2 Usage]
-- [v2 Annotation Reference]
-
-#### Version 1.x
-
-- [v1 Detailed Installation]
-- [v1 Usage]
-- [v1 Annotation Reference]
+- [Detailed Installation]
+- [Usage]
+- [Annotation Reference]
 
 License
 -------
@@ -89,10 +75,6 @@ for more information.
 
 [retrofit]: https://github.com/square/retrofit
 
-[v1 detailed installation]: docs/v1/installation.md
-[v1 usage]: docs/v1/usage.md
-[v1 annotation reference]: docs/v1/annotations.md
-
-[v2 detailed installation]: docs/v2/installation.md
-[v2 usage]: docs/v2/usage.md
-[v2 annotation reference]: docs/v2/annotations.md
+[detailed installation]: docs/installation.md
+[usage]: docs/usage.md
+[annotation reference]: docs/annotations.md
