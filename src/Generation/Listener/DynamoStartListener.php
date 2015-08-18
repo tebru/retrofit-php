@@ -59,7 +59,7 @@ class DynamoStartListener
         $baseUrl = new ParameterModel($methodModel, 'baseUrl', false);
 
         $client = new ParameterModel($methodModel, 'client', false);
-        $client->setTypeHint('\Guzzle\Http\ClientInterface');
+        $client->setTypeHint('\Tebru\Retrofit\Adapter\HttpClientAdapter');
 
         $serializer = new ParameterModel($methodModel, 'serializer', false);
         $serializer->setTypeHint('\JMS\Serializer\SerializerInterface');

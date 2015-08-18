@@ -6,11 +6,15 @@
 
 namespace Tebru\Retrofit\Adapter\Rest;
 
-use Guzzle\Http\Client;
-use Guzzle\Http\ClientInterface;
+use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use JMS\Serializer\SerializerBuilder;
 use JMS\Serializer\SerializerInterface;
 use Tebru;
+use Tebru\Retrofit\Adapter\Guzzle\GuzzleV5ClientAdapter;
+use Tebru\Retrofit\Adapter\Guzzle\GuzzleV6ClientAdapter;
+use Tebru\Retrofit\Adapter\Http\RetrofitClientAdapter;
+use Tebru\Retrofit\Adapter\HttpClientAdapter;
 use Tebru\Retrofit\Exception\RetrofitException;
 
 /**
@@ -28,7 +32,7 @@ class RestAdapterBuilder
     private $baseUrl;
 
     /**
-     * @var ClientInterface $httpClient
+     * @var HttpClientAdapter $httpClient
      */
     private $httpClient;
 
@@ -53,10 +57,10 @@ class RestAdapterBuilder
     /**
      * Sets the http client used with rest client
      *
-     * @param ClientInterface $httpClient
+     * @param HttpClientAdapter $httpClient
      * @return $this
      */
-    public function setHttpClient(ClientInterface $httpClient)
+    public function setHttpClient(HttpClientAdapter $httpClient)
     {
         $this->httpClient = $httpClient;
 
@@ -89,7 +93,7 @@ class RestAdapterBuilder
         }
 
         if (null === $this->httpClient) {
-            $this->httpClient = new Client();
+            $this->httpClient = $this->getHttpClient();
         }
 
         if (null === $this->serializer) {
@@ -99,5 +103,23 @@ class RestAdapterBuilder
         $adapter = new RestAdapter($this->baseUrl, $this->httpClient, $this->serializer);
 
         return $adapter;
+    }
+
+    private function getHttpClient()
+    {
+        if (!class_exists('GuzzleHttp\ClientInterface')) {
+            return new RetrofitClientAdapter();
+        }
+
+        $version = (int)ClientInterface::VERSION;
+        if (5 === $version) {
+            return new GuzzleV5ClientAdapter(new Client());
+        }
+
+        if (6 === $version) {
+            return new GuzzleV6ClientAdapter(new Client());
+        }
+
+        throw new RetrofitException('Could not find an http client');
     }
 }

@@ -9,6 +9,7 @@ namespace Tebru\Retrofit\Generation\Handler;
 use Tebru\Retrofit\Annotation\Header;
 use Tebru\Retrofit\Annotation\Headers;
 use Tebru\Retrofit\Annotation\JsonBody;
+use Tebru\Retrofit\Annotation\Multipart;
 
 /**
  * Class RequestHeaderHandler
@@ -23,7 +24,7 @@ class RequestHeaderHandler extends Handler
         $headers = [];
         $headers = $this->setStaticHeaders($headers);
         $headers = $this->setHeaders($headers);
-        $headers = $this->setJsonHeader($headers);
+        $headers = $this->setContentTypeHeader($headers);
 
         $this->methodBodyBuilder->setHeaders($headers);
     }
@@ -77,13 +78,21 @@ class RequestHeaderHandler extends Handler
      * @param array $headers
      * @return array
      */
-    private function setJsonHeader(array $headers)
+    private function setContentTypeHeader(array $headers)
     {
-        if (!$this->annotations->exists(JsonBody::NAME)) {
+        if ($this->annotations->exists(JsonBody::NAME)) {
+            $headers['Content-Type'] = 'application/json';
+
             return $headers;
         }
 
-        $headers['Content-Type'] = 'application/json';
+        if ($this->annotations->exists(Multipart::NAME)) {
+            $headers['Content-Type'] = 'multipart/form-data';
+
+            return $headers;
+        }
+
+        $headers['Content-Type'] = 'application/x-www-form-urlencoded';
 
         return $headers;
     }

@@ -22,7 +22,8 @@ class BodyClientGenerationTest extends MockeryTestCase
     public function testSimpleBody()
     {
         $body = ['foo' => 'bar'];
-        $httpClient = $this->getHttpClient($this->getRequest(), $this->getResponse(), 'POST', '/post', [], $body);
+        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
+        $httpClient = $this->getHttpClient($this->getResponse(), 'POST', '/post', $headers, http_build_query($body));
         /** @var MockServiceBody $client */
         $client = $this->getClient(MockServiceBody::class, $httpClient, $this->getSerializer());
         $response = $client->simpleBody($body);
@@ -33,7 +34,8 @@ class BodyClientGenerationTest extends MockeryTestCase
     public function testSimpleBodyChangeName()
     {
         $body = ['foo' => 'bar'];
-        $httpClient = $this->getHttpClient($this->getRequest(), $this->getResponse(), 'POST', '/post', [], $body);
+        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
+        $httpClient = $this->getHttpClient($this->getResponse(), 'POST', '/post', $headers, http_build_query($body));
         /** @var MockServiceBody $client */
         $client = $this->getClient(MockServiceBody::class, $httpClient, $this->getSerializer());
         $response = $client->bodyChangeName($body);
@@ -44,7 +46,8 @@ class BodyClientGenerationTest extends MockeryTestCase
     public function testObjectBody()
     {
         $body = $this->getUser();
-        $httpClient = $this->getHttpClient($this->getRequest(), $this->getResponse(), 'POST', '/post', [], $this->getSerializedUser());
+        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
+        $httpClient = $this->getHttpClient($this->getResponse(), 'POST', '/post', $headers, $this->getSerializedUser());
         /** @var MockServiceBody $client */
         $client = $this->getClient(MockServiceBody::class, $httpClient, $this->getSerializer());
         $response = $client->objectBody($body);
@@ -55,7 +58,8 @@ class BodyClientGenerationTest extends MockeryTestCase
     public function testObjectBodyChangeName()
     {
         $body = $this->getUser();
-        $httpClient = $this->getHttpClient($this->getRequest(), $this->getResponse(), 'POST', '/post', [], $this->getSerializedUser());
+        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
+        $httpClient = $this->getHttpClient($this->getResponse(), 'POST', '/post', $headers, $this->getSerializedUser());
         /** @var MockServiceBody $client */
         $client = $this->getClient(MockServiceBody::class, $httpClient, $this->getSerializer());
         $response = $client->objectBodyChangeName($body);
@@ -66,7 +70,8 @@ class BodyClientGenerationTest extends MockeryTestCase
     public function testParts()
     {
         $body = ['foo' => 'foo', 'bar' => 'bar'];
-        $httpClient = $this->getHttpClient($this->getRequest(), $this->getResponse(), 'POST', '/post', [], $body);
+        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
+        $httpClient = $this->getHttpClient($this->getResponse(), 'POST', '/post', $headers, http_build_query($body));
         /** @var MockServiceBody $client */
         $client = $this->getClient(MockServiceBody::class, $httpClient, $this->getSerializer());
         $response = $client->parts('foo', 'bar');
@@ -77,7 +82,8 @@ class BodyClientGenerationTest extends MockeryTestCase
     public function testPartsChangeName()
     {
         $body = ['foo' => 'foo', 'bar' => 'bar'];
-        $httpClient = $this->getHttpClient($this->getRequest(), $this->getResponse(), 'POST', '/post', [], $body);
+        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
+        $httpClient = $this->getHttpClient($this->getResponse(), 'POST', '/post', $headers, http_build_query($body));
         /** @var MockServiceBody $client */
         $client = $this->getClient(MockServiceBody::class, $httpClient, $this->getSerializer());
         $response = $client->partsChangeName('foo', 'bar');
@@ -89,7 +95,7 @@ class BodyClientGenerationTest extends MockeryTestCase
     {
         $headers = ['Content-Type' => 'application/json'];
         $body = ['foo' => 'bar'];
-        $httpClient = $this->getHttpClient($this->getRequest(), $this->getResponse(), 'POST', '/post', $headers, $body);
+        $httpClient = $this->getHttpClient($this->getResponse(), 'POST', '/post', $headers, http_build_query($body));
         /** @var MockServiceBody $client */
         $client = $this->getClient(MockServiceBody::class, $httpClient, $this->getSerializer());
         $response = $client->jsonBody($body);
@@ -100,7 +106,7 @@ class BodyClientGenerationTest extends MockeryTestCase
     public function testObjectJsonBody()
     {
         $headers = ['Content-Type' => 'application/json'];
-        $httpClient = $this->getHttpClient($this->getRequest(), $this->getResponse(), 'POST', '/post', $headers, $this->getSerializedUser());
+        $httpClient = $this->getHttpClient($this->getResponse(), 'POST', '/post', $headers, $this->getSerializedUser());
         /** @var MockServiceBody $client */
         $client = $this->getClient(MockServiceBody::class, $httpClient, $this->getSerializer());
         $response = $client->objectJsonBody($this->getUser());
@@ -112,7 +118,7 @@ class BodyClientGenerationTest extends MockeryTestCase
     {
         $headers = ['Content-Type' => 'application/json'];
         $body = ['foo' => 'foo', 'bar' => 'bar'];
-        $httpClient = $this->getHttpClient($this->getRequest(), $this->getResponse(), 'POST', '/post', $headers, $body);
+        $httpClient = $this->getHttpClient($this->getResponse(), 'POST', '/post', $headers, http_build_query($body));
         /** @var MockServiceBody $client */
         $client = $this->getClient(MockServiceBody::class, $httpClient, $this->getSerializer());
         $response = $client->partsJsonBody('foo', 'bar');
@@ -124,10 +130,22 @@ class BodyClientGenerationTest extends MockeryTestCase
     {
         $headers = ['foo' => 'bar', 'Content-Type' => 'application/json'];
         $body = ['foo' => 'bar'];
-        $httpClient = $this->getHttpClient($this->getRequest(), $this->getResponse(), 'POST', '/post', $headers, $body);
+        $httpClient = $this->getHttpClient($this->getResponse(), 'POST', '/post', $headers, http_build_query($body));
         /** @var MockServiceBody $client */
         $client = $this->getClient(MockServiceBody::class, $httpClient, $this->getSerializer());
         $response = $client->headerJsonBody('bar', $body);
+
+        $this->assertSame([], $response);
+    }
+
+    public function testHeaderMultipartBody()
+    {
+        $headers = ['Content-Type' => 'multipart/form-data'];
+        $body = ['foo' => 'bar'];
+        $httpClient = $this->getHttpClient($this->getResponse(), 'POST', '/post', $headers, http_build_query($body));
+        /** @var MockServiceBody $client */
+        $client = $this->getClient(MockServiceBody::class, $httpClient, $this->getSerializer());
+        $response = $client->multipart($body);
 
         $this->assertSame([], $response);
     }

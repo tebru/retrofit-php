@@ -6,12 +6,11 @@
 
 namespace Tebru\Retrofit\Test\Mock\Traits;
 
-use Guzzle\Http\ClientInterface;
-use Guzzle\Http\Message\RequestInterface;
 use JMS\Serializer\SerializerBuilder;
 use JMS\Serializer\SerializerInterface;
 use Mockery;
-use Psr\Http\Message\ResponseInterface;
+use Tebru\Retrofit\Adapter\Http\Response;
+use Tebru\Retrofit\Adapter\HttpClientAdapter;
 use Tebru\Retrofit\Adapter\Rest\RestAdapter;
 use Tebru\Retrofit\Test\Mock\MockUser;
 
@@ -23,40 +22,29 @@ use Tebru\Retrofit\Test\Mock\MockUser;
 trait ClientMocks
 {
     /**
-     * @return RequestInterface
-     */
-    protected function getRequest()
-    {
-        return Mockery::mock(RequestInterface::class);
-    }
-
-    /**
      * @param string $responseBody
-     * @return ResponseInterface
+     * @return Response
      */
     protected function getResponse($responseBody = '[]')
     {
-        $response = Mockery::mock(ResponseInterface::class);
-        $response->shouldReceive('getBody')->times(1)->with(true)->andReturn($responseBody);
+        $response = Mockery::mock(Response::class);
+        $response->shouldReceive('getBody')->times(1)->with()->andReturn($responseBody);
 
         return $response;
     }
 
     /**
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
+     * @param Response $response
      * @param $method
      * @param $uri
      * @param array $headers
      * @param null $body
-     * @return ClientInterface
+     * @return HttpClientAdapter
      */
-    protected function getHttpClient(RequestInterface $request, ResponseInterface $response, $method, $uri, $headers = [], $body = null, $baseUrl = 'http://mockservice.com')
+    protected function getHttpClient(Response $response, $method, $uri, $headers = [], $body = null, $baseUrl = 'http://mockservice.com')
     {
-        $httpClient = Mockery::mock(ClientInterface::class);
-
-        $httpClient->shouldReceive('createRequest')->times(1)->with($method, $baseUrl . $uri, $headers, $body)->andReturn($request);
-        $httpClient->shouldReceive('send')->times(1)->with($request)->andReturn($response);
+        $httpClient = Mockery::mock(HttpClientAdapter::class);
+        $httpClient->shouldReceive('send')->times(1)->with($method, $baseUrl . $uri, $headers, $body)->andReturn($response);
 
         return $httpClient;
     }
@@ -69,7 +57,7 @@ trait ClientMocks
         return SerializerBuilder::create()->build();
     }
 
-    protected function getClient($service, ClientInterface $httpClient, SerializerInterface $serializer)
+    protected function getClient($service, HttpClientAdapter $httpClient, SerializerInterface $serializer)
     {
         $builder = RestAdapter::builder()->setBaseUrl('http://mockservice.com');
         $builder->setHttpClient($httpClient);

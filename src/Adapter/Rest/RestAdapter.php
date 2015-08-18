@@ -6,9 +6,9 @@
 
 namespace Tebru\Retrofit\Adapter\Rest;
 
-use Guzzle\Http\ClientInterface;
 use JMS\Serializer\SerializerInterface;
 use Tebru;
+use Tebru\Retrofit\Adapter\HttpClientAdapter;
 use Tebru\Retrofit\Exception\RetrofitException;
 use Tebru\Retrofit\Retrofit;
 
@@ -25,7 +25,7 @@ class RestAdapter
     private $baseUrl;
 
     /**
-     * @var ClientInterface $httpClient
+     * @var HttpClientAdapter $httpClient
      */
     private $httpClient;
 
@@ -38,10 +38,10 @@ class RestAdapter
      * Constructor
      *
      * @param string $baseUrl
-     * @param ClientInterface $httpClient
+     * @param HttpClientAdapter $httpClient
      * @param SerializerInterface $serializer
      */
-    public function __construct($baseUrl, ClientInterface $httpClient, SerializerInterface $serializer) {
+    public function __construct($baseUrl, HttpClientAdapter $httpClient, SerializerInterface $serializer) {
         $this->baseUrl = $baseUrl;
         $this->httpClient = $httpClient;
         $this->serializer = $serializer;

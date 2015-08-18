@@ -28,7 +28,7 @@ class MethodBodyBuilderTest extends MockeryTestCase
         $builder->setReturnType('array');
 
         $response = $builder->build();
-        $expected = '$queryString = urldecode(http_build_query(["foo" => "bar"] + $map));$requestUrl = http://example.com . "/path?" . $queryString;$headers = [];$body = null;$request = $this->client->createRequest("GET", $requestUrl, $headers, $body);$response = $this->client->send($request);return json_decode($response->getBody(true), true);';
+        $expected = '$queryString = urldecode(http_build_query(["foo" => "bar"] + $map));$requestUrl = http://example.com . "/path?" . $queryString;$headers = [];$body = null;$response = $this->client->send("GET", $requestUrl, $headers, $body);return json_decode($response->getBody());';
 
         $this->assertSame($expected, $response);
     }
@@ -43,7 +43,7 @@ class MethodBodyBuilderTest extends MockeryTestCase
         $builder->setReturnType('array');
 
         $response = $builder->build();
-        $expected = '$queryString = urldecode(http_build_query($map));$requestUrl = http://example.com . "/path?" . $queryString;$headers = [];$body = null;$request = $this->client->createRequest("GET", $requestUrl, $headers, $body);$response = $this->client->send($request);return json_decode($response->getBody(true), true);';
+        $expected = '$queryString = urldecode(http_build_query($map));$requestUrl = http://example.com . "/path?" . $queryString;$headers = [];$body = null;$response = $this->client->send("GET", $requestUrl, $headers, $body);return json_decode($response->getBody());';
 
         $this->assertSame($expected, $response);
     }
@@ -58,7 +58,7 @@ class MethodBodyBuilderTest extends MockeryTestCase
         $builder->setReturnType('array');
 
         $response = $builder->build();
-        $expected = '$requestUrl = http://example.com . "/path" . "?foo=bar";$headers = [];$body = null;$request = $this->client->createRequest("GET", $requestUrl, $headers, $body);$response = $this->client->send($request);return json_decode($response->getBody(true), true);';
+        $expected = '$requestUrl = http://example.com . "/path" . "?foo=bar";$headers = [];$body = null;$response = $this->client->send("GET", $requestUrl, $headers, $body);return json_decode($response->getBody());';
 
         $this->assertSame($expected, $response);
     }
@@ -81,10 +81,28 @@ class MethodBodyBuilderTest extends MockeryTestCase
         $builder->setUri('/path');
         $builder->setBody('$body');
         $builder->setBodyIsObject(false);
+        $builder->setBodyIsArray(true);
         $builder->setReturnType('raw');
 
         $response = $builder->build();
-        $expected = '$requestUrl = http://example.com . "/path";$headers = [];$body = $body;$request = $this->client->createRequest("POST", $requestUrl, $headers, $body);$response = $this->client->send($request);return $response->getBody(true);';
+        $expected = '$requestUrl = http://example.com . "/path";$headers = [];$body = http_build_query($body);$response = $this->client->send("POST", $requestUrl, $headers, $body);return $response->getBody();';
+
+        $this->assertSame($expected, $response);
+    }
+
+    public function testSimpleBodyString()
+    {
+        $builder = new MethodBodyBuilder();
+        $builder->setRequestMethod('POST');
+        $builder->setBaseUrl('http://example.com');
+        $builder->setUri('/path');
+        $builder->setBody('$body');
+        $builder->setBodyIsObject(false);
+        $builder->setBodyIsArray(false);
+        $builder->setReturnType('raw');
+
+        $response = $builder->build();
+        $expected = '$requestUrl = http://example.com . "/path";$headers = [];$body = $body;$response = $this->client->send("POST", $requestUrl, $headers, $body);return $response->getBody();';
 
         $this->assertSame($expected, $response);
     }
@@ -119,7 +137,7 @@ class MethodBodyBuilderTest extends MockeryTestCase
         $builder->setReturnType(MockUser::class);
 
         $response = $builder->build();
-        $expected = '$requestUrl = http://example.com . "/path";$headers = ["Content-Type" => "application/json"];$context = \Jms\Serializer\SerializationContext::create();$context->setGroups(["test" => "group"]);$context->setVersion(1);$context->setSerializeNull(1);$context->enableMaxDepthChecks();$context->setAttribute("foo", "bar");$body = $this->serializer->serialize($body, "json", $context);$request = $this->client->createRequest("POST", $requestUrl, $headers, $body);$response = $this->client->send($request);$context = \JMS\Serializer\DeserializationContext::create();$context->setGroups(["test" => "group"]);$context->setVersion(1);$context->setSerializeNull(1);$context->enableMaxDepthChecks();$context->setAttribute("foo", "bar");while ($context->getDepth() > 2) { $context->decreaseDepth(); }while ($context->getDepth() < 2) { $context->increaseDepth(); }return $this->serializer->deserialize($response->getBody(true), "Tebru\Retrofit\Test\Mock\MockUser", "json", $context);';
+        $expected = '$requestUrl = http://example.com . "/path";$headers = ["Content-Type" => "application/json"];$context = \Jms\Serializer\SerializationContext::create();$context->setGroups(["test" => "group"]);$context->setVersion(1);$context->setSerializeNull(1);$context->enableMaxDepthChecks();$context->setAttribute("foo", "bar");$body = $this->serializer->serialize($body, "json", $context);$response = $this->client->send("POST", $requestUrl, $headers, $body);$context = \JMS\Serializer\DeserializationContext::create();$context->setGroups(["test" => "group"]);$context->setVersion(1);$context->setSerializeNull(1);$context->enableMaxDepthChecks();$context->setAttribute("foo", "bar");while ($context->getDepth() > 2) { $context->decreaseDepth(); }while ($context->getDepth() < 2) { $context->increaseDepth(); }return $this->serializer->deserialize($response->getBody(), "Tebru\Retrofit\Test\Mock\MockUser", "json", $context);';
 
         $this->assertSame($expected, $response);
     }
@@ -134,7 +152,7 @@ class MethodBodyBuilderTest extends MockeryTestCase
         $builder->setReturnType(MockUser::class);
 
         $response = $builder->build();
-        $expected = '$requestUrl = http://example.com . "/path";$headers = [];$body = ["foo" => "bar"];$request = $this->client->createRequest("POST", $requestUrl, $headers, $body);$response = $this->client->send($request);$context = \JMS\Serializer\DeserializationContext::create();return $this->serializer->deserialize($response->getBody(true), "Tebru\Retrofit\Test\Mock\MockUser", "json", $context);';
+        $expected = '$requestUrl = http://example.com . "/path";$headers = [];$body = http_build_query(["foo" => "bar"]);$response = $this->client->send("POST", $requestUrl, $headers, $body);$context = \JMS\Serializer\DeserializationContext::create();return $this->serializer->deserialize($response->getBody(), "Tebru\Retrofit\Test\Mock\MockUser", "json", $context);';
 
         $this->assertSame($expected, $response);
     }

@@ -6,8 +6,8 @@
 
 namespace Tebru\Retrofit\Test\Unit\Adapter\Rest;
 
-use Guzzle\Http\Client;
 use JMS\Serializer\SerializerBuilder;
+use Tebru\Retrofit\Adapter\Http\RetrofitClientAdapter;
 use Tebru\Retrofit\Adapter\Rest\RestAdapter;
 use Tebru\Retrofit\Adapter\Rest\RestAdapterBuilder;
 use Tebru\Retrofit\Test\MockeryTestCase;
@@ -36,7 +36,7 @@ class RestAdapterBuilderTest extends MockeryTestCase
 
     public function testWillUseCustomHttpClient()
     {
-        $client = new Client();
+        $client = new RetrofitClientAdapter();
         $restAdapter = $this->getRestAdapterBuilder()->setHttpClient($client);
 
         $this->assertAttributeEquals($client, 'httpClient', $restAdapter);

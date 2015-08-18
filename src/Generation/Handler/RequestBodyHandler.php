@@ -40,6 +40,7 @@ class RequestBodyHandler extends Handler
         $parameter = $this->methodModel->getParameter($bodyAnnotation->getVariableName());
 
         $this->methodBodyBuilder->setBodyIsObject($parameter->isObject());
+        $this->methodBodyBuilder->setBodyIsArray($parameter->isArray());
         $this->methodBodyBuilder->setBody($bodyAnnotation->getVariable());
     }
 

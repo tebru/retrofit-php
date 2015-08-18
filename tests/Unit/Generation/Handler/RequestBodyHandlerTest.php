@@ -53,7 +53,9 @@ class RequestBodyHandlerTest extends MockeryTestCase
         $bodyAnnotation->shouldReceive('getVariable')->times(1)->withNoArgs()->andReturn('$foo');
         $methodModel->shouldReceive('getParameter')->times(1)->with('foo')->andReturn($parameter);
         $parameter->shouldReceive('isObject')->times(1)->withNoArgs()->andReturn(true);
+        $parameter->shouldReceive('isArray')->times(1)->withNoArgs()->andReturn(false);
         $methodBodyBuilder->shouldReceive('setBodyIsObject')->times(1)->with(true)->andReturnNull();
+        $methodBodyBuilder->shouldReceive('setBodyIsArray')->times(1)->with(false)->andReturnNull();
         $methodBodyBuilder->shouldReceive('setBody')->times(1)->with('$foo')->andReturnNull();
 
         $annotationCollection->shouldReceive('exists')->times(1)->with(Part::NAME)->andReturn(true);

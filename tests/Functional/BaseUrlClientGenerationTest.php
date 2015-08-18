@@ -21,7 +21,8 @@ class BaseUrlClientGenerationTest extends MockeryTestCase
 
     public function testBaseUrl()
     {
-        $httpClient = $this->getHttpClient($this->getRequest(), $this->getResponse(), 'GET', '/get?foo=bar&test=test', ['foo' => 'foo'], null, 'http://changebase.org');
+        $headers = ['foo' => 'foo', 'Content-Type' => 'application/x-www-form-urlencoded'];
+        $httpClient = $this->getHttpClient($this->getResponse(), 'GET', '/get?foo=bar&test=test', $headers, null, 'http://changebase.org');
         /** @var MockServiceBaseUrl $client */
         $client = $this->getClient(MockServiceBaseUrl::class, $httpClient, $this->getSerializer());
         $response = $client->baseUrl('http://changebase.org', 'foo', 'test');

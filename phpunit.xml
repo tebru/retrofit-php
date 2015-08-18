@@ -11,6 +11,7 @@
         <blacklist>
             <directory>vendor</directory>
             <directory>tests</directory>
+            <directory>cache</directory>
         </blacklist>
     </filter>
     <logging>

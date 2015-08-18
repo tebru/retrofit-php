@@ -77,6 +77,13 @@ class MethodBodyBuilder
     private $bodyIsObject = false;
 
     /**
+     * True if the body is an array
+     *
+     * @var bool
+     */
+    private $bodyIsArray = false;
+
+    /**
      * Method return type
      *
      * @var string
@@ -170,6 +177,14 @@ class MethodBodyBuilder
     }
 
     /**
+     * @param boolean $bodyIsArray
+     */
+    public function setBodyIsArray($bodyIsArray)
+    {
+        $this->bodyIsArray = $bodyIsArray;
+    }
+
+    /**
      * @param string $returnType
      */
     public function setReturnType($returnType)
@@ -204,7 +219,6 @@ class MethodBodyBuilder
         $body = $this->createRequestUrl($body);
         $body = $this->createHeaders($body);
         $body = $this->createBody($body);
-        $body = $this->createRequest($body);
         $body = $this->createResponse($body);
         $body = $this->createReturns($body);
 
@@ -285,24 +299,13 @@ class MethodBodyBuilder
             $body[] = sprintf('$context = \Jms\Serializer\SerializationContext::create();');
             $body = $this->createContext($body, $this->serializationContext);
             $body[] = sprintf('$body = $this->serializer->serialize(%s, "json", $context);', $this->body);
+        } elseif ($this->bodyIsArray) {
+            $body[] = sprintf('$body = http_build_query(%s);', $this->body);
         } elseif (null !== $this->body) {
             $body[] = sprintf('$body = %s;', $this->body);
         } else {
-            $body[] = sprintf('$body = %s;', $this->arrayToString($this->bodyParts));
+            $body[] = sprintf('$body = http_build_query(%s);', $this->arrayToString($this->bodyParts));
         }
-
-        return $body;
-    }
-
-    /**
-     * Build the request
-     *
-     * @param array $body
-     * @return array
-     */
-    private function createRequest(array $body)
-    {
-        $body[] = sprintf('$request = $this->client->createRequest("%s", $requestUrl, $headers, $body);', strtoupper($this->requestMethod));
 
         return $body;
     }
@@ -315,7 +318,7 @@ class MethodBodyBuilder
      */
     private function createResponse(array $body)
     {
-        $body[] = sprintf('$response = $this->client->send($request);');
+        $body[] = sprintf('$response = $this->client->send("%s", $requestUrl, $headers, $body);', strtoupper($this->requestMethod));
 
         return $body;
     }
@@ -330,10 +333,10 @@ class MethodBodyBuilder
     {
         switch ($this->returnType) {
             case 'raw':
-                $body[] = sprintf('return $response->getBody(true);');
+                $body[] = sprintf('return $response->getBody();');
                 break;
             case 'array':
-                $body[] = sprintf('return json_decode($response->getBody(true), true);');
+                $body[] = sprintf('return json_decode($response->getBody());');
                 break;
             default:
                 $body[] = sprintf('$context = \JMS\Serializer\DeserializationContext::create();');
@@ -341,7 +344,7 @@ class MethodBodyBuilder
                 $body = $this->createDepthContext($body);
 
 
-                $body[] = sprintf('return $this->serializer->deserialize($response->getBody(true), "%s", "json", $context);', $this->returnType);
+                $body[] = sprintf('return $this->serializer->deserialize($response->getBody(), "%s", "json", $context);', $this->returnType);
         }
 
         return $body;

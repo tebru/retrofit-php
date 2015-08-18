@@ -31,6 +31,7 @@ interface MockServiceReturns
 
     /**
      * @Rest\GET("/get")
+     * @Rest\Serializer\DeserializationContext(depth=3, enableMaxDepthChecks=true, serializeNull=true)
      * @Rest\Returns("Tebru\Retrofit\Test\Mock\MockUser")
      */
     public function deserializedReturn();

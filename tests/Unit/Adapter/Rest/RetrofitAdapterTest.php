@@ -6,10 +6,10 @@
 
 namespace Tebru\Retrofit\Test\Unit\Adapter\Rest;
 
-use Guzzle\Http\Client;
 use JMS\Serializer\Serializer;
 use Mockery;
 use stdClass;
+use Tebru\Retrofit\Adapter\HttpClientAdapter;
 use Tebru\Retrofit\Adapter\Rest\RestAdapter;
 use Tebru\Retrofit\Test\Mock\Service\MockServiceUrlRequest;
 use Tebru\Retrofit\Test\MockeryTestCase;
@@ -51,7 +51,7 @@ class RetrofitAdapterTest extends MockeryTestCase
 
     public function testWillUseInterface()
     {
-        $httpClient = Mockery::mock(Client::class);
+        $httpClient = Mockery::mock(HttpClientAdapter::class);
         $serializer = Mockery::mock(Serializer::class);
         $adapter = RestAdapter::builder()->setBaseUrl('')->setHttpClient($httpClient)->setSerializer($serializer)->build();
         $generatedClass = new \Tebru\Retrofit\Generated\Tebru\Retrofit\Test\Mock\Service\MockServiceUrlRequest('', $httpClient, $serializer);

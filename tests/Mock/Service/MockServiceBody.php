@@ -85,4 +85,11 @@ interface MockServiceBody
      * @Rest\JsonBody()
      */
     public function headerJsonBody($foo, array $bar);
+
+    /**
+     * @Rest\POST("/post")
+     * @Rest\Body("bar")
+     * @Rest\Multipart()
+     */
+    public function multipart(array $bar);
 }
