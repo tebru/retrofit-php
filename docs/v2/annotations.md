@@ -30,6 +30,10 @@ Adds headers literally supplied in the value.
 -----------
 Indicates that the body of the request should be serialized into JSON.
 
+`@Multipart`
+-----------
+Indicates that the body of the request should be sent as `multipart/form-data`
+
 
 `@Part`
 -------

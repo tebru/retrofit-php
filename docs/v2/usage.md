@@ -130,6 +130,17 @@ The body can be sent as json by adding the `@JsonBody` annotation
 public function listRepos($user, $body);
 ```
 
+The body can be sent as multipart by using the `@Multipart` annotation
+
+```php
+/**
+ * @GET("/users/{user}/list")
+ * @Body("body")
+ * @Multipart
+ */
+public function listRepos($user, $body);
+```
+
 ### Headers
 Headers can be set on the class or method using `@Headers`.  If they're set on the class, they'll be applied to each method.
 
@@ -205,8 +216,7 @@ The two main technologies backing Retrofit are Guzzle and JMS Serializer.
 
 Use the `setHttpClient` or `setSerializer` methods on the builder to use a custom configured version of either.
 
-An extremely rudimentary http client is included, however it is recommended to use guzzle.  Retrofit supports
-version 5 or 6.
+Retrofit supports version 5 or 6 of guzzle.
 
 There are two methods `setSerializationContext` and `setDeserializationContext` on the builder that allow you add
 JMS serializer contexts that will be used in during serialization/deserialization.

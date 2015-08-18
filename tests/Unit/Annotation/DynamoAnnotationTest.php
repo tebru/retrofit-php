@@ -6,6 +6,7 @@
 
 namespace Tebru\Retrofit\Test\Unit\Annotation;
 
+use PhpParser\Node\Expr\AssignOp\Mul;
 use Tebru\Dynamo\Annotation\DynamoAnnotation;
 use Tebru\Retrofit\Annotation\BaseUrl;
 use Tebru\Retrofit\Annotation\Body;
@@ -15,6 +16,7 @@ use Tebru\Retrofit\Annotation\HEAD;
 use Tebru\Retrofit\Annotation\Header;
 use Tebru\Retrofit\Annotation\Headers;
 use Tebru\Retrofit\Annotation\JsonBody;
+use Tebru\Retrofit\Annotation\Multipart;
 use Tebru\Retrofit\Annotation\OPTIONS;
 use Tebru\Retrofit\Annotation\Part;
 use Tebru\Retrofit\Annotation\PATCH;
@@ -61,6 +63,7 @@ class DynamoAnnotationTest extends MockeryTestCase
             [Header::class, Header::NAME, true],
             [Headers::class, Headers::NAME, false],
             [JsonBody::class, JsonBody::NAME, false],
+            [Multipart::class, Multipart::NAME, false],
             [Part::class, Part::NAME, true],
             [Query::class, Query::NAME, true],
             [QueryMap::class, QueryMap::NAME, false],
