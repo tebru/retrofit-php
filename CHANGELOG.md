@@ -7,8 +7,8 @@ This document keeps track of important changes between releases of the library.
 ------------------
 
 * Removed composer wrapper
-* Upgraded guzzle to v6
-* Abstracted class generation
+* Removed guzzle dependency (added support for either v5 or v6)
+* Abstracted class generation into tebru/dynamo
 * Fixed issue with query map
 * Fixed issue with interface inheritance 
 
