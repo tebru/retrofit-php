@@ -6,7 +6,6 @@
 
 namespace Tebru\Retrofit\Annotation;
 
-use Doctrine\Common\Annotations\Annotation\Target;
 use Tebru\Dynamo\Annotation\DynamoAnnotation;
 
 /**
