@@ -3,7 +3,6 @@
     "description": "Retrofit for PHP - A PHP REST client.",
     "require": {
         "php": ">= 5.4",
-        "ext-curl": "*",
         "jms/serializer": "~0.11",
         "symfony/console": "^2.0.5",
         "tebru/assert": "^0.2",
