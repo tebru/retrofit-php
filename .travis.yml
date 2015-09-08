@@ -9,6 +9,8 @@ before_script:
 
 script:
   - mkdir -p build/logs
+  - npm install canned
+  - nohup node ./node_modules/canned/bin/canned -p 5000 tests/canned >/dev/null 2>&1 &
   - vendor/bin/phpunit
 
 after_script:

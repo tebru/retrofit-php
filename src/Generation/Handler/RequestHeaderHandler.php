@@ -93,7 +93,9 @@ class RequestHeaderHandler extends Handler
             return $headers;
         }
 
-        $headers['Content-Type'] = 'application/x-www-form-urlencoded';
+        if (!isset($headers['Content-Type'])) {
+            $headers['Content-Type'] = 'application/x-www-form-urlencoded';
+        }
 
         return $headers;
     }

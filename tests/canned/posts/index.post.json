@@ -1,0 +1,11 @@
+//! body: {"title": "My Title"}
+{
+    "id": 3,
+    "title": "My Title"
+}
+
+//! body: {"title": "My Other Title"}
+{
+    "id": 4,
+    "title": "My Other Title"
+}
