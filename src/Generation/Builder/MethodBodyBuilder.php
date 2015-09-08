@@ -311,7 +311,7 @@ class MethodBodyBuilder
         Tebru\assertThat(null === $this->body || empty($this->bodyParts), 'Cannot have both @Body and @Part annotations');
 
         if ($this->bodyIsObject) {
-            $body[] = sprintf('$context = \Jms\Serializer\SerializationContext::create();');
+            $body[] = sprintf('$context = \JMS\Serializer\SerializationContext::create();');
             $body = $this->createContext($body, $this->serializationContext);
             $body[] = sprintf('$body = $this->serializer->serialize(%s, "json", $context);', $this->body);
         } elseif ($this->bodyIsArray) {
