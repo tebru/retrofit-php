@@ -12,7 +12,7 @@ namespace Tebru\Retrofit\Annotation;
  * @author Nate Brunette <n@tebru.net>
  *
  * @Annotation
- * @Target("METHOD")
+ * @Target({"CLASS", "METHOD"})
  */
 class PATCH extends HttpRequest
 {

@@ -14,7 +14,7 @@ use Tebru\Dynamo\Annotation\DynamoAnnotation;
  * @author Nate Brunette <n@tebru.net>
  *
  * @Annotation
- * @Target("METHOD")
+ * @Target({"CLASS", "METHOD"})
  */
 class Header extends VariableMapper implements DynamoAnnotation
 {

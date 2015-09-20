@@ -31,7 +31,7 @@ use Tebru\Dynamo\Annotation\DynamoAnnotation;
  * @author Nate Brunette <n@tebru.net>
  *
  * @Annotation
- * @Target("METHOD")
+ * @Target({"CLASS", "METHOD"})
  */
 class QueryMap extends VariableMapper implements DynamoAnnotation
 {
