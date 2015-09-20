@@ -22,4 +22,12 @@ class ResponseTest extends MockeryTestCase
 
         $this->assertSame('my body', $response->getBody());
     }
+
+    public function testCanSetBody()
+    {
+        $response = new Response('my body');
+        $response->setBody('my body2');
+
+        $this->assertSame('my body2', $response->getBody());
+    }
 }

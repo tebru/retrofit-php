@@ -337,7 +337,14 @@ class MethodBodyBuilder
      */
     private function createResponse(array $body)
     {
+        $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.beforeSend", new \Tebru\Retrofit\Event\BeforeSendEvent("%s", $requestUrl, $headers, $body));', strtoupper($this->requestMethod));
+        $body[] = sprintf('try {');
         $body[] = sprintf('$response = $this->client->send("%s", $requestUrl, $headers, $body);', strtoupper($this->requestMethod));
+        $body[] = sprintf('} catch (\Exception $exception) {');
+        $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.apiException", new \Tebru\Retrofit\Event\ApiExceptionEvent($exception));');
+        $body[] = sprintf('throw new \Tebru\Retrofit\Exception\RetrofitApiException(get_class($this), $exception->getMessage(), $exception->getCode(), $exception);');
+        $body[] = sprintf('}');
+        $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.afterSend", new \Tebru\Retrofit\Event\AfterSendEvent($response));');
 
         return $body;
     }

@@ -7,6 +7,7 @@
 namespace Tebru\Retrofit\Adapter\Rest;
 
 use JMS\Serializer\SerializerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Tebru;
 use Tebru\Retrofit\Adapter\HttpClientAdapter;
 use Tebru\Retrofit\Exception\RetrofitException;
@@ -36,16 +37,28 @@ class RestAdapter
     private $serializer;
 
     /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    /**
      * Constructor
      *
      * @param string $baseUrl
      * @param HttpClientAdapter $httpClient
      * @param SerializerInterface $serializer
+     * @param EventDispatcherInterface $eventDispatcher
      */
-    public function __construct($baseUrl, HttpClientAdapter $httpClient, SerializerInterface $serializer) {
+    public function __construct(
+        $baseUrl,
+        HttpClientAdapter $httpClient,
+        SerializerInterface $serializer,
+        EventDispatcherInterface $eventDispatcher
+    ) {
         $this->baseUrl = $baseUrl;
         $this->httpClient = $httpClient;
         $this->serializer = $serializer;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -87,6 +100,6 @@ class RestAdapter
             throw new RetrofitException(sprintf('Could not create client. "%s" should be a class or interface.', $service));
         }
 
-        return new $class($this->baseUrl, $this->httpClient, $this->serializer);
+        return new $class($this->baseUrl, $this->httpClient, $this->serializer, $this->eventDispatcher);
     }
 }

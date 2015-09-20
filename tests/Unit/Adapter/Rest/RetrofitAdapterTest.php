@@ -9,6 +9,7 @@ namespace Tebru\Retrofit\Test\Unit\Adapter\Rest;
 use JMS\Serializer\Serializer;
 use Mockery;
 use stdClass;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Tebru\Retrofit\Adapter\HttpClientAdapter;
 use Tebru\Retrofit\Adapter\Rest\RestAdapter;
 use Tebru\Retrofit\Test\Mock\Service\MockServiceUrlRequest;
@@ -56,8 +57,14 @@ class RetrofitAdapterTest extends MockeryTestCase
     {
         $httpClient = Mockery::mock(HttpClientAdapter::class);
         $serializer = Mockery::mock(Serializer::class);
-        $adapter = RestAdapter::builder()->setBaseUrl('')->setHttpClient($httpClient)->setSerializer($serializer)->build();
-        $generatedClass = new \Tebru\Retrofit\Generated\Tebru\Retrofit\Test\Mock\Service\MockServiceUrlRequest('', $httpClient, $serializer);
+        $eventDispatcher = Mockery::mock(EventDispatcherInterface::class);
+        $adapter = RestAdapter::builder()
+            ->setBaseUrl('')
+            ->setHttpClient($httpClient)
+            ->setSerializer($serializer)
+            ->setEventDispatcher($eventDispatcher)
+            ->build();
+        $generatedClass = new \Tebru\Retrofit\Generated\Tebru\Retrofit\Test\Mock\Service\MockServiceUrlRequest('', $httpClient, $serializer, $eventDispatcher);
         $service = $adapter->create(MockServiceUrlRequest::class);
 
         $this->assertEquals($generatedClass, $service);

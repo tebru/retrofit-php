@@ -182,11 +182,11 @@ public function listRepos($user, $accept);
 Events
 ------
 
-Add event listeners directly to the guzzle client or serializer, or add a 
-subscriber to the builder.
+Add event listeners directly to the guzzle client or serializer, or add an event
+dispatcher to the builder.
 
 
-### Examples of handling request events
+### Examples of handling request events with Guzzle 5
 
 ```php
 $httpClient->getEmiter()->on('before', function use ($myHeader) (BeforeEvent $event) {
@@ -208,6 +208,35 @@ $httpCient->getEmiter()->on('complete', function (CompleteEvent $event) {
 });
 ```
 
+Because Guzzle 6 does not include the same event system, a rudimentary version has been added
+to Retrofit
+
+### BeforeSendEvent
+
+Retrofit will dispatch a `retrofit.beforeSend` event before a request is made.  It includes:
+
+- The request method
+- The request url
+- Any request headers
+- A request body
+
+### AfterSendEvent
+
+Similarly, a `retrofit.afterSend` event will be dispatched after a request has been completed. It
+only includes the respond body.
+
+### ApiExceptionEvent
+
+If the http client throws an exception, it will be caught and a `retrofit.apiException` event will be
+dispatched.  Additionally, a new RetrofitApiException will be thrown.
+
+
+Exceptions
+----------
+
+If the http client throws an exception, a RetrofitApiException will be thrown.  This exception includes
+original message and code of the caught exception, the original exception, and the class of the client
+that the exception came from.
 
 Interoperability
 ----------------

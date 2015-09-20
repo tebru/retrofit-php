@@ -41,4 +41,14 @@ class Response
     {
         return $this->response;
     }
+
+    /**
+     * Set the response body
+     *
+     * @param string $responseBody
+     */
+    public function setBody($responseBody)
+    {
+        $this->response = $responseBody;
+    }
 }

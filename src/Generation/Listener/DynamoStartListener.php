@@ -41,10 +41,12 @@ class DynamoStartListener
         $baseUrl = new PropertyModel($classModel, 'baseUrl');
         $client = new PropertyModel($classModel, 'client');
         $serializer = new PropertyModel($classModel, 'serializer');
+        $eventDispatcher = new PropertyModel($classModel, 'eventDispatcher');
 
         $classModel->addProperty($baseUrl);
         $classModel->addProperty($client);
         $classModel->addProperty($serializer);
+        $classModel->addProperty($eventDispatcher);
     }
 
     /**
@@ -64,14 +66,19 @@ class DynamoStartListener
         $serializer = new ParameterModel($methodModel, 'serializer', false);
         $serializer->setTypeHint('\JMS\Serializer\SerializerInterface');
 
+        $eventDispatcher = new ParameterModel($methodModel, 'eventDispatcher', false);
+        $eventDispatcher->setTypeHint('\Symfony\Component\EventDispatcher\EventDispatcherInterface');
+
         $methodModel->addParameter($baseUrl);
         $methodModel->addParameter($client);
         $methodModel->addParameter($serializer);
+        $methodModel->addParameter($eventDispatcher);
 
         $methodBody = [
             '$this->baseUrl = $baseUrl;',
             '$this->client = $client;',
             '$this->serializer = $serializer;',
+            '$this->eventDispatcher = $eventDispatcher;',
         ];
 
         $methodModel->setBody(implode($methodBody));

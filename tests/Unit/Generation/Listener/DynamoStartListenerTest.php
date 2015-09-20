@@ -27,7 +27,7 @@ class DynamoStartListenerTest extends MockeryTestCase
         $classModel = Mockery::mock(ClassModel::class);
 
         $event->shouldReceive('getClassModel')->times(1)->withNoArgs()->andReturn($classModel);
-        $classModel->shouldReceive('addProperty')->times(3)->with(Mockery::type(PropertyModel::class))->andReturnNull();
+        $classModel->shouldReceive('addProperty')->times(4)->with(Mockery::type(PropertyModel::class))->andReturnNull();
         $classModel->shouldReceive('addMethod')->times(1)->with(Mockery::type(MethodModel::class));
 
         $listener = new DynamoStartListener();

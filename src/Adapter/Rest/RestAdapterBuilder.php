@@ -7,6 +7,8 @@
 namespace Tebru\Retrofit\Adapter\Rest;
 use JMS\Serializer\SerializerBuilder;
 use JMS\Serializer\SerializerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Tebru;
 use Tebru\Retrofit\Exception\RetrofitException;
 use Tebru\Retrofit\HttpClient\ClientProvider;
@@ -46,6 +48,11 @@ class RestAdapterBuilder
      * @var SerializerInterface $serializer
      */
     private $serializer;
+
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
 
     /**
      * Sets the base url for the rest client
@@ -89,6 +96,19 @@ class RestAdapterBuilder
     }
 
     /**
+     * Set the event dispatcher
+     *
+     * @param EventDispatcherInterface $eventDispatcher
+     * @return RestAdapterBuilder
+     */
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
+
+        return $this;
+    }
+
+    /**
      * Build the rest adapter
      *
      * @return RestAdapter
@@ -104,7 +124,11 @@ class RestAdapterBuilder
             $this->serializer = SerializerBuilder::create()->build();
         }
 
-        $adapter = new RestAdapter($this->baseUrl, $this->clientProvider->getClient(), $this->serializer);
+        if (null === $this->eventDispatcher) {
+            $this->eventDispatcher = new EventDispatcher();
+        }
+
+        $adapter = new RestAdapter($this->baseUrl, $this->clientProvider->getClient(), $this->serializer, $this->eventDispatcher);
 
         return $adapter;
     }
