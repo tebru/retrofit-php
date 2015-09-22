@@ -314,6 +314,11 @@ class MethodBodyBuilder
             $body[] = sprintf('$context = \JMS\Serializer\SerializationContext::create();');
             $body = $this->createContext($body, $this->serializationContext);
             $body[] = sprintf('$body = $this->serializer->serialize(%s, "json", $context);', $this->body);
+
+            if (false === $this->jsonEncode) {
+                $body[] = sprintf('$body = json_decode($body, true);');
+                $body[] = sprintf('$body = http_build_query($body);');
+            }
         } elseif ($this->bodyIsArray) {
             $body[] = (true === $this->jsonEncode)
                 ? sprintf('$body = json_encode(%s);', $this->body)

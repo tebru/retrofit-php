@@ -31,14 +31,22 @@ interface MockServiceBody
     /**
      * @Rest\POST("/post")
      * @Rest\Body("user")
+     * @Rest\JsonBody()
      */
     public function objectBody(MockUser $user);
 
     /**
      * @Rest\POST("/post")
      * @Rest\Body("user", var="foo")
+     * @Rest\JsonBody()
      */
     public function objectBodyChangeName(MockUser $foo);
+
+    /**
+     * @Rest\POST("/post")
+     * @Rest\Body("user")
+     */
+    public function objectBodyAsFromEncoded(MockUser $user);
 
     /**
      * @Rest\POST("/post")

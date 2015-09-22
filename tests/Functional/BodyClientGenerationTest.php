@@ -46,7 +46,7 @@ class BodyClientGenerationTest extends MockeryTestCase
     public function testObjectBody()
     {
         $body = $this->getUser();
-        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
+        $headers = ['Content-Type' => 'application/json'];
         $httpClient = $this->getHttpClient($this->getResponse(), 'POST', '/post', $headers, $this->getSerializedUser());
         /** @var MockServiceBody $client */
         $client = $this->getClient(MockServiceBody::class, $httpClient, $this->getSerializer());
@@ -58,11 +58,24 @@ class BodyClientGenerationTest extends MockeryTestCase
     public function testObjectBodyChangeName()
     {
         $body = $this->getUser();
-        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
+        $headers = ['Content-Type' => 'application/json'];
         $httpClient = $this->getHttpClient($this->getResponse(), 'POST', '/post', $headers, $this->getSerializedUser());
         /** @var MockServiceBody $client */
         $client = $this->getClient(MockServiceBody::class, $httpClient, $this->getSerializer());
         $response = $client->objectBodyChangeName($body);
+
+        $this->assertSame([], $response);
+    }
+
+    public function testObjectBodyFormEncoded()
+    {
+        $body = $this->getUser();
+        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
+        $expected = http_build_query(json_decode($this->getSerializedUser(), true));
+        $httpClient = $this->getHttpClient($this->getResponse(), 'POST', '/post', $headers, $expected);
+        /** @var MockServiceBody $client */
+        $client = $this->getClient(MockServiceBody::class, $httpClient, $this->getSerializer());
+        $response = $client->objectBodyAsFromEncoded($body);
 
         $this->assertSame([], $response);
     }

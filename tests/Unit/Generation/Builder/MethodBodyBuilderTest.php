@@ -147,6 +147,7 @@ class MethodBodyBuilderTest extends MockeryTestCase
         $builder->setUri('/path');
         $builder->setBody('$body');
         $builder->setBodyIsObject(true);
+        $builder->setJsonEncode(true);
         $builder->setHeaders(['Content-Type' => 'application/json']);
         $context = ['groups' => ['test' => 'group'], 'version' => 1, 'serializeNull' => true, 'enableMaxDepthChecks' => true, 'attributes' => ['foo' => 'bar']];
         $builder->setSerializationContext($context);
@@ -171,6 +172,22 @@ class MethodBodyBuilderTest extends MockeryTestCase
 
         $response = $builder->build();
         $expected = '$requestUrl = http://example.com . "/path";$headers = [];$body = http_build_query(["foo" => "bar"]);$this->eventDispatcher->dispatch("retrofit.beforeSend", new \Tebru\Retrofit\Event\BeforeSendEvent("POST", $requestUrl, $headers, $body));try {$response = $this->client->send("POST", $requestUrl, $headers, $body);} catch (\Exception $exception) {$this->eventDispatcher->dispatch("retrofit.apiException", new \Tebru\Retrofit\Event\ApiExceptionEvent($exception));throw new \Tebru\Retrofit\Exception\RetrofitApiException(get_class($this), $exception->getMessage(), $exception->getCode(), $exception);}$this->eventDispatcher->dispatch("retrofit.afterSend", new \Tebru\Retrofit\Event\AfterSendEvent($response));$context = \JMS\Serializer\DeserializationContext::create();return $this->serializer->deserialize($response->getBody(), "Tebru\Retrofit\Test\Mock\MockUser", "json", $context);';
+
+        $this->assertSame($expected, $response);
+    }
+
+    public function testBodyObjectFormEncoded()
+    {
+        $builder = new MethodBodyBuilder();
+        $builder->setRequestMethod('POST');
+        $builder->setBaseUrl('http://example.com');
+        $builder->setUri('/path');
+        $builder->setBody('$body');
+        $builder->setBodyIsObject(true);
+        $builder->setReturnType(MockUser::class);
+
+        $response = $builder->build();
+        $expected = '$requestUrl = http://example.com . "/path";$headers = [];$context = \JMS\Serializer\SerializationContext::create();$body = $this->serializer->serialize($body, "json", $context);$body = json_decode($body, true);$body = http_build_query($body);$this->eventDispatcher->dispatch("retrofit.beforeSend", new \Tebru\Retrofit\Event\BeforeSendEvent("POST", $requestUrl, $headers, $body));try {$response = $this->client->send("POST", $requestUrl, $headers, $body);} catch (\Exception $exception) {$this->eventDispatcher->dispatch("retrofit.apiException", new \Tebru\Retrofit\Event\ApiExceptionEvent($exception));throw new \Tebru\Retrofit\Exception\RetrofitApiException(get_class($this), $exception->getMessage(), $exception->getCode(), $exception);}$this->eventDispatcher->dispatch("retrofit.afterSend", new \Tebru\Retrofit\Event\AfterSendEvent($response));$context = \JMS\Serializer\DeserializationContext::create();return $this->serializer->deserialize($response->getBody(), "Tebru\Retrofit\Test\Mock\MockUser", "json", $context);';
 
         $this->assertSame($expected, $response);
     }
