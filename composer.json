@@ -3,7 +3,7 @@
     "description": "Retrofit for PHP - A PHP REST client.",
     "require": {
         "php": ">= 5.4",
-        "jms/serializer": "~0.11",
+        "jms/serializer": ">=0.11, <2.0",
         "symfony/console": "^2.0.5",
         "tebru/assert": "^0.2",
         "tebru/dynamo": "^0.1",
