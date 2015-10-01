@@ -345,9 +345,14 @@ class MethodBodyBuilder
                 $body[] = sprintf('if (null !== %s) {', $this->body);
             }
 
-            $body[] = sprintf('$context = \JMS\Serializer\SerializationContext::create();');
-            $body = $this->createContext($body, $this->serializationContext);
-            $body[] = sprintf('$body = $this->serializer->serialize(%s, "json", $context);', $this->body);
+            if (!empty($this->serializationContext)) {
+                $body[] = sprintf('$context = \JMS\Serializer\SerializationContext::create();');
+                $body = $this->createContext($body, $this->serializationContext);
+                $body[] = sprintf('$body = $this->serializer->serialize(%s, "json", $context);', $this->body);
+            } else {
+                $body[] = sprintf('$body = $this->serializer->serialize(%s, "json");', $this->body);
+            }
+
 
             if (false === $this->jsonEncode) {
                 $body[] = sprintf('$body = json_decode($body, true);');
@@ -409,12 +414,14 @@ class MethodBodyBuilder
                 $body[] = sprintf('return json_decode($response->getBody(), true);');
                 break;
             default:
-                $body[] = sprintf('$context = \JMS\Serializer\DeserializationContext::create();');
-                $body = $this->createContext($body, $this->deserializationContext);
-                $body = $this->createDepthContext($body);
-
-
-                $body[] = sprintf('return $this->serializer->deserialize($response->getBody(), "%s", "json", $context);', $this->returnType);
+                if (!empty($this->deserializationContext)) {
+                    $body[] = sprintf('$context = \JMS\Serializer\DeserializationContext::create();');
+                    $body = $this->createContext($body, $this->deserializationContext);
+                    $body = $this->createDepthContext($body);
+                    $body[] = sprintf('return $this->serializer->deserialize($response->getBody(), "%s", "json", $context);', $this->returnType);
+                } else {
+                    $body[] = sprintf('return $this->serializer->deserialize($response->getBody(), "%s", "json");', $this->returnType);
+                }
         }
 
         return $body;
