@@ -56,6 +56,12 @@ interface MockServiceBody
 
     /**
      * @Rest\POST("/post")
+     * @Rest\Body("user", jsonSerializable=true)
+     */
+    public function objectBodyJsonSerializable(MockUser $user);
+
+    /**
+     * @Rest\POST("/post")
      * @Rest\Part("foo")
      * @Rest\Part("bar")
      */

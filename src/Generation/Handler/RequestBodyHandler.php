@@ -43,6 +43,7 @@ class RequestBodyHandler extends Handler
         $this->methodBodyBuilder->setBodyIsObject($parameter->isObject());
         $this->methodBodyBuilder->setBodyIsOptional($parameter->isOptional());
         $this->methodBodyBuilder->setBodyDefaultValue(BodyManipulator::varToString($parameter->getDefaultValue()));
+        $this->methodBodyBuilder->setBodyIsJsonSerializable($bodyAnnotation->isJsonSerializable());
         $this->methodBodyBuilder->setBodyIsArray($parameter->isArray());
         $this->methodBodyBuilder->setBody($bodyAnnotation->getVariable());
     }

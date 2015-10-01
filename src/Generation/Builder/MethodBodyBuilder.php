@@ -91,6 +91,13 @@ class MethodBodyBuilder
     private $bodyDefaultValue;
 
     /**
+     * True if the body implements \JsonSerializable
+     *
+     * @var boolean
+     */
+    private $bodyIsJsonSerializable;
+
+    /**
      * True if the body is an array
      *
      * @var bool
@@ -211,6 +218,14 @@ class MethodBodyBuilder
     public function setBodyDefaultValue($bodyDefaultValue)
     {
         $this->bodyDefaultValue = $bodyDefaultValue;
+    }
+
+    /**
+     * @param boolean $bodyIsJsonSerializable
+     */
+    public function setBodyIsJsonSerializable($bodyIsJsonSerializable)
+    {
+        $this->bodyIsJsonSerializable = $bodyIsJsonSerializable;
     }
 
     /**
@@ -345,12 +360,16 @@ class MethodBodyBuilder
                 $body[] = sprintf('if (null !== %s) {', $this->body);
             }
 
-            if (!empty($this->serializationContext)) {
-                $body[] = sprintf('$context = \JMS\Serializer\SerializationContext::create();');
-                $body = $this->createContext($body, $this->serializationContext);
-                $body[] = sprintf('$body = $this->serializer->serialize(%s, "json", $context);', $this->body);
+            if ($this->bodyIsJsonSerializable) {
+                $body[] = sprintf('$body = json_encode(%s);', $this->body);
             } else {
-                $body[] = sprintf('$body = $this->serializer->serialize(%s, "json");', $this->body);
+                if (!empty($this->serializationContext)) {
+                    $body[] = sprintf('$context = \JMS\Serializer\SerializationContext::create();');
+                    $body = $this->createContext($body, $this->serializationContext);
+                    $body[] = sprintf('$body = $this->serializer->serialize(%s, "json", $context);', $this->body);
+                } else {
+                    $body[] = sprintf('$body = $this->serializer->serialize(%s, "json");', $this->body);
+                }
             }
 
 

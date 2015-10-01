@@ -25,6 +25,20 @@ class Body extends VariableMapper implements DynamoAnnotation
     const NAME = 'body';
 
     /**
+     * If the body implements \JsonSerializable
+     *
+     * @var boolean
+     */
+    private $jsonSerializable;
+
+    public function __construct(array $params)
+    {
+        parent::__construct($params);
+
+        $this->jsonSerializable = (isset($params['jsonSerializable'])) ? $params['jsonSerializable'] : false;
+    }
+
+    /**
      * The name of the annotation or class of annotations
      *
      * @return string
@@ -32,6 +46,14 @@ class Body extends VariableMapper implements DynamoAnnotation
     public function getName()
     {
         return self::NAME;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isJsonSerializable()
+    {
+        return $this->jsonSerializable;
     }
 
     /**

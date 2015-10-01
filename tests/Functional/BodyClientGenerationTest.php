@@ -91,6 +91,19 @@ class BodyClientGenerationTest extends MockeryTestCase
         $this->assertSame([], $response);
     }
 
+    public function testObjectBodyJsonSerializable()
+    {
+        $body = $this->getUser();
+        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
+        $expected = http_build_query(json_decode(json_encode($body), true));
+        $httpClient = $this->getHttpClient($this->getResponse(), 'POST', '/post', $headers, $expected);
+        /** @var MockServiceBody $client */
+        $client = $this->getClient(MockServiceBody::class, $httpClient, $this->getSerializer());
+        $response = $client->objectBodyJsonSerializable($body);
+
+        $this->assertSame([], $response);
+    }
+
     public function testParts()
     {
         $body = ['foo' => 'foo', 'bar' => 'bar'];
