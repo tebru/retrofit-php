@@ -77,6 +77,20 @@ class MethodBodyBuilder
     private $bodyIsObject = false;
 
     /**
+     * True if the body is an optional paramter
+     *
+     * @var bool
+     */
+    private $bodyIsOptional = false;
+
+    /**
+     * The default body value
+     *
+     * @var mixed
+     */
+    private $bodyDefaultValue;
+
+    /**
      * True if the body is an array
      *
      * @var bool
@@ -181,6 +195,22 @@ class MethodBodyBuilder
     public function setBodyIsObject($bodyIsObject)
     {
         $this->bodyIsObject = $bodyIsObject;
+    }
+
+    /**
+     * @param boolean $bodyIsOptional
+     */
+    public function setBodyIsOptional($bodyIsOptional)
+    {
+        $this->bodyIsOptional = $bodyIsOptional;
+    }
+
+    /**
+     * @param mixed $bodyDefaultValue
+     */
+    public function setBodyDefaultValue($bodyDefaultValue)
+    {
+        $this->bodyDefaultValue = $bodyDefaultValue;
     }
 
     /**
@@ -311,6 +341,10 @@ class MethodBodyBuilder
         Tebru\assertThat(null === $this->body || empty($this->bodyParts), 'Cannot have both @Body and @Part annotations');
 
         if ($this->bodyIsObject) {
+            if ($this->bodyIsOptional) {
+                $body[] = sprintf('if (null !== %s) {', $this->body);
+            }
+
             $body[] = sprintf('$context = \JMS\Serializer\SerializationContext::create();');
             $body = $this->createContext($body, $this->serializationContext);
             $body[] = sprintf('$body = $this->serializer->serialize(%s, "json", $context);', $this->body);
@@ -319,6 +353,10 @@ class MethodBodyBuilder
                 $body[] = sprintf('$body = json_decode($body, true);');
                 $body[] = sprintf('$body = \Tebru\Retrofit\Generation\Manipulator\BodyManipulator::boolToString($body);');
                 $body[] = sprintf('$body = http_build_query($body);');
+            }
+
+            if ($this->bodyIsOptional) {
+                $body[] = sprintf('} else { $body = %s; }', $this->bodyDefaultValue);
             }
         } elseif ($this->bodyIsArray) {
             $body[] = (true === $this->jsonEncode)

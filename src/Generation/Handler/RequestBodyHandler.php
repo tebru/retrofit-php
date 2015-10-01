@@ -8,6 +8,7 @@ namespace Tebru\Retrofit\Generation\Handler;
 
 use Tebru\Retrofit\Annotation\Body;
 use Tebru\Retrofit\Annotation\Part;
+use Tebru\Retrofit\Generation\Manipulator\BodyManipulator;
 
 /**
  * Class RequestBodyHandler
@@ -40,6 +41,8 @@ class RequestBodyHandler extends Handler
         $parameter = $this->methodModel->getParameter($bodyAnnotation->getVariableName());
 
         $this->methodBodyBuilder->setBodyIsObject($parameter->isObject());
+        $this->methodBodyBuilder->setBodyIsOptional($parameter->isOptional());
+        $this->methodBodyBuilder->setBodyDefaultValue(BodyManipulator::varToString($parameter->getDefaultValue()));
         $this->methodBodyBuilder->setBodyIsArray($parameter->isArray());
         $this->methodBodyBuilder->setBody($bodyAnnotation->getVariable());
     }

@@ -27,10 +27,33 @@ class BodyManipulator
             }
 
             if (is_bool($element)) {
-                $elements[$key] = (true === $element) ? 'true' : 'false';
+                $elements[$key] = self::varToString($element);
             }
         }
 
         return $elements;
+    }
+
+    /**
+     * Convert a value to its string representation
+     *
+     * @param mixed $variable
+     * @return string
+     */
+    public static function varToString($variable)
+    {
+        if (null === $variable) {
+            return 'null';
+        }
+
+        if (is_bool($variable)) {
+            return (true === $variable) ? 'true' : 'false';
+        }
+
+        if (is_array($variable)) {
+            return '[]';
+        }
+
+        return (string)$variable;
     }
 }

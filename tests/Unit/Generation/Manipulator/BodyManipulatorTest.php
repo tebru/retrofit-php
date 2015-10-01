@@ -49,4 +49,34 @@ class BodyManipulatorTest extends MockeryTestCase
 
         $this->assertSame($expected, $result);
     }
+
+    public function testVarToStringWithNull()
+    {
+        $this->assertSame('null', BodyManipulator::varToString(null));
+    }
+
+    public function testVarToStringWithTrue()
+    {
+        $this->assertSame('true', BodyManipulator::varToString(true));
+    }
+
+    public function testVarToStringWithFalse()
+    {
+        $this->assertSame('false', BodyManipulator::varToString(false));
+    }
+
+    public function testVarToStringWithArray()
+    {
+        $this->assertSame('[]', BodyManipulator::varToString([]));
+    }
+
+    public function testVarToStringWithInt()
+    {
+        $this->assertSame('1', BodyManipulator::varToString(1));
+    }
+
+    public function testVarToStringWithString()
+    {
+        $this->assertSame('string', BodyManipulator::varToString('string'));
+    }
 }

@@ -191,4 +191,22 @@ class MethodBodyBuilderTest extends MockeryTestCase
 
         $this->assertSame($expected, $response);
     }
+
+    public function testBodyOptional()
+    {
+        $builder = new MethodBodyBuilder();
+        $builder->setRequestMethod('POST');
+        $builder->setBaseUrl('http://example.com');
+        $builder->setUri('/path');
+        $builder->setBody('$body');
+        $builder->setBodyIsObject(true);
+        $builder->setBodyIsOptional(true);
+        $builder->setBodyDefaultValue('null');
+        $builder->setReturnType(MockUser::class);
+
+        $response = $builder->build();
+        $expected = '$requestUrl = http://example.com . "/path";$headers = [];if (null !== $body) {$context = \JMS\Serializer\SerializationContext::create();$body = $this->serializer->serialize($body, "json", $context);$body = json_decode($body, true);$body = \Tebru\Retrofit\Generation\Manipulator\BodyManipulator::boolToString($body);$body = http_build_query($body);} else { $body = null; }$this->eventDispatcher->dispatch("retrofit.beforeSend", new \Tebru\Retrofit\Event\BeforeSendEvent("POST", $requestUrl, $headers, $body));try {$response = $this->client->send("POST", $requestUrl, $headers, $body);} catch (\Exception $exception) {$this->eventDispatcher->dispatch("retrofit.apiException", new \Tebru\Retrofit\Event\ApiExceptionEvent($exception));throw new \Tebru\Retrofit\Exception\RetrofitApiException(get_class($this), $exception->getMessage(), $exception->getCode(), $exception);}$this->eventDispatcher->dispatch("retrofit.afterSend", new \Tebru\Retrofit\Event\AfterSendEvent($response));$context = \JMS\Serializer\DeserializationContext::create();return $this->serializer->deserialize($response->getBody(), "Tebru\Retrofit\Test\Mock\MockUser", "json", $context);';
+
+        $this->assertSame($expected, $response);
+    }
 }

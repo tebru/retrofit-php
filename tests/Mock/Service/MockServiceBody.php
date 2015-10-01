@@ -50,6 +50,12 @@ interface MockServiceBody
 
     /**
      * @Rest\POST("/post")
+     * @Rest\Body("user")
+     */
+    public function objectBodyOptional(MockUser $user = null);
+
+    /**
+     * @Rest\POST("/post")
      * @Rest\Part("foo")
      * @Rest\Part("bar")
      */
