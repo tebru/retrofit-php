@@ -317,6 +317,7 @@ class MethodBodyBuilder
 
             if (false === $this->jsonEncode) {
                 $body[] = sprintf('$body = json_decode($body, true);');
+                $body[] = sprintf('$body = \Tebru\Retrofit\Generation\Manipulator\BodyManipulator::boolToString($body);');
                 $body[] = sprintf('$body = http_build_query($body);');
             }
         } elseif ($this->bodyIsArray) {
