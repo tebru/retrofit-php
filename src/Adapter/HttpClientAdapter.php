@@ -6,7 +6,7 @@
 
 namespace Tebru\Retrofit\Adapter;
 
-use Tebru\Retrofit\Adapter\Http\Response;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Interface HttpClientAdapter
@@ -22,7 +22,7 @@ interface HttpClientAdapter
      * @param string $uri
      * @param array $headers
      * @param string $body
-     * @return Response
+     * @return ResponseInterface
      */
     public function send($method, $uri, array $headers = [], $body = null);
 }

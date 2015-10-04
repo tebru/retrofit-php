@@ -6,6 +6,7 @@
 
 namespace Tebru\Retrofit\Test\Unit\Event;
 
+use GuzzleHttp\Psr7\Request;
 use Tebru\Retrofit\Event\BeforeSendEvent;
 use Tebru\Retrofit\Test\MockeryTestCase;
 
@@ -18,10 +19,11 @@ class BeforeSendEventTest extends MockeryTestCase
 {
     public function testGetters()
     {
-        $event = new BeforeSendEvent('method', 'requestUrl', 'headers', 'body');
-        $this->assertSame('method', $event->getMethod());
-        $this->assertSame('requestUrl', $event->getRequestUrl());
-        $this->assertSame('headers', $event->getHeaders());
+        $event = new BeforeSendEvent(new Request('POST', 'http://mockservice.com/post', ['foo' => 'bar'], 'body'));
+        $this->assertInstanceOf(Request::class, $event->getRequest());
+        $this->assertSame('POST', $event->getMethod());
+        $this->assertSame('http://mockservice.com/post', $event->getRequestUrl());
+        $this->assertSame(['Host' => ['mockservice.com'], 'foo' => ['bar']], $event->getHeaders());
         $this->assertSame('body', $event->getBody());
     }
 }

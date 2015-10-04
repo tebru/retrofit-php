@@ -6,6 +6,7 @@
 
 namespace Tebru\Retrofit\Event;
 
+use Psr\Http\Message\RequestInterface;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
@@ -16,70 +17,63 @@ use Symfony\Component\EventDispatcher\Event;
 class BeforeSendEvent extends Event
 {
     /**
-     * @var string
+     * A PSR-7 Request object
+     *
+     * @var RequestInterface
      */
-    private $method;
-
-    /**
-     * @var string
-     */
-    private $requestUrl;
-
-    /**
-     * @var string
-     */
-    private $headers;
-
-    /**
-     * @var string
-     */
-    private $body;
+    private $request;
 
     /**
      * Constructor
      *
-     * @param string $method
-     * @param string $requestUrl
-     * @param string $headers
-     * @param string $body
+     * @param RequestInterface $request
      */
-    public function __construct($method, $requestUrl, $headers, $body)
+    public function __construct(RequestInterface $request)
     {
-        $this->method = $method;
-        $this->requestUrl = $requestUrl;
-        $this->headers = $headers;
-        $this->body = $body;
+        $this->request = $request;
     }
 
     /**
+     * @return RequestInterface
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
+    /**
+     * @deprecated Use getRequest()
      * @return string
      */
     public function getMethod()
     {
-        return $this->method;
+        return $this->request->getMethod();
     }
 
     /**
+     * @deprecated Use getRequest()
      * @return string
      */
     public function getRequestUrl()
     {
-        return $this->requestUrl;
+        return (string)$this->request->getUri();
     }
 
     /**
-     * @return string
+     * @deprecated Use getRequest()
+     * @return array
      */
     public function getHeaders()
     {
-        return $this->headers;
+        return $this->request->getHeaders();
     }
 
     /**
+     * @deprecated Use getRequest()
      * @return string
      */
     public function getBody()
     {
-        return $this->body;
+        return (string)$this->request->getBody();
     }
 }

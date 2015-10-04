@@ -21,7 +21,7 @@ class UrlRequestClientGenerationTest extends MockeryTestCase
 
     public function testSimpleGet()
     {
-        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
+        $headers = ['Host' => ['mockservice.com'], 'Content-Type' => ['application/x-www-form-urlencoded']];
         $httpClient = $this->getHttpClient($this->getResponse(), 'GET', '/get', $headers);
         /** @var MockServiceUrlRequest $client */
         $client = $this->getClient(MockServiceUrlRequest::class, $httpClient, $this->getSerializer());
@@ -32,7 +32,7 @@ class UrlRequestClientGenerationTest extends MockeryTestCase
 
     public function testSimplePost()
     {
-        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
+        $headers = ['Host' => ['mockservice.com'], 'Content-Type' => ['application/x-www-form-urlencoded']];
         $httpClient = $this->getHttpClient($this->getResponse(), 'POST', '/post', $headers);
         /** @var MockServiceUrlRequest $client */
         $client = $this->getClient(MockServiceUrlRequest::class, $httpClient, $this->getSerializer());
@@ -43,7 +43,7 @@ class UrlRequestClientGenerationTest extends MockeryTestCase
 
     public function testSimplePut()
     {
-        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
+        $headers = ['Host' => ['mockservice.com'], 'Content-Type' => ['application/x-www-form-urlencoded']];
         $httpClient = $this->getHttpClient($this->getResponse(), 'PUT', '/put', $headers);
         /** @var MockServiceUrlRequest $client */
         $client = $this->getClient(MockServiceUrlRequest::class, $httpClient, $this->getSerializer());
@@ -54,7 +54,7 @@ class UrlRequestClientGenerationTest extends MockeryTestCase
 
     public function testSimpleDelete()
     {
-        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
+        $headers = ['Host' => ['mockservice.com'], 'Content-Type' => ['application/x-www-form-urlencoded']];
         $httpClient = $this->getHttpClient($this->getResponse(), 'DELETE', '/delete', $headers);
         /** @var MockServiceUrlRequest $client */
         $client = $this->getClient(MockServiceUrlRequest::class, $httpClient, $this->getSerializer());
@@ -65,7 +65,7 @@ class UrlRequestClientGenerationTest extends MockeryTestCase
 
     public function testSimpleHead()
     {
-        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
+        $headers = ['Host' => ['mockservice.com'], 'Content-Type' => ['application/x-www-form-urlencoded']];
         $httpClient = $this->getHttpClient($this->getResponse(), 'HEAD', '/head', $headers);
         /** @var MockServiceUrlRequest $client */
         $client = $this->getClient(MockServiceUrlRequest::class, $httpClient, $this->getSerializer());
@@ -76,7 +76,7 @@ class UrlRequestClientGenerationTest extends MockeryTestCase
 
     public function testSimpleOptions()
     {
-        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
+        $headers = ['Host' => ['mockservice.com'], 'Content-Type' => ['application/x-www-form-urlencoded']];
         $httpClient = $this->getHttpClient($this->getResponse(), 'OPTIONS', '/options', $headers);
         /** @var MockServiceUrlRequest $client */
         $client = $this->getClient(MockServiceUrlRequest::class, $httpClient, $this->getSerializer());
@@ -87,7 +87,7 @@ class UrlRequestClientGenerationTest extends MockeryTestCase
 
     public function testSimplePatch()
     {
-        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
+        $headers = ['Host' => ['mockservice.com'], 'Content-Type' => ['application/x-www-form-urlencoded']];
         $httpClient = $this->getHttpClient($this->getResponse(), 'PATCH', '/patch', $headers);
         /** @var MockServiceUrlRequest $client */
         $client = $this->getClient(MockServiceUrlRequest::class, $httpClient, $this->getSerializer());
@@ -98,7 +98,7 @@ class UrlRequestClientGenerationTest extends MockeryTestCase
 
     public function testUrlParam()
     {
-        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
+        $headers = ['Host' => ['mockservice.com'], 'Content-Type' => ['application/x-www-form-urlencoded']];
         $httpClient = $this->getHttpClient($this->getResponse(), 'GET', '/get/1', $headers);
         /** @var MockServiceUrlRequest $client */
         $client = $this->getClient(MockServiceUrlRequest::class, $httpClient, $this->getSerializer());
@@ -109,7 +109,7 @@ class UrlRequestClientGenerationTest extends MockeryTestCase
 
     public function testUrlQuery()
     {
-        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
+        $headers = ['Host' => ['mockservice.com'], 'Content-Type' => ['application/x-www-form-urlencoded']];
         $url = '/get?foo=bar';
         $httpClient = $this->getHttpClient($this->getResponse(), 'GET', $url, $headers);
         /** @var MockServiceUrlRequest $client */
@@ -121,7 +121,7 @@ class UrlRequestClientGenerationTest extends MockeryTestCase
 
     public function testVariableQuery()
     {
-        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
+        $headers = ['Host' => ['mockservice.com'], 'Content-Type' => ['application/x-www-form-urlencoded']];
         $url = '/get?foo=bar&baz=baz';
         $httpClient = $this->getHttpClient($this->getResponse(), 'GET', $url, $headers);
         /** @var MockServiceUrlRequest $client */
@@ -133,7 +133,7 @@ class UrlRequestClientGenerationTest extends MockeryTestCase
 
     public function testVariableQueryChangeName()
     {
-        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
+        $headers = ['Host' => ['mockservice.com'], 'Content-Type' => ['application/x-www-form-urlencoded']];
         $url = '/get?foo=bar&baz=baz';
         $httpClient = $this->getHttpClient($this->getResponse(), 'GET', $url, $headers);
         /** @var MockServiceUrlRequest $client */
@@ -145,8 +145,9 @@ class UrlRequestClientGenerationTest extends MockeryTestCase
 
     public function testQueryMap()
     {
-        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
-        $url = '/get?foo=bar&baz=baz&kit[kat]=1';
+        $headers = ['Host' => ['mockservice.com'], 'Content-Type' => ['application/x-www-form-urlencoded']];
+        $query = ['foo' => 'bar', 'baz' => 'baz', 'kit' => ['kat' => 1]];
+        $url = '/get?' . http_build_query($query);
         $httpClient = $this->getHttpClient($this->getResponse(), 'GET', $url, $headers);
         /** @var MockServiceUrlRequest $client */
         $client = $this->getClient(MockServiceUrlRequest::class, $httpClient, $this->getSerializer());
@@ -157,8 +158,9 @@ class UrlRequestClientGenerationTest extends MockeryTestCase
 
     public function testQueryChangeName()
     {
-        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
-        $url = '/get?foo=bar&baz=baz&kit[kat]=1';
+        $headers = ['Host' => ['mockservice.com'], 'Content-Type' => ['application/x-www-form-urlencoded']];
+        $query = ['foo' => 'bar', 'baz' => 'baz', 'kit' => ['kat' => 1]];
+        $url = '/get?' . http_build_query($query);
         $httpClient = $this->getHttpClient($this->getResponse(), 'GET', $url, $headers);
         /** @var MockServiceUrlRequest $client */
         $client = $this->getClient(MockServiceUrlRequest::class, $httpClient, $this->getSerializer());
@@ -169,7 +171,7 @@ class UrlRequestClientGenerationTest extends MockeryTestCase
 
     public function testDefaultParams()
     {
-        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
+        $headers = ['Host' => ['mockservice.com'], 'Content-Type' => ['application/x-www-form-urlencoded']];
         $url = '/get?foo=&bar=1&baz=&kit=1&kat=1';
         $httpClient = $this->getHttpClient($this->getResponse(), 'GET', $url, $headers);
         /** @var MockServiceUrlRequest $client */

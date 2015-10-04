@@ -21,7 +21,7 @@ class HeadersClientGenerationTest extends MockeryTestCase
 
     public function testNoMethodHeaders()
     {
-        $headers = ['foo' => 'bar', 'baz' => 'buzz', 'Content-Type' => 'application/x-www-form-urlencoded'];
+        $headers = ['Host' => ['mockservice.com'], 'foo' => ['bar'], 'baz' => ['buzz'], 'Content-Type' => ['application/x-www-form-urlencoded']];
         $httpClient = $this->getHttpClient($this->getResponse(), 'GET', '/get', $headers);
         /** @var MockServiceHeaders $client */
         $client = $this->getClient(MockServiceHeaders::class, $httpClient, $this->getSerializer());
@@ -32,7 +32,7 @@ class HeadersClientGenerationTest extends MockeryTestCase
 
     public function testOneMethodHeaders()
     {
-        $headers = ['foo' => 'bar', 'baz' => 'buzz', 'kit' => 'kat', 'Content-Type' => 'application/x-www-form-urlencoded'];
+        $headers = ['Host' => ['mockservice.com'], 'foo' => ['bar'], 'baz' => ['buzz'], 'kit' => ['kat'], 'Content-Type' => ['application/x-www-form-urlencoded']];
         $httpClient = $this->getHttpClient($this->getResponse(), 'GET', '/get', $headers);
         /** @var MockServiceHeaders $client */
         $client = $this->getClient(MockServiceHeaders::class, $httpClient, $this->getSerializer());
@@ -43,7 +43,7 @@ class HeadersClientGenerationTest extends MockeryTestCase
 
     public function testHeaderChangeName()
     {
-        $headers = ['foo' => 'bar', 'baz' => 'buzz', 'kit' => 'kat', 'Content-Type' => 'application/x-www-form-urlencoded'];
+        $headers = ['Host' => ['mockservice.com'], 'foo' => ['bar'], 'baz' => ['buzz'], 'kit' => ['kat'], 'Content-Type' => ['application/x-www-form-urlencoded']];
         $httpClient = $this->getHttpClient($this->getResponse(), 'GET', '/get', $headers);
         /** @var \Tebru\Retrofit\Test\Mock\Service\MockServiceHeaders $client */
         $client = $this->getClient(MockServiceHeaders::class, $httpClient, $this->getSerializer());
@@ -54,7 +54,7 @@ class HeadersClientGenerationTest extends MockeryTestCase
 
     public function testOneHeaderOverwrite()
     {
-        $headers = ['foo' => 'foo', 'baz' => 'buzz', 'kit' => 'kat', 'Content-Type' => 'application/x-www-form-urlencoded'];
+        $headers = ['Host' => ['mockservice.com'], 'foo' => ['foo'], 'baz' => ['buzz'], 'kit' => ['kat'], 'Content-Type' => ['application/x-www-form-urlencoded']];
         $httpClient = $this->getHttpClient($this->getResponse(), 'GET', '/get', $headers);
         /** @var \Tebru\Retrofit\Test\Mock\Service\MockServiceHeaders $client */
         $client = $this->getClient(MockServiceHeaders::class, $httpClient, $this->getSerializer());

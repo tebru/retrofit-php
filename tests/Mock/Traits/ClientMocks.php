@@ -6,10 +6,10 @@
 
 namespace Tebru\Retrofit\Test\Mock\Traits;
 
+use GuzzleHttp\Psr7\Response;
 use JMS\Serializer\SerializerBuilder;
 use JMS\Serializer\SerializerInterface;
 use Mockery;
-use Tebru\Retrofit\Adapter\Http\Response;
 use Tebru\Retrofit\Adapter\HttpClientAdapter;
 use Tebru\Retrofit\Adapter\Rest\RestAdapter;
 use Tebru\Retrofit\Test\Mock\MockUser;

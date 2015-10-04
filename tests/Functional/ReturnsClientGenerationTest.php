@@ -21,7 +21,7 @@ class ReturnsClientGenerationTest extends MockeryTestCase
 
     public function testRawReturn()
     {
-        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
+        $headers = ['Host' => ['mockservice.com'], 'Content-Type' => ['application/x-www-form-urlencoded']];
         $httpClient = $this->getHttpClient($this->getResponse(), 'GET', '/get', $headers);
         /** @var MockServiceReturns $client */
         $client = $this->getClient(MockServiceReturns::class, $httpClient, $this->getSerializer());
@@ -32,7 +32,7 @@ class ReturnsClientGenerationTest extends MockeryTestCase
 
     public function testArrayReturn()
     {
-        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
+        $headers = ['Host' => ['mockservice.com'], 'Content-Type' => ['application/x-www-form-urlencoded']];
         $httpClient = $this->getHttpClient($this->getResponse(), 'GET', '/get', $headers);
         /** @var MockServiceReturns $client */
         $client = $this->getClient(MockServiceReturns::class, $httpClient, $this->getSerializer());
@@ -43,7 +43,7 @@ class ReturnsClientGenerationTest extends MockeryTestCase
 
     public function testDeserializedReturn()
     {
-        $headers = ['Content-Type' => 'application/x-www-form-urlencoded'];
+        $headers = ['Host' => ['mockservice.com'], 'Content-Type' => ['application/x-www-form-urlencoded']];
         $httpClient = $this->getHttpClient($this->getResponse($this->getSerializedUser()), 'GET', '/get', $headers);
         /** @var MockServiceReturns $client */
         $client = $this->getClient(MockServiceReturns::class, $httpClient, $this->getSerializer());

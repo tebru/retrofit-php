@@ -405,9 +405,10 @@ class MethodBodyBuilder
      */
     private function createResponse(array $body)
     {
-        $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.beforeSend", new \Tebru\Retrofit\Event\BeforeSendEvent("%s", $requestUrl, $headers, $body));', strtoupper($this->requestMethod));
+        $body[] = sprintf('$request = new \GuzzleHttp\Psr7\Request("%s", $requestUrl, $headers, $body);', strtoupper($this->requestMethod));
+        $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.beforeSend", new \Tebru\Retrofit\Event\BeforeSendEvent($request));');
         $body[] = sprintf('try {');
-        $body[] = sprintf('$response = $this->client->send("%s", $requestUrl, $headers, $body);', strtoupper($this->requestMethod));
+        $body[] = sprintf('$response = $this->client->send($request->getMethod(), (string)$request->getUri(), $request->getHeaders(), (string)$request->getBody());');
         $body[] = sprintf('} catch (\Exception $exception) {');
         $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.apiException", new \Tebru\Retrofit\Event\ApiExceptionEvent($exception));');
         $body[] = sprintf('throw new \Tebru\Retrofit\Exception\RetrofitApiException(get_class($this), $exception->getMessage(), $exception->getCode(), $exception);');
@@ -427,21 +428,24 @@ class MethodBodyBuilder
     {
         switch ($this->returnType) {
             case 'raw':
-                $body[] = sprintf('return $response->getBody();');
+                $body[] = sprintf('$return = (string)$response->getBody();');
                 break;
             case 'array':
-                $body[] = sprintf('return json_decode($response->getBody(), true);');
+                $body[] = sprintf('$return = json_decode((string)$response->getBody(), true);');
                 break;
             default:
                 if (!empty($this->deserializationContext)) {
                     $body[] = sprintf('$context = \JMS\Serializer\DeserializationContext::create();');
                     $body = $this->createContext($body, $this->deserializationContext);
                     $body = $this->createDepthContext($body);
-                    $body[] = sprintf('return $this->serializer->deserialize($response->getBody(), "%s", "json", $context);', $this->returnType);
+                    $body[] = sprintf('$return = $this->serializer->deserialize((string)$response->getBody(), "%s", "json", $context);', $this->returnType);
                 } else {
-                    $body[] = sprintf('return $this->serializer->deserialize($response->getBody(), "%s", "json");', $this->returnType);
+                    $body[] = sprintf('$return = $this->serializer->deserialize((string)$response->getBody(), "%s", "json");', $this->returnType);
                 }
         }
+
+        $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.return", new \Tebru\Retrofit\Event\ReturnEvent($return));');
+        $body[] = sprintf('return $return;');
 
         return $body;
     }

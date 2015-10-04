@@ -6,20 +6,19 @@
 
 namespace Tebru\Retrofit\Test\Unit\Event;
 
-use GuzzleHttp\Psr7\Response;
-use Tebru\Retrofit\Event\AfterSendEvent;
+use Tebru\Retrofit\Event\ReturnEvent;
 use Tebru\Retrofit\Test\MockeryTestCase;
 
 /**
- * Class AfterSendEventTest
+ * Class ReturnEventTest
  *
  * @author Nate Brunette <n@tebru.net>
  */
-class AfterSendEventTest extends MockeryTestCase
+class ReturnEventTest extends MockeryTestCase
 {
     public function testGetters()
     {
-        $event = new AfterSendEvent(new Response(200, [], 'body'));
-        $this->assertInstanceOf(Response::class, $event->getResponse());
+        $event = new ReturnEvent('return');
+        $this->assertSame('return', $event->getReturn());
     }
 }

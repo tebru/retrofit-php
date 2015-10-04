@@ -6,8 +6,8 @@
 
 namespace Tebru\Retrofit\Event;
 
+use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\EventDispatcher\Event;
-use Tebru\Retrofit\Adapter\Http\Response;
 
 /**
  * Class AfterSendEvent
@@ -17,22 +17,22 @@ use Tebru\Retrofit\Adapter\Http\Response;
 class AfterSendEvent extends Event
 {
     /**
-     * @var Response
+     * @var ResponseInterface
      */
     private $response;
 
     /**
      * Constructor
      *
-     * @param Response $response
+     * @param ResponseInterface $response
      */
-    public function __construct(Response $response)
+    public function __construct(ResponseInterface $response)
     {
         $this->response = $response;
     }
 
     /**
-     * @return Response
+     * @return ResponseInterface
      */
     public function getResponse()
     {
