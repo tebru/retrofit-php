@@ -10,6 +10,7 @@ use Mockery;
 use Tebru\Dynamo\Collection\AnnotationCollection;
 use Tebru\Dynamo\Model\MethodModel;
 use Tebru\Retrofit\Generation\Builder\MethodBodyBuilder;
+use Tebru\Retrofit\Generation\Handler\AsyncHandler;
 use Tebru\Retrofit\Generation\Handler\BaseUrlHandler;
 use Tebru\Retrofit\Generation\Handler\Factory\HandlerFactory;
 use Tebru\Retrofit\Generation\Handler\RequestBodyHandler;
@@ -96,5 +97,17 @@ class HandlerFactoryTest extends MockeryTestCase
         $handler = $handlerFactory->serializationContext($methodModel, $methodBodyBuilder, $annotationCollection);
 
         $this->assertInstanceOf(SerializationContextHandler::class, $handler);
+    }
+
+    public function testCanCreateAsyncCallbackHandler()
+    {
+        $methodModel = Mockery::mock(MethodModel::class);
+        $methodBodyBuilder = Mockery::mock(MethodBodyBuilder::class);
+        $annotationCollection = Mockery::mock(AnnotationCollection::class);
+
+        $handlerFactory = new HandlerFactory();
+        $handler = $handlerFactory->asyncCallback($methodModel, $methodBodyBuilder, $annotationCollection);
+
+        $this->assertInstanceOf(AsyncHandler::class, $handler);
     }
 }

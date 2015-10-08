@@ -7,7 +7,7 @@
         "symfony/console": "^2.0.5",
         "tebru/assert": "^0.2",
         "tebru/dynamo": "^0.1",
-        "tebru/retrofit-http-clients": "^0.3",
+        "tebru/retrofit-http-clients": "^0.4",
         "symfony/event-dispatcher": "^2.3",
         "guzzlehttp/psr7": "^1.0"
     },

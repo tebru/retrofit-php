@@ -63,6 +63,7 @@ class DynamoMethodListener
             $this->handlerFactory->requestHeader($methodModel, $methodBodyBuilder, $annotations),
             $this->handlerFactory->requestBody($methodModel, $methodBodyBuilder, $annotations),
             $this->handlerFactory->returns($methodModel, $methodBodyBuilder, $annotations),
+            $this->handlerFactory->asyncCallback($methodModel, $methodBodyBuilder, $annotations),
         ];
 
         /** @var Handler $handler */

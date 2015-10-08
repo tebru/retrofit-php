@@ -26,7 +26,7 @@ class AfterSendEvent extends Event
      *
      * @param ResponseInterface $response
      */
-    public function __construct(ResponseInterface $response)
+    public function __construct(ResponseInterface $response = null)
     {
         $this->response = $response;
     }

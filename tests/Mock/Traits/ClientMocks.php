@@ -6,12 +6,14 @@
 
 namespace Tebru\Retrofit\Test\Mock\Traits;
 
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use JMS\Serializer\SerializerBuilder;
 use JMS\Serializer\SerializerInterface;
 use Mockery;
 use Tebru\Retrofit\Adapter\HttpClientAdapter;
 use Tebru\Retrofit\Adapter\Rest\RestAdapter;
+use Tebru\Retrofit\Http\Callback;
 use Tebru\Retrofit\Test\Mock\MockUser;
 
 /**
@@ -45,6 +47,17 @@ trait ClientMocks
     {
         $httpClient = Mockery::mock(HttpClientAdapter::class);
         $httpClient->shouldReceive('send')->times(1)->with($method, $baseUrl . $uri, $headers, $body)->andReturn($response);
+
+        return $httpClient;
+    }
+
+    /**
+     * @return HttpClientAdapter
+     */
+    protected function getAsyncHttpClient()
+    {
+        $httpClient = Mockery::mock(HttpClientAdapter::class);
+        $httpClient->shouldReceive('sendAsync')->times(1)->with(Mockery::type(Request::class), Mockery::type(Callback::class))->andReturnNull();
 
         return $httpClient;
     }
