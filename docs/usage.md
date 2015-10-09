@@ -92,7 +92,7 @@ Passing `['foo' => 'bar']` to $queryParams will result in a query formatted like
 
 ### Request Body
 Request body also maps to a method parameter.  Acceptable values are `string`, 
-`array`, or an object that can be serialied.
+`array`, or an object that can be serialized.
 
 ```php
 /**
@@ -119,7 +119,7 @@ public function listRepos($user, $part1, $foo);
 
 Both `@Body` and `@Part` annotations cannot be set.
 
-The body can be sent as json by adding the `@JsonBody` annotation
+The body can be sent as json by adding the `@JsonBody` annotation.
 
 ```php
 /**
@@ -130,7 +130,7 @@ The body can be sent as json by adding the `@JsonBody` annotation
 public function listRepos($user, $body);
 ```
 
-The body can be sent as multipart by using the `@Multipart` annotation
+The body can be sent as multipart by using the `@Multipart` annotation.
 
 ```php
 /**
@@ -156,7 +156,7 @@ interface GitHubService
 {
 ```
 
-They can also be set individually on methods with `@HEADER` and map to a method parameter.
+They can also be set individually on methods with `@Header` and map to a method parameter.
 
 ```php
 /**
@@ -175,21 +175,21 @@ Use `@Returns` to specify a return type.  The default is `array`.  Other accepta
  * @GET("/users/{user}/list")
  * @Returns("ArrayCollection<My\Foo\ReposList>")
  */
-public function listRepos($user, $accept);
+public function listRepos($user);
 ```
 
 
 Events
 ------
 
-Add event listeners directly to the guzzle client or serializer, or add an event
+Add event listeners directly to the Guzzle client or serializer, or add an event
 dispatcher to the builder.
 
 
 ### Examples of handling request events with Guzzle 5
 
 ```php
-$httpClient->getEmiter()->on('before', function use ($myHeader) (BeforeEvent $event) {
+$httpClient->getEmitter()->on('before', function use ($myHeader) (BeforeEvent $event) {
     $request = $event->getRequest();
     
     $request->getQuery()->add('sort', 'desc');
@@ -198,7 +198,7 @@ $httpClient->getEmiter()->on('before', function use ($myHeader) (BeforeEvent $ev
 ```
 
 ```php
-$httpCient->getEmiter()->on('complete', function (CompleteEvent $event) {
+$httpCient->getEmitter()->on('complete', function (CompleteEvent $event) {
     $responseBody = (string)$event->getResponse()->getBody();
     $responseBody = json_decode($responseBody);
     
@@ -209,7 +209,7 @@ $httpCient->getEmiter()->on('complete', function (CompleteEvent $event) {
 ```
 
 Because Guzzle 6 does not include the same event system, a rudimentary version has been added
-to Retrofit
+to Retrofit.
 
 ### BeforeSendEvent
 
@@ -223,18 +223,18 @@ Retrofit will dispatch a `retrofit.beforeSend` event before a request is made.  
 ### AfterSendEvent
 
 Similarly, a `retrofit.afterSend` event will be dispatched after a request has been completed. It
-only includes the respond body.
+only includes the response body.
 
 ### ApiExceptionEvent
 
 If the http client throws an exception, it will be caught and a `retrofit.apiException` event will be
-dispatched.  Additionally, a new RetrofitApiException will be thrown.
+dispatched.  Additionally, a new `RetrofitApiException` will be thrown.
 
 
 Exceptions
 ----------
 
-If the http client throws an exception, a RetrofitApiException will be thrown.  This exception includes
+If the http client throws an exception, a `RetrofitApiException` will be thrown.  This exception includes
 original message and code of the caught exception, the original exception, and the class of the client
 that the exception came from.
 
@@ -245,7 +245,7 @@ The two main technologies backing Retrofit are Guzzle and JMS Serializer.
 
 Use the `setHttpClient` or `setSerializer` methods on the builder to use a custom configured version of either.
 
-Retrofit supports version 5 or 6 of guzzle.
+Retrofit supports version 5 or 6 of Guzzle.
 
 There are two methods `setSerializationContext` and `setDeserializationContext` on the builder that allow you add
 JMS serializer contexts that will be used in during serialization/deserialization.
@@ -258,7 +258,7 @@ $builder->setDeserializationContext(DeserializationContext::create());
 Command
 -------
 
-Use the included command to generate the cache files
+Use the included command to generate the cache files.
 
 ```
 vendor/bin/retrofit compile <path/to/src/dir> <path/to/cache/dir>
