@@ -18,11 +18,16 @@ use Tebru\Retrofit\Generation\Builder\MethodBodyBuilder;
  */
 abstract class Handler
 {
+    /**
+     * @var MethodModel
+     */
     protected $methodModel;
+    
     /**
      * @var MethodBodyBuilder
      */
     protected $methodBodyBuilder;
+    
     /**
      * @var AnnotationCollection
      */
