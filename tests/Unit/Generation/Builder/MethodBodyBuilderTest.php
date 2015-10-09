@@ -236,7 +236,7 @@ class MethodBodyBuilderTest extends MockeryTestCase
         $builder->setBaseUrl('http://example.com');
         $builder->setUri('/get');
         $builder->setCallback('$callback');
-        $builder->setIsCallbackOptional(true);
+        $builder->setCallbackOptional(true);
         $builder->setReturnType('array');
 
         $response = $builder->build();
@@ -252,7 +252,7 @@ class MethodBodyBuilderTest extends MockeryTestCase
         $builder->setBaseUrl('http://example.com');
         $builder->setUri('/get');
         $builder->setCallback('$callback');
-        $builder->setIsCallbackOptional(false);
+        $builder->setCallbackOptional(false);
         $builder->setReturnType('array');
 
         $response = $builder->build();

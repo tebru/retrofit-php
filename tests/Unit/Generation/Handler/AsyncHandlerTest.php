@@ -40,7 +40,7 @@ class AsyncHandlerTest extends MockeryTestCase
         $parameterModel->shouldReceive('isOptional')->once()->andReturn(true);
 
         $methodBodyBuilder->shouldReceive('setCallback')->times(1)->with('$foo')->andReturnNull();
-        $methodBodyBuilder->shouldReceive('setIsCallbackOptional')->times(1)->with(true)->andReturnNull();
+        $methodBodyBuilder->shouldReceive('setCallbackOptional')->times(1)->with(true)->andReturnNull();
 
         $handler = new AsyncHandler($methodModel, $methodBodyBuilder, $annotationCollection);
 
@@ -83,7 +83,7 @@ class AsyncHandlerTest extends MockeryTestCase
         $parameterModel->shouldNotReceive('isOptional');
 
         $methodBodyBuilder->shouldNotReceive('setCallback');
-        $methodBodyBuilder->shouldNotReceive('setIsCallbackOptional');
+        $methodBodyBuilder->shouldNotReceive('setCallbackOptional');
 
         $handler = new AsyncHandler($methodModel, $methodBodyBuilder, $annotationCollection);
 

@@ -144,7 +144,7 @@ class MethodBodyBuilder
      *
      * @var bool
      */
-    private $isCallbackOptional = false;
+    private $callbackOptional = false;
 
     /**
      * @param string $baseUrl
@@ -291,11 +291,11 @@ class MethodBodyBuilder
     }
 
     /**
-     * @param boolean $isCallbackOptional
+     * @param boolean $callbackOptional
      */
-    public function setIsCallbackOptional($isCallbackOptional)
+    public function setCallbackOptional($callbackOptional)
     {
-        $this->isCallbackOptional = $isCallbackOptional;
+        $this->callbackOptional = $callbackOptional;
     }
 
     /**
@@ -439,13 +439,13 @@ class MethodBodyBuilder
         $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.beforeSend", new \Tebru\Retrofit\Event\BeforeSendEvent($request));');
         $body[] = sprintf('try {');
 
-        if ($this->callback !== null && $this->isCallbackOptional) {
+        if ($this->callback !== null && $this->callbackOptional) {
             $body[] = sprintf('if (%s !== null) {', $this->callback);
             $body[] = sprintf('$response = $this->client->sendAsync($request, %s);', $this->callback);
             $body[] = sprintf('} else {');
             $body[] = sprintf('$response = $this->client->send($request->getMethod(), (string)$request->getUri(), $request->getHeaders(), (string)$request->getBody());');
             $body[] = sprintf('}');
-        } elseif ($this->callback !== null && !$this->isCallbackOptional) {
+        } elseif ($this->callback !== null && !$this->callbackOptional) {
             $body[] = sprintf('$response = $this->client->sendAsync($request, %s);', $this->callback);
         } else {
             $body[] = sprintf('$response = $this->client->send($request->getMethod(), (string)$request->getUri(), $request->getHeaders(), (string)$request->getBody());');
@@ -468,12 +468,12 @@ class MethodBodyBuilder
      */
     private function createReturns(array $body)
     {
-        if ($this->callback !== null && $this->isCallbackOptional) {
+        if ($this->callback !== null && $this->callbackOptional) {
             $body[] = sprintf('if (%s !== null) {', $this->callback);
             $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.return", new \Tebru\Retrofit\Event\ReturnEvent(null));');
             $body[] = sprintf('return null;');
             $body[] = sprintf('}');
-        } elseif ($this->callback !== null && !$this->isCallbackOptional) {
+        } elseif ($this->callback !== null && !$this->callbackOptional) {
             $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.return", new \Tebru\Retrofit\Event\ReturnEvent(null));');
             $body[] = sprintf('return null;');
 

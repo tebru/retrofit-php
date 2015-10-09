@@ -32,7 +32,7 @@ class AsyncHandler extends Handler
         }
 
         $this->methodBodyBuilder->setCallback('$' . $callback->getName());
-        $this->methodBodyBuilder->setIsCallbackOptional($callback->isOptional());
+        $this->methodBodyBuilder->setCallbackOptional($callback->isOptional());
     }
 
     /**
