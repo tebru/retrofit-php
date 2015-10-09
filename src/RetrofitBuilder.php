@@ -24,9 +24,24 @@ use Tebru\Retrofit\Generation\Listener\DynamoStartListener;
  */
 class RetrofitBuilder
 {
+    /**
+     * @var string
+     */
     private $cacheDir;
+    
+    /**
+     * @var EventDispatcherInterface
+     */
     private $eventDispatcher;
+    
+    /**
+     * @var ServiceResolver
+     */
     private $serviceResolver;
+    
+    /**
+     * @var Generator
+     */
     private $generator;
 
     /**
@@ -44,7 +59,7 @@ class RetrofitBuilder
      * @param EventDispatcherInterface $eventDispatcher
      * @return $this
      */
-    public function setEventDispatcher($eventDispatcher)
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
     {
         $this->eventDispatcher = $eventDispatcher;
 
@@ -55,7 +70,7 @@ class RetrofitBuilder
      * @param ServiceResolver $serviceResolver
      * @return $this
      */
-    public function setServiceResolver($serviceResolver)
+    public function setServiceResolver(ServiceResolver $serviceResolver)
     {
         $this->serviceResolver = $serviceResolver;
 
@@ -66,7 +81,7 @@ class RetrofitBuilder
      * @param Generator $generator
      * @return $this
      */
-    public function setGenerator($generator)
+    public function setGenerator(Generator $generator)
     {
         $this->generator = $generator;
 
