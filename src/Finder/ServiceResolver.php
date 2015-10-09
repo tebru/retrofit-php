@@ -18,6 +18,11 @@ use RegexIterator;
  */
 class ServiceResolver
 {
+    const ANNOTATION_REGEX = '/Tebru\\\\Retrofit\\\\Annotation/';
+    const FILE_REGEX = '/^.+\.php$/i';
+    const INTERFACE_REGEX = '/^interface\s+([\w\\\\]+)[\s{\n]?/m';
+    const NAMESPACE_REGEX = '/^namespace\s+([\w\\\\]+)/m';
+    
     /**
      * Find all services given a source directory
      *
@@ -28,26 +33,25 @@ class ServiceResolver
     {
         $directory = new RecursiveDirectoryIterator($srcDir);
         $iterator = new RecursiveIteratorIterator($directory);
-        $files = new RegexIterator($iterator, '/^.+\.php$/i', RecursiveRegexIterator::GET_MATCH);
+        $files = new RegexIterator($iterator, self::FILE_REGEX, RecursiveRegexIterator::GET_MATCH);
 
         $services = [];
         foreach ($files as $file) {
-            $regex = '/Tebru\\\\Retrofit\\\\Annotation/';
             $fileString = file_get_contents($file[0]);
-            $matchesFound = preg_match($regex, $fileString);
+            
+            $annotationMatchesFound = preg_match(self::ANNOTATION_REGEX, $fileString);
 
-            if (!$matchesFound) {
+            if (!$annotationMatchesFound) {
                 continue;
             }
 
-            $namespaceRegex = '/^namespace\s+([\w\\\\]+)/m';
-            $interfaceRegex = '/^interface\s+([\w\\\\]+)[\s{\n]?/m';
-            $namespaceMatchesFound = preg_match($namespaceRegex, $fileString, $namespaceMatches);
-            $interfaceMatchesFound = preg_match($interfaceRegex, $fileString, $interfaceMatches);
+            $interfaceMatchesFound = preg_match(self::INTERFACE_REGEX, $fileString, $interfaceMatches);
 
             if (!$interfaceMatchesFound) {
                 continue;
             }
+            
+            $namespaceMatchesFound = preg_match(self::NAMESPACE_REGEX, $fileString, $namespaceMatches);
 
             $className = '';
 
