@@ -9,6 +9,7 @@ namespace Tebru\Retrofit\Generation\Handler\Factory;
 use Tebru\Dynamo\Collection\AnnotationCollection;
 use Tebru\Dynamo\Model\MethodModel;
 use Tebru\Retrofit\Generation\Builder\MethodBodyBuilder;
+use Tebru\Retrofit\Generation\Handler\AsyncHandler;
 use Tebru\Retrofit\Generation\Handler\BaseUrlHandler;
 use Tebru\Retrofit\Generation\Handler\RequestBodyHandler;
 use Tebru\Retrofit\Generation\Handler\RequestHeaderHandler;
@@ -99,5 +100,18 @@ class HandlerFactory
     public function serializationContext(MethodModel $methodModel, MethodBodyBuilder $methodBodyBuilder, AnnotationCollection $annotationCollection)
     {
         return new SerializationContextHandler($methodModel, $methodBodyBuilder, $annotationCollection);
+    }
+
+    /**
+     * Create async handler
+     *
+     * @param MethodModel $methodModel
+     * @param MethodBodyBuilder $methodBodyBuilder
+     * @param AnnotationCollection $annotationCollection
+     * @return AsyncHandler
+     */
+    public function asyncCallback(MethodModel $methodModel, MethodBodyBuilder $methodBodyBuilder, AnnotationCollection $annotationCollection)
+    {
+        return new AsyncHandler($methodModel, $methodBodyBuilder, $annotationCollection);
     }
 }

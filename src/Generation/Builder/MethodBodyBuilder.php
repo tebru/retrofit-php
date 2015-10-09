@@ -133,6 +133,20 @@ class MethodBodyBuilder
     private $deserializationContext = [];
 
     /**
+     * Request callback variable name
+     *
+     * @var string
+     */
+    private $callback;
+
+    /**
+     * Async callback is optional
+     *
+     * @var bool
+     */
+    private $isCallbackOptional = false;
+
+    /**
      * @param string $baseUrl
      */
     public function setBaseUrl($baseUrl)
@@ -266,6 +280,22 @@ class MethodBodyBuilder
     public function setDeserializationContext(array $deserializationContext)
     {
         $this->deserializationContext = $deserializationContext;
+    }
+
+    /**
+     * @param string $callback
+     */
+    public function setCallback($callback)
+    {
+        $this->callback = $callback;
+    }
+
+    /**
+     * @param boolean $isCallbackOptional
+     */
+    public function setIsCallbackOptional($isCallbackOptional)
+    {
+        $this->isCallbackOptional = $isCallbackOptional;
     }
 
     /**
@@ -408,7 +438,19 @@ class MethodBodyBuilder
         $body[] = sprintf('$request = new \GuzzleHttp\Psr7\Request("%s", $requestUrl, $headers, $body);', strtoupper($this->requestMethod));
         $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.beforeSend", new \Tebru\Retrofit\Event\BeforeSendEvent($request));');
         $body[] = sprintf('try {');
-        $body[] = sprintf('$response = $this->client->send($request->getMethod(), (string)$request->getUri(), $request->getHeaders(), (string)$request->getBody());');
+
+        if ($this->callback !== null && $this->isCallbackOptional) {
+            $body[] = sprintf('if (%s !== null) {', $this->callback);
+            $body[] = sprintf('$response = $this->client->sendAsync($request, %s);', $this->callback);
+            $body[] = sprintf('} else {');
+            $body[] = sprintf('$response = $this->client->send($request->getMethod(), (string)$request->getUri(), $request->getHeaders(), (string)$request->getBody());');
+            $body[] = sprintf('}');
+        } elseif ($this->callback !== null && !$this->isCallbackOptional) {
+            $body[] = sprintf('$response = $this->client->sendAsync($request, %s);', $this->callback);
+        } else {
+            $body[] = sprintf('$response = $this->client->send($request->getMethod(), (string)$request->getUri(), $request->getHeaders(), (string)$request->getBody());');
+        }
+
         $body[] = sprintf('} catch (\Exception $exception) {');
         $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.apiException", new \Tebru\Retrofit\Event\ApiExceptionEvent($exception));');
         $body[] = sprintf('throw new \Tebru\Retrofit\Exception\RetrofitApiException(get_class($this), $exception->getMessage(), $exception->getCode(), $exception);');
@@ -426,6 +468,18 @@ class MethodBodyBuilder
      */
     private function createReturns(array $body)
     {
+        if ($this->callback !== null && $this->isCallbackOptional) {
+            $body[] = sprintf('if (%s !== null) {', $this->callback);
+            $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.return", new \Tebru\Retrofit\Event\ReturnEvent(null));');
+            $body[] = sprintf('return null;');
+            $body[] = sprintf('}');
+        } elseif ($this->callback !== null && !$this->isCallbackOptional) {
+            $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.return", new \Tebru\Retrofit\Event\ReturnEvent(null));');
+            $body[] = sprintf('return null;');
+
+            return $body;
+        }
+
         switch ($this->returnType) {
             case 'raw':
                 $body[] = sprintf('$return = (string)$response->getBody();');

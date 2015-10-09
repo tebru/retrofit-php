@@ -228,4 +228,36 @@ class MethodBodyBuilderTest extends MockeryTestCase
 
         $this->assertSame($expected, $response);
     }
+
+    public function testOptionalCallback()
+    {
+        $builder = new MethodBodyBuilder();
+        $builder->setRequestMethod('GET');
+        $builder->setBaseUrl('http://example.com');
+        $builder->setUri('/get');
+        $builder->setCallback('$callback');
+        $builder->setIsCallbackOptional(true);
+        $builder->setReturnType('array');
+
+        $response = $builder->build();
+        $expected = '$requestUrl = http://example.com . "/get";$headers = [];$body = null;$request = new \GuzzleHttp\Psr7\Request("GET", $requestUrl, $headers, $body);$this->eventDispatcher->dispatch("retrofit.beforeSend", new \Tebru\Retrofit\Event\BeforeSendEvent($request));try {if ($callback !== null) {$response = $this->client->sendAsync($request, $callback);} else {$response = $this->client->send($request->getMethod(), (string)$request->getUri(), $request->getHeaders(), (string)$request->getBody());}} catch (\Exception $exception) {$this->eventDispatcher->dispatch("retrofit.apiException", new \Tebru\Retrofit\Event\ApiExceptionEvent($exception));throw new \Tebru\Retrofit\Exception\RetrofitApiException(get_class($this), $exception->getMessage(), $exception->getCode(), $exception);}$this->eventDispatcher->dispatch("retrofit.afterSend", new \Tebru\Retrofit\Event\AfterSendEvent($response));if ($callback !== null) {$this->eventDispatcher->dispatch("retrofit.return", new \Tebru\Retrofit\Event\ReturnEvent(null));return null;}$return = json_decode((string)$response->getBody(), true);$this->eventDispatcher->dispatch("retrofit.return", new \Tebru\Retrofit\Event\ReturnEvent($return));return $return;';
+
+        $this->assertSame($expected, $response);
+    }
+
+    public function testRequiredCallback()
+    {
+        $builder = new MethodBodyBuilder();
+        $builder->setRequestMethod('GET');
+        $builder->setBaseUrl('http://example.com');
+        $builder->setUri('/get');
+        $builder->setCallback('$callback');
+        $builder->setIsCallbackOptional(false);
+        $builder->setReturnType('array');
+
+        $response = $builder->build();
+        $expected = '$requestUrl = http://example.com . "/get";$headers = [];$body = null;$request = new \GuzzleHttp\Psr7\Request("GET", $requestUrl, $headers, $body);$this->eventDispatcher->dispatch("retrofit.beforeSend", new \Tebru\Retrofit\Event\BeforeSendEvent($request));try {$response = $this->client->sendAsync($request, $callback);} catch (\Exception $exception) {$this->eventDispatcher->dispatch("retrofit.apiException", new \Tebru\Retrofit\Event\ApiExceptionEvent($exception));throw new \Tebru\Retrofit\Exception\RetrofitApiException(get_class($this), $exception->getMessage(), $exception->getCode(), $exception);}$this->eventDispatcher->dispatch("retrofit.afterSend", new \Tebru\Retrofit\Event\AfterSendEvent($response));$this->eventDispatcher->dispatch("retrofit.return", new \Tebru\Retrofit\Event\ReturnEvent(null));return null;';
+
+        $this->assertSame($expected, $response);
+    }
 }

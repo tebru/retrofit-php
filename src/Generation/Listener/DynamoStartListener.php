@@ -29,6 +29,7 @@ class DynamoStartListener
         $classModel = $event->getClassModel();
         $this->addProperties($classModel);
         $this->addConstructor($classModel);
+        $this->addWait($classModel);
     }
 
     /**
@@ -82,6 +83,27 @@ class DynamoStartListener
         ];
 
         $methodModel->setBody(implode($methodBody));
+
+        $classModel->addMethod($methodModel);
+    }
+
+    /**
+     * Create wait method
+     *
+     * @param ClassModel $classModel
+     * @return null
+     */
+    private function addWait(ClassModel $classModel)
+    {
+        $reflectionClass = new \ReflectionClass($classModel->getInterface());
+
+        if (!in_array('Tebru\Retrofit\Http\AsyncAware', $reflectionClass->getInterfaceNames())) {
+            return null;
+        }
+
+        $methodModel = new MethodModel($classModel, 'wait');
+
+        $methodModel->setBody('$this->client->wait();');
 
         $classModel->addMethod($methodModel);
     }
