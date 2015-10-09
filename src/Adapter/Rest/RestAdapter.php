@@ -8,7 +8,6 @@ namespace Tebru\Retrofit\Adapter\Rest;
 
 use JMS\Serializer\SerializerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Tebru;
 use Tebru\Retrofit\Adapter\HttpClientAdapter;
 use Tebru\Retrofit\Exception\RetrofitException;
 use Tebru\Retrofit\HttpClient\ClientProvider;
