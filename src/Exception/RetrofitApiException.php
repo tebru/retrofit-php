@@ -20,6 +20,12 @@ class RetrofitApiException extends Exception
      */
     private $clientClass;
 
+    /**
+     * @param string $clientClass
+     * @param string $message
+     * @param int $code
+     * @param Exception $previous
+     */
     public function __construct($clientClass, $message = '', $code = 0, Exception $previous = null)
     {
         parent::__construct($message, $code, $previous);
