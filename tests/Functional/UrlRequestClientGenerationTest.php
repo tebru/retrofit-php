@@ -131,6 +131,18 @@ class UrlRequestClientGenerationTest extends MockeryTestCase
         $this->assertSame([], $response);
     }
 
+    public function testVariableQueryWithArray()
+    {
+        $headers = ['Host' => ['mockservice.com'], 'Content-Type' => ['application/x-www-form-urlencoded']];
+        $url = '/get?foo%5B0%5D=bar&foo%5B1%5D=baz';
+        $httpClient = $this->getHttpClient($this->getResponse(), 'GET', $url, $headers);
+        /** @var MockServiceUrlRequest $client */
+        $client = $this->getClient(MockServiceUrlRequest::class, $httpClient, $this->getSerializer());
+        $response = $client->variableQueryWithArray(['bar', 'baz']);
+
+        $this->assertSame([], $response);
+    }
+
     public function testVariableQueryChangeName()
     {
         $headers = ['Host' => ['mockservice.com'], 'Content-Type' => ['application/x-www-form-urlencoded']];
@@ -172,7 +184,7 @@ class UrlRequestClientGenerationTest extends MockeryTestCase
     public function testDefaultParams()
     {
         $headers = ['Host' => ['mockservice.com'], 'Content-Type' => ['application/x-www-form-urlencoded']];
-        $url = '/get?foo=&bar=1&baz=&kit=1&kat=1';
+        $url = '/get?bar=1&baz=&kit=1&kat=1';
         $httpClient = $this->getHttpClient($this->getResponse(), 'GET', $url, $headers);
         /** @var MockServiceUrlRequest $client */
         $client = $this->getClient(MockServiceUrlRequest::class, $httpClient, $this->getSerializer());

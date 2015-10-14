@@ -69,6 +69,12 @@ interface MockServiceUrlRequest
     public function variableQuery($baz);
 
     /**
+     * @Rest\GET("/get")
+     * @Rest\Query("foo")
+     */
+    public function variableQueryWithArray($foo);
+
+    /**
      * @Rest\GET("/get?foo=bar")
      * @Rest\Query("baz", var="buzz")
      */

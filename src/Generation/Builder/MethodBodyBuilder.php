@@ -341,8 +341,9 @@ class MethodBodyBuilder
 
             // if we have queries, add them to the request url
         } elseif (!empty($this->queries)) {
-            $queryString = urldecode(http_build_query($this->queries));
-            $body[] = sprintf('$requestUrl = %s . "%s" . "?%s";', $baseUrl, $this->uri, $queryString);
+            $queryArray = $this->arrayToString($this->queries);
+            $body[] = sprintf('$queryString = urldecode(http_build_query(%s));', $queryArray);
+            $body[] = sprintf('$requestUrl = %s . "%s" . "?" . $queryString;', $baseUrl, $this->uri);
         } else {
             $body[] = sprintf('$requestUrl = %s . "%s";', $baseUrl, $this->uri);
         }
