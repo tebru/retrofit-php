@@ -6,7 +6,7 @@
 
 namespace Tebru\Retrofit\Adapter;
 
-use GuzzleHttp\Psr7\Request;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Tebru\Retrofit\Http\Callback;
 
@@ -31,11 +31,11 @@ interface HttpClientAdapter
     /**
      * Make an async request
      *
-     * @param Request $request
-     * @param Callback $callback
+     * @param RequestInterface $request
+     * @param \Tebru\Retrofit\Http\Callback $callback
      * @return ResponseInterface
      */
-    public function sendAsync(Request $request, Callback $callback);
+    public function sendAsync(RequestInterface $request, Callback $callback);
 
     /**
      * Resolve all async requests

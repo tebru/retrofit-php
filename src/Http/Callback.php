@@ -6,20 +6,28 @@
 
 namespace Tebru\Retrofit\Http;
 
+use Psr\Http\Message\ResponseInterface;
+use Tebru\Retrofit\Exception\RequestException;
+
 /**
  * Interface Callback
  *
  * @author Edward Pfremmer <epfremme@nerdery.com>
+ * @author Nate Brunete <n@tebru.net>
  */
 interface Callback
 {
     /**
-     * @return callable
+     * Called on successful responses
+     *
+     * @param ResponseInterface $response
      */
-    public function success();
+    public function onResponse(ResponseInterface $response);
 
     /**
-     * @return callable
+     * Called on errors
+     *
+     * @param RequestException $response
      */
-    public function failure();
+    public function onFailure(RequestException $response);
 }
