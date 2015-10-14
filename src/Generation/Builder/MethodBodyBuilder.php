@@ -471,12 +471,14 @@ class MethodBodyBuilder
     {
         if ($this->callback !== null && $this->callbackOptional) {
             $body[] = sprintf('if (%s !== null) {', $this->callback);
-            $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.return", new \Tebru\Retrofit\Event\ReturnEvent(null));');
-            $body[] = sprintf('return null;');
+            $body[] = sprintf('$returnEvent = new \Tebru\Retrofit\Event\ReturnEvent(null);');
+            $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.return", $returnEvent);');
+            $body[] = sprintf('return $returnEvent->getReturn();');
             $body[] = sprintf('}');
         } elseif ($this->callback !== null && !$this->callbackOptional) {
-            $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.return", new \Tebru\Retrofit\Event\ReturnEvent(null));');
-            $body[] = sprintf('return null;');
+            $body[] = sprintf('$returnEvent = new \Tebru\Retrofit\Event\ReturnEvent(null);');
+            $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.return", $returnEvent);');
+            $body[] = sprintf('return $returnEvent->getReturn();');
 
             return $body;
         }
@@ -499,8 +501,9 @@ class MethodBodyBuilder
                 }
         }
 
-        $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.return", new \Tebru\Retrofit\Event\ReturnEvent($return));');
-        $body[] = sprintf('return $return;');
+        $body[] = sprintf('$returnEvent = new \Tebru\Retrofit\Event\ReturnEvent($return);');
+        $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.return", $returnEvent);');
+        $body[] = sprintf('return $returnEvent->getReturn();');
 
         return $body;
     }

@@ -21,4 +21,11 @@ class ReturnEventTest extends MockeryTestCase
         $event = new ReturnEvent('return');
         $this->assertSame('return', $event->getReturn());
     }
+
+    public function testSetters()
+    {
+        $event = new ReturnEvent('return');
+        $event->setReturn('return2');
+        $this->assertSame('return2', $event->getReturn());
+    }
 }

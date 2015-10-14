@@ -37,4 +37,12 @@ class ReturnEvent extends Event
     {
         return $this->return;
     }
+
+    /**
+     * @param mixed $return
+     */
+    public function setReturn($return)
+    {
+        $this->return = $return;
+    }
 }
