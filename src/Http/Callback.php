@@ -27,7 +27,7 @@ interface Callback
     /**
      * Called on errors
      *
-     * @param RequestException $response
+     * @param RequestException $exception
      */
-    public function onFailure(RequestException $response);
+    public function onFailure(RequestException $exception);
 }
