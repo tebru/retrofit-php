@@ -3,6 +3,12 @@ Change Log
 
 This document keeps track of important changes between releases of the library.
 
+2.5.0
+------------------
+
+* Added logging
+* Fixed Dyanmo minimum version dependency
+
 2.4.0
 ------------------
 
