@@ -7,6 +7,8 @@
 namespace Tebru\Retrofit\Adapter\Rest;
 use JMS\Serializer\SerializerBuilder;
 use JMS\Serializer\SerializerInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Tebru;
@@ -30,6 +32,34 @@ class RestAdapterBuilder
     private $clientProvider;
 
     /**
+     * Client base url
+     *
+     * @var string $baseUrl
+     */
+    private $baseUrl;
+
+    /**
+     * JMS Serializer
+     *
+     * @var SerializerInterface $serializer
+     */
+    private $serializer;
+
+    /**
+     * Symfony event dispatcher
+     *
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    /**
+     * Psr logger
+     *
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * Constructor
      *
      * @param ClientProvider $clientProvider
@@ -39,20 +69,6 @@ class RestAdapterBuilder
         $this->clientProvider = $clientProvider;
     }
 
-    /**
-     * @var string $baseUrl
-     */
-    private $baseUrl;
-
-    /**
-     * @var SerializerInterface $serializer
-     */
-    private $serializer;
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
 
     /**
      * Sets the base url for the rest client
@@ -109,6 +125,17 @@ class RestAdapterBuilder
     }
 
     /**
+     * @param LoggerInterface $logger
+     * @return $this
+     */
+    public function setLogger($logger)
+    {
+        $this->logger = $logger;
+
+        return $this;
+    }
+
+    /**
      * Build the rest adapter
      *
      * @return RestAdapter
@@ -128,7 +155,17 @@ class RestAdapterBuilder
             $this->eventDispatcher = new EventDispatcher();
         }
 
-        $adapter = new RestAdapter($this->baseUrl, $this->clientProvider->getClient(), $this->serializer, $this->eventDispatcher);
+        if (null === $this->logger) {
+            $this->logger = new NullLogger();
+        }
+
+        $adapter = new RestAdapter(
+            $this->baseUrl,
+            $this->clientProvider->getClient(),
+            $this->serializer,
+            $this->eventDispatcher,
+            $this->logger
+        );
 
         return $adapter;
     }

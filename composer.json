@@ -9,7 +9,8 @@
         "tebru/dynamo": "^0.1",
         "tebru/retrofit-http-clients": "^0.5",
         "symfony/event-dispatcher": "^2.3",
-        "guzzlehttp/psr7": "^1.0"
+        "guzzlehttp/psr7": "^1.0",
+        "monolog/monolog": "~1.0"
     },
     "require-dev": {
         "mockery/mockery": "0.9.*",
