@@ -437,25 +437,35 @@ class MethodBodyBuilder
     private function createResponse(array $body)
     {
         $body[] = sprintf('$request = new \GuzzleHttp\Psr7\Request("%s", $requestUrl, $headers, $body);', strtoupper($this->requestMethod));
+        $body[] = sprintf('$this->logger->debug("Created Request", ["request" => ["method" => $request->getMethod(), "uri" => (string)$request->getUri(), "headers" => $request->getHeaders(), "body" => (string)$request->getBody()]]);');
+        $body[] = sprintf('$this->logger->info("Dispatching BeforeSendEvent");');
         $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.beforeSend", new \Tebru\Retrofit\Event\BeforeSendEvent($request));');
         $body[] = sprintf('try {');
 
         if ($this->callback !== null && $this->callbackOptional) {
             $body[] = sprintf('if (%s !== null) {', $this->callback);
+            $body[] = sprintf('$this->logger->info("Sending Asynchronous Request");');
             $body[] = sprintf('$response = $this->client->sendAsync($request, %s);', $this->callback);
             $body[] = sprintf('} else {');
+            $body[] = sprintf('$this->logger->info("Sending Synchronous Request");');
             $body[] = sprintf('$response = $this->client->send($request->getMethod(), (string)$request->getUri(), $request->getHeaders(), (string)$request->getBody());');
             $body[] = sprintf('}');
         } elseif ($this->callback !== null && !$this->callbackOptional) {
+            $body[] = sprintf('$this->logger->info("Sending Asynchronous Request");');
             $body[] = sprintf('$response = $this->client->sendAsync($request, %s);', $this->callback);
         } else {
+            $body[] = sprintf('$this->logger->info("Sending Synchronous Request");');
             $body[] = sprintf('$response = $this->client->send($request->getMethod(), (string)$request->getUri(), $request->getHeaders(), (string)$request->getBody());');
         }
 
         $body[] = sprintf('} catch (\Exception $exception) {');
+        $body[] = sprintf('$this->logger->error("Caught Exception", ["exception" => $exception]);');
+        $body[] = sprintf('$this->logger->info("Dispatching ApiExceptionEvent");');
         $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.apiException", new \Tebru\Retrofit\Event\ApiExceptionEvent($exception));');
         $body[] = sprintf('throw new \Tebru\Retrofit\Exception\RetrofitApiException(get_class($this), $exception->getMessage(), $exception->getCode(), $exception);');
         $body[] = sprintf('}');
+        $body[] = sprintf('$this->logger->debug("API Response", ["response" => $response]);');
+        $body[] = sprintf('$this->logger->info("Dispatching AfterSendEvent");');
         $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.afterSend", new \Tebru\Retrofit\Event\AfterSendEvent($response));');
 
         return $body;
@@ -471,11 +481,13 @@ class MethodBodyBuilder
     {
         if ($this->callback !== null && $this->callbackOptional) {
             $body[] = sprintf('if (%s !== null) {', $this->callback);
+            $body[] = sprintf('$this->logger->info("Dispatching ReturnEvent");');
             $body[] = sprintf('$returnEvent = new \Tebru\Retrofit\Event\ReturnEvent(null);');
             $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.return", $returnEvent);');
             $body[] = sprintf('return $returnEvent->getReturn();');
             $body[] = sprintf('}');
         } elseif ($this->callback !== null && !$this->callbackOptional) {
+            $body[] = sprintf('$this->logger->info("Dispatching ReturnEvent");');
             $body[] = sprintf('$returnEvent = new \Tebru\Retrofit\Event\ReturnEvent(null);');
             $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.return", $returnEvent);');
             $body[] = sprintf('return $returnEvent->getReturn();');
@@ -501,6 +513,7 @@ class MethodBodyBuilder
                 }
         }
 
+        $body[] = sprintf('$this->logger->info("Dispatching ReturnEvent");');
         $body[] = sprintf('$returnEvent = new \Tebru\Retrofit\Event\ReturnEvent($return);');
         $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.return", $returnEvent);');
         $body[] = sprintf('return $returnEvent->getReturn();');
