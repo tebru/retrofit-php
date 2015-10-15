@@ -12,3 +12,9 @@ This is a credits file of people that have contributed Retrofit-PHP Library.
 
  * Matthew Loberg
    * Email: loberg.matt@gmail.com
+   
+ * Edward Pfremmer
+   * Email: edward.pfremmer@nerdery.com
+   
+ * Tony Nelson
+   * Email: tonynelson19@gmail.com
