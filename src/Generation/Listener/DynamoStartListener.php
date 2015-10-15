@@ -98,14 +98,14 @@ class DynamoStartListener
      * Create wait method
      *
      * @param ClassModel $classModel
-     * @return null
+     * @return void
      */
     private function addWait(ClassModel $classModel)
     {
         $reflectionClass = new \ReflectionClass($classModel->getInterface());
 
         if (!in_array('Tebru\Retrofit\Http\AsyncAware', $reflectionClass->getInterfaceNames())) {
-            return null;
+            return;
         }
 
         $methodModel = new MethodModel($classModel, 'wait');
