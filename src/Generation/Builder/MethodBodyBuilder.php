@@ -437,7 +437,7 @@ class MethodBodyBuilder
     private function createResponse(array $body)
     {
         $body[] = sprintf('$request = new \GuzzleHttp\Psr7\Request("%s", $requestUrl, $headers, $body);', strtoupper($this->requestMethod));
-        $body[] = sprintf('$this->logger->debug("Created Request", ["request" => ["method" => $request->getMethod(), "uri" => (string)$request->getUri(), "headers" => $request->getHeaders(), "body" => (string)$request->getBody()]]);');
+        $body[] = sprintf('$this->logger->debug("Created Request", ["request" => ["method" => $request->getMethod(), "uri" => urldecode((string)$request->getUri()), "headers" => $request->getHeaders(), "body" => (string)$request->getBody()]]);');
         $body[] = sprintf('$this->logger->info("Dispatching BeforeSendEvent");');
         $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.beforeSend", new \Tebru\Retrofit\Event\BeforeSendEvent($request));');
         $body[] = sprintf('try {');
@@ -448,14 +448,14 @@ class MethodBodyBuilder
             $body[] = sprintf('$response = $this->client->sendAsync($request, %s);', $this->callback);
             $body[] = sprintf('} else {');
             $body[] = sprintf('$this->logger->info("Sending Synchronous Request");');
-            $body[] = sprintf('$response = $this->client->send($request->getMethod(), (string)$request->getUri(), $request->getHeaders(), (string)$request->getBody());');
+            $body[] = sprintf('$response = $this->client->send($request->getMethod(), urldecode((string)$request->getUri()), $request->getHeaders(), (string)$request->getBody());');
             $body[] = sprintf('}');
         } elseif ($this->callback !== null && !$this->callbackOptional) {
             $body[] = sprintf('$this->logger->info("Sending Asynchronous Request");');
             $body[] = sprintf('$response = $this->client->sendAsync($request, %s);', $this->callback);
         } else {
             $body[] = sprintf('$this->logger->info("Sending Synchronous Request");');
-            $body[] = sprintf('$response = $this->client->send($request->getMethod(), (string)$request->getUri(), $request->getHeaders(), (string)$request->getBody());');
+            $body[] = sprintf('$response = $this->client->send($request->getMethod(), urldecode((string)$request->getUri()), $request->getHeaders(), (string)$request->getBody());');
         }
 
         $body[] = sprintf('} catch (\Exception $exception) {');
