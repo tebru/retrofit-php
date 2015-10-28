@@ -7,6 +7,7 @@
 namespace Tebru\Retrofit\Event;
 
 use Exception;
+use Psr\Http\Message\RequestInterface;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
@@ -22,13 +23,20 @@ class ApiExceptionEvent extends Event
     private $exception;
 
     /**
+     * @var RequestInterface
+     */
+    private $request;
+
+    /**
      * Constructor
      *
-     * @param Exception $exception
+     * @param Exception         $exception
+     * @param RequestInterface  $request
      */
-    public function __construct(Exception $exception)
+    public function __construct(Exception $exception, RequestInterface $request = null)
     {
         $this->exception = $exception;
+        $this->request   = $request;
     }
 
     /**
@@ -45,5 +53,13 @@ class ApiExceptionEvent extends Event
     public function setException(Exception $exception)
     {
         $this->exception = $exception;
+    }
+
+    /**
+     * @return RequestInterface
+     */
+    public function getRequest()
+    {
+        return $this->request;
     }
 }
