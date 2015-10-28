@@ -42,6 +42,14 @@ class BeforeSendEvent extends Event
     }
 
     /**
+     * @param RequestInterface $request
+     */
+    public function setRequest(RequestInterface $request)
+    {
+        $this->request = $request;
+    }
+
+    /**
      * @deprecated Use getRequest()
      * @return string
      */

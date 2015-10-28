@@ -26,4 +26,14 @@ class BeforeSendEventTest extends MockeryTestCase
         $this->assertSame(['Host' => ['mockservice.com'], 'foo' => ['bar']], $event->getHeaders());
         $this->assertSame('body', $event->getBody());
     }
+
+    public function testSetters()
+    {
+        $request = new Request('POST', 'http://mockservice.com/post', ['foo' => 'bar'], 'body');
+        $event = new BeforeSendEvent($request);
+        $request = $request->withMethod('PUT');
+        $event->setRequest($request);
+        $this->assertEquals('PUT', $event->getRequest()->getMethod());
+    }
+
 }

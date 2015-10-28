@@ -22,4 +22,13 @@ class AfterSendEventTest extends MockeryTestCase
         $event = new AfterSendEvent(new Response(200, [], 'body'));
         $this->assertInstanceOf(Response::class, $event->getResponse());
     }
+
+    public function testSetters()
+    {
+        $response = new Response(200, [], 'body');
+        $event = new AfterSendEvent($response);
+        $response = $response->withStatus(500);
+        $event->setResponse($response);
+        $this->assertSame(500, $event->getResponse()->getStatusCode());
+    }
 }

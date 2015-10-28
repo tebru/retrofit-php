@@ -439,7 +439,9 @@ class MethodBodyBuilder
         $body[] = sprintf('$request = new \GuzzleHttp\Psr7\Request("%s", $requestUrl, $headers, $body);', strtoupper($this->requestMethod));
         $body[] = sprintf('$this->logger->debug("Created Request", ["request" => ["method" => $request->getMethod(), "uri" => urldecode((string)$request->getUri()), "headers" => $request->getHeaders(), "body" => (string)$request->getBody()]]);');
         $body[] = sprintf('$this->logger->info("Dispatching BeforeSendEvent");');
-        $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.beforeSend", new \Tebru\Retrofit\Event\BeforeSendEvent($request));');
+        $body[] = sprintf('$beforeSendEvent = new \Tebru\Retrofit\Event\BeforeSendEvent($request);');
+        $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.beforeSend", $beforeSendEvent);');
+        $body[] = sprintf('$request = $beforeSendEvent->getRequest();');
         $body[] = sprintf('try {');
 
         if ($this->callback !== null && $this->callbackOptional) {
@@ -461,12 +463,16 @@ class MethodBodyBuilder
         $body[] = sprintf('} catch (\Exception $exception) {');
         $body[] = sprintf('$this->logger->error("Caught Exception", ["exception" => $exception]);');
         $body[] = sprintf('$this->logger->info("Dispatching ApiExceptionEvent");');
-        $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.apiException", new \Tebru\Retrofit\Event\ApiExceptionEvent($exception));');
+        $body[] = sprintf('$apiExceptionEvent = new \Tebru\Retrofit\Event\ApiExceptionEvent($exception);');
+        $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.apiException", $apiExceptionEvent);');
+        $body[] = sprintf('$exception = $apiExceptionEvent->getException();');
         $body[] = sprintf('throw new \Tebru\Retrofit\Exception\RetrofitApiException(get_class($this), $exception->getMessage(), $exception->getCode(), $exception);');
         $body[] = sprintf('}');
         $body[] = sprintf('$this->logger->debug("API Response", ["response" => $response]);');
         $body[] = sprintf('$this->logger->info("Dispatching AfterSendEvent");');
-        $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.afterSend", new \Tebru\Retrofit\Event\AfterSendEvent($response));');
+        $body[] = sprintf('$afterSendEvent = new \Tebru\Retrofit\Event\AfterSendEvent($response);');
+        $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.afterSend", $afterSendEvent);');
+        $body[] = sprintf('$response = $afterSendEvent->getResponse();');
 
         return $body;
     }
