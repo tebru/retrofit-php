@@ -42,7 +42,7 @@ class AfterSendEvent extends Event
     /**
      * @param ResponseInterface $response
      */
-    public function setResponse(ResponseInterface $response)
+    public function setResponse(ResponseInterface $response = null)
     {
         $this->response = $response;
     }
