@@ -463,14 +463,14 @@ class MethodBodyBuilder
         $body[] = sprintf('} catch (\Exception $exception) {');
         $body[] = sprintf('$this->logger->error("Caught Exception", ["exception" => $exception]);');
         $body[] = sprintf('$this->logger->info("Dispatching ApiExceptionEvent");');
-        $body[] = sprintf('$apiExceptionEvent = new \Tebru\Retrofit\Event\ApiExceptionEvent($exception);');
+        $body[] = sprintf('$apiExceptionEvent = new \Tebru\Retrofit\Event\ApiExceptionEvent($exception, $request);');
         $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.apiException", $apiExceptionEvent);');
         $body[] = sprintf('$exception = $apiExceptionEvent->getException();');
         $body[] = sprintf('throw new \Tebru\Retrofit\Exception\RetrofitApiException(get_class($this), $exception->getMessage(), $exception->getCode(), $exception);');
         $body[] = sprintf('}');
         $body[] = sprintf('$this->logger->debug("API Response", ["response" => $response]);');
         $body[] = sprintf('$this->logger->info("Dispatching AfterSendEvent");');
-        $body[] = sprintf('$afterSendEvent = new \Tebru\Retrofit\Event\AfterSendEvent($response);');
+        $body[] = sprintf('$afterSendEvent = new \Tebru\Retrofit\Event\AfterSendEvent($request, $response);');
         $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.afterSend", $afterSendEvent);');
         $body[] = sprintf('$response = $afterSendEvent->getResponse();');
 

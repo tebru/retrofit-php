@@ -7,6 +7,7 @@
 namespace Tebru\Retrofit\Test\Unit\Event;
 
 use Exception;
+use GuzzleHttp\Psr7\Request;
 use InvalidArgumentException;
 use Tebru\Retrofit\Event\ApiExceptionEvent;
 use Tebru\Retrofit\Test\MockeryTestCase;
@@ -20,8 +21,9 @@ class ApiExceptionEventTest extends MockeryTestCase
 {
     public function testGetters()
     {
-        $event = new ApiExceptionEvent(new Exception());
+        $event = new ApiExceptionEvent(new Exception(), new Request('GET', 'http://mockservice.com/get'));
         $this->assertInstanceOf(Exception::class, $event->getException());
+        $this->assertInstanceOf(Request::class, $event->getRequest());
     }
 
     public function testSetters()
