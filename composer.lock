@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "d2f5e339e19fa2f54607c2f2d2972738",
-    "content-hash": "9af652d28cf7aaadd3a352e791ea79d9",
+    "hash": "031184d65cdbc4824311555c92a79535",
+    "content-hash": "88bd9b3370ce1316017b544061dffe93",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -982,16 +982,16 @@
         },
         {
             "name": "tebru/dynamo",
-            "version": "v0.1.3",
+            "version": "v0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tebru/dynamo.git",
-                "reference": "788e053a49a25e2dc72ff9b8faa9344e542b3c5c"
+                "reference": "afa96fbe1b847f728c0fc30384e2c9cba84592ac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tebru/dynamo/zipball/788e053a49a25e2dc72ff9b8faa9344e542b3c5c",
-                "reference": "788e053a49a25e2dc72ff9b8faa9344e542b3c5c",
+                "url": "https://api.github.com/repos/tebru/dynamo/zipball/afa96fbe1b847f728c0fc30384e2c9cba84592ac",
+                "reference": "afa96fbe1b847f728c0fc30384e2c9cba84592ac",
                 "shasum": ""
             },
             "require": {
@@ -1027,7 +1027,7 @@
                 }
             ],
             "description": "Generates PHP classes from an interface based on doctrine annotations",
-            "time": "2015-08-27 21:40:11"
+            "time": "2015-11-04 02:04:06"
         },
         {
             "name": "tebru/retrofit-http-clients",

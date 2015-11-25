@@ -7,6 +7,7 @@
 namespace Tebru\Retrofit\Generation\Builder;
 
 use Tebru;
+use Tebru\Dynamo\Model\Body;
 
 /**
  * Class MethodBodyBuilder
@@ -15,6 +16,11 @@ use Tebru;
  */
 class MethodBodyBuilder
 {
+    /**
+     * @var Body
+     */
+    private $methodBody;
+    
     /**
      * @var string
      */
@@ -145,6 +151,14 @@ class MethodBodyBuilder
      * @var bool
      */
     private $callbackOptional = false;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->methodBody = new Body();
+    }
 
     /**
      * @param string $baseUrl
@@ -305,23 +319,19 @@ class MethodBodyBuilder
      */
     public function build()
     {
-        $body = [];
-        $body = $this->createRequestUrl($body);
-        $body = $this->createHeaders($body);
-        $body = $this->createBody($body);
-        $body = $this->createResponse($body);
-        $body = $this->createReturns($body);
+        $this->createRequestUrl();
+        $this->createHeaders();
+        $this->createBody();
+        $this->createResponse();
+        $this->createReturns();
 
-        return implode($body);
+        return (string)$this->methodBody;
     }
 
     /**
      * Build the request url
-     *
-     * @param array $body
-     * @return array
      */
-    private function createRequestUrl(array $body)
+    private function createRequestUrl()
     {
         Tebru\assertNotNull($this->uri, 'Request annotation not found (e.g. @GET, @POST)');
 
@@ -332,252 +342,221 @@ class MethodBodyBuilder
             // if we have regular queries, add them to the query builder
             if (!empty($this->queries)) {
                 $queryArray = $this->arrayToString($this->queries);
-                $body[] = sprintf('$queryString = urldecode(http_build_query(%s + %s));', $queryArray, $this->queryMap);
+                $this->methodBody->add('$queryString = urldecode(http_build_query(%s + %s));', $queryArray, $this->queryMap);
             } else {
-                $body[] = sprintf('$queryString = urldecode(http_build_query(%s));', $this->queryMap);
+                $this->methodBody->add('$queryString = urldecode(http_build_query(%s));', $this->queryMap);
             }
 
-            $body[] = sprintf('$requestUrl = %s . "%s?" . $queryString;', $baseUrl, $this->uri);
+            $this->methodBody->add('$requestUrl = %s . "%s?" . $queryString;', $baseUrl, $this->uri);
 
             // if we have queries, add them to the request url
         } elseif (!empty($this->queries)) {
             $queryArray = $this->arrayToString($this->queries);
-            $body[] = sprintf('$queryString = urldecode(http_build_query(%s));', $queryArray);
-            $body[] = sprintf('$requestUrl = %s . "%s" . "?" . $queryString;', $baseUrl, $this->uri);
+            $this->methodBody->add('$queryString = urldecode(http_build_query(%s));', $queryArray);
+            $this->methodBody->add('$requestUrl = %s . "%s" . "?" . $queryString;', $baseUrl, $this->uri);
         } else {
-            $body[] = sprintf('$requestUrl = %s . "%s";', $baseUrl, $this->uri);
+            $this->methodBody->add('$requestUrl = %s . "%s";', $baseUrl, $this->uri);
         }
-
-        return $body;
     }
 
     /**
      * Build the headers
-     *
-     * @param array $body
-     * @return array
      */
-    private function createHeaders(array $body)
+    private function createHeaders()
     {
         if (empty($this->headers)) {
-            $body[] = '$headers = [];';
+            $this->methodBody->add('$headers = [];');
 
-            return $body;
+            return;
         }
 
-        $body[] = sprintf('$headers = %s;', $this->arrayToString($this->headers));
-
-        return $body;
+        $this->methodBody->add('$headers = %s;', $this->arrayToString($this->headers));
     }
 
     /**
      * Build the request body
-     *
-     * @param array $body
-     * @return array
      */
-    private function createBody(array $body)
+    private function createBody()
     {
         if (null === $this->body && empty($this->bodyParts)) {
-            $body[] = '$body = null;';
+            $this->methodBody->add('$body = null;');
 
-            return $body;
+            return;
         }
 
         Tebru\assertThat(null === $this->body || empty($this->bodyParts), 'Cannot have both @Body and @Part annotations');
 
         if ($this->bodyIsObject) {
             if ($this->bodyIsOptional) {
-                $body[] = sprintf('if (null !== %s) {', $this->body);
+                $this->methodBody->add('if (null !== %s) {', $this->body);
             }
 
             if ($this->bodyIsJsonSerializable) {
-                $body[] = sprintf('$body = json_encode(%s);', $this->body);
+                $this->methodBody->add('$body = json_encode(%s);', $this->body);
             } else {
                 if (!empty($this->serializationContext)) {
-                    $body[] = sprintf('$context = \JMS\Serializer\SerializationContext::create();');
-                    $body = $this->createContext($body, $this->serializationContext);
-                    $body[] = sprintf('$body = $this->serializer->serialize(%s, "json", $context);', $this->body);
+                    $this->methodBody->add('$context = \JMS\Serializer\SerializationContext::create();');
+                    $this->createContext($this->serializationContext);
+                    $this->methodBody->add('$body = $this->serializer->serialize(%s, "json", $context);', $this->body);
                 } else {
-                    $body[] = sprintf('$body = $this->serializer->serialize(%s, "json");', $this->body);
+                    $this->methodBody->add('$body = $this->serializer->serialize(%s, "json");', $this->body);
                 }
             }
 
 
             if (false === $this->jsonEncode) {
-                $body[] = sprintf('$body = json_decode($body, true);');
-                $body[] = sprintf('$body = \Tebru\Retrofit\Generation\Manipulator\BodyManipulator::boolToString($body);');
-                $body[] = sprintf('$body = http_build_query($body);');
+                $this->methodBody->add('$body = json_decode($body, true);');
+                $this->methodBody->add('$body = \Tebru\Retrofit\Generation\Manipulator\BodyManipulator::boolToString($body);');
+                $this->methodBody->add('$body = http_build_query($body);');
             }
 
             if ($this->bodyIsOptional) {
-                $body[] = sprintf('} else { $body = %s; }', $this->bodyDefaultValue);
+                $this->methodBody->add('} else { $body = %s; }', $this->bodyDefaultValue);
             }
         } elseif ($this->bodyIsArray) {
-            $body[] = (true === $this->jsonEncode)
-                ? sprintf('$body = json_encode(%s);', $this->body)
-                : sprintf('$body = http_build_query(%s);', $this->body);
+            (true === $this->jsonEncode)
+                ? $this->methodBody->add('$body = json_encode(%s);', $this->body)
+                : $this->methodBody->add('$body = http_build_query(%s);', $this->body);
         } elseif (null !== $this->body) {
-            $body[] = sprintf('$body = %s;', $this->body);
+            $this->methodBody->add('$body = %s;', $this->body);
         } else {
-            $body[] = (true === $this->jsonEncode)
-                ? sprintf('$body = json_encode(%s);', $this->arrayToString($this->bodyParts))
-                : sprintf('$body = http_build_query(%s);', $this->arrayToString($this->bodyParts));
+            (true === $this->jsonEncode)
+                ? $this->methodBody->add('$body = json_encode(%s);', $this->arrayToString($this->bodyParts))
+                : $this->methodBody->add('$body = http_build_query(%s);', $this->arrayToString($this->bodyParts));
         }
-
-        return $body;
     }
 
     /**
      * Build the response
-     *
-     * @param array $body
-     * @return array
      */
-    private function createResponse(array $body)
+    private function createResponse()
     {
-        $body[] = sprintf('$request = new \GuzzleHttp\Psr7\Request("%s", $requestUrl, $headers, $body);', strtoupper($this->requestMethod));
-        $body[] = sprintf('$this->logger->debug("Created Request", ["request" => ["method" => $request->getMethod(), "uri" => urldecode((string)$request->getUri()), "headers" => $request->getHeaders(), "body" => (string)$request->getBody()]]);');
-        $body[] = sprintf('$this->logger->info("Dispatching BeforeSendEvent");');
-        $body[] = sprintf('$beforeSendEvent = new \Tebru\Retrofit\Event\BeforeSendEvent($request);');
-        $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.beforeSend", $beforeSendEvent);');
-        $body[] = sprintf('$request = $beforeSendEvent->getRequest();');
-        $body[] = sprintf('try {');
+        $this->methodBody->add('$request = new \GuzzleHttp\Psr7\Request("%s", $requestUrl, $headers, $body);', strtoupper($this->requestMethod));
+        $this->methodBody->add('$this->logger->debug("Created Request", ["request" => ["method" => $request->getMethod(), "uri" => urldecode((string)$request->getUri()), "headers" => $request->getHeaders(), "body" => (string)$request->getBody()]]);');
+        $this->methodBody->add('$this->logger->info("Dispatching BeforeSendEvent");');
+        $this->methodBody->add('$beforeSendEvent = new \Tebru\Retrofit\Event\BeforeSendEvent($request);');
+        $this->methodBody->add('$this->eventDispatcher->dispatch("retrofit.beforeSend", $beforeSendEvent);');
+        $this->methodBody->add('$request = $beforeSendEvent->getRequest();');
+        $this->methodBody->add('try {');
 
         if ($this->callback !== null && $this->callbackOptional) {
-            $body[] = sprintf('if (%s !== null) {', $this->callback);
-            $body[] = sprintf('$this->logger->info("Sending Asynchronous Request");');
-            $body[] = sprintf('$response = $this->client->sendAsync($request, %s);', $this->callback);
-            $body[] = sprintf('} else {');
-            $body[] = sprintf('$this->logger->info("Sending Synchronous Request");');
-            $body[] = sprintf('$response = $this->client->send($request->getMethod(), urldecode((string)$request->getUri()), $request->getHeaders(), (string)$request->getBody());');
-            $body[] = sprintf('}');
+            $this->methodBody->add('if (%s !== null) {', $this->callback);
+            $this->methodBody->add('$this->logger->info("Sending Asynchronous Request");');
+            $this->methodBody->add('$response = $this->client->sendAsync($request, %s);', $this->callback);
+            $this->methodBody->add('} else {');
+            $this->methodBody->add('$this->logger->info("Sending Synchronous Request");');
+            $this->methodBody->add('$response = $this->client->send($request->getMethod(), urldecode((string)$request->getUri()), $request->getHeaders(), (string)$request->getBody());');
+            $this->methodBody->add('}');
         } elseif ($this->callback !== null && !$this->callbackOptional) {
-            $body[] = sprintf('$this->logger->info("Sending Asynchronous Request");');
-            $body[] = sprintf('$response = $this->client->sendAsync($request, %s);', $this->callback);
+            $this->methodBody->add('$this->logger->info("Sending Asynchronous Request");');
+            $this->methodBody->add('$response = $this->client->sendAsync($request, %s);', $this->callback);
         } else {
-            $body[] = sprintf('$this->logger->info("Sending Synchronous Request");');
-            $body[] = sprintf('$response = $this->client->send($request->getMethod(), urldecode((string)$request->getUri()), $request->getHeaders(), (string)$request->getBody());');
+            $this->methodBody->add('$this->logger->info("Sending Synchronous Request");');
+            $this->methodBody->add('$response = $this->client->send($request->getMethod(), urldecode((string)$request->getUri()), $request->getHeaders(), (string)$request->getBody());');
         }
 
-        $body[] = sprintf('} catch (\Exception $exception) {');
-        $body[] = sprintf('$this->logger->error("Caught Exception", ["exception" => $exception]);');
-        $body[] = sprintf('$this->logger->info("Dispatching ApiExceptionEvent");');
-        $body[] = sprintf('$apiExceptionEvent = new \Tebru\Retrofit\Event\ApiExceptionEvent($exception, $request);');
-        $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.apiException", $apiExceptionEvent);');
-        $body[] = sprintf('$exception = $apiExceptionEvent->getException();');
-        $body[] = sprintf('throw new \Tebru\Retrofit\Exception\RetrofitApiException(get_class($this), $exception->getMessage(), $exception->getCode(), $exception);');
-        $body[] = sprintf('}');
-        $body[] = sprintf('$this->logger->debug("API Response", ["response" => $response]);');
-        $body[] = sprintf('$this->logger->info("Dispatching AfterSendEvent");');
-        $body[] = sprintf('$afterSendEvent = new \Tebru\Retrofit\Event\AfterSendEvent($request, $response);');
-        $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.afterSend", $afterSendEvent);');
-        $body[] = sprintf('$response = $afterSendEvent->getResponse();');
-
-        return $body;
+        $this->methodBody->add('} catch (\Exception $exception) {');
+        $this->methodBody->add('$this->logger->error("Caught Exception", ["exception" => $exception]);');
+        $this->methodBody->add('$this->logger->info("Dispatching ApiExceptionEvent");');
+        $this->methodBody->add('$apiExceptionEvent = new \Tebru\Retrofit\Event\ApiExceptionEvent($exception, $request);');
+        $this->methodBody->add('$this->eventDispatcher->dispatch("retrofit.apiException", $apiExceptionEvent);');
+        $this->methodBody->add('$exception = $apiExceptionEvent->getException();');
+        $this->methodBody->add('throw new \Tebru\Retrofit\Exception\RetrofitApiException(get_class($this), $exception->getMessage(), $exception->getCode(), $exception);');
+        $this->methodBody->add('}');
+        $this->methodBody->add('$this->logger->debug("API Response", ["response" => $response]);');
+        $this->methodBody->add('$this->logger->info("Dispatching AfterSendEvent");');
+        $this->methodBody->add('$afterSendEvent = new \Tebru\Retrofit\Event\AfterSendEvent($request, $response);');
+        $this->methodBody->add('$this->eventDispatcher->dispatch("retrofit.afterSend", $afterSendEvent);');
+        $this->methodBody->add('$response = $afterSendEvent->getResponse();');
     }
 
     /**
      * Build the return
-     *
-     * @param array $body
-     * @return array
      */
-    private function createReturns(array $body)
+    private function createReturns()
     {
         if ($this->callback !== null && $this->callbackOptional) {
-            $body[] = sprintf('if (%s !== null) {', $this->callback);
-            $body[] = sprintf('$this->logger->info("Dispatching ReturnEvent");');
-            $body[] = sprintf('$returnEvent = new \Tebru\Retrofit\Event\ReturnEvent(null);');
-            $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.return", $returnEvent);');
-            $body[] = sprintf('return $returnEvent->getReturn();');
-            $body[] = sprintf('}');
+            $this->methodBody->add('if (%s !== null) {', $this->callback);
+            $this->methodBody->add('$this->logger->info("Dispatching ReturnEvent");');
+            $this->methodBody->add('$returnEvent = new \Tebru\Retrofit\Event\ReturnEvent(null);');
+            $this->methodBody->add('$this->eventDispatcher->dispatch("retrofit.return", $returnEvent);');
+            $this->methodBody->add('return $returnEvent->getReturn();');
+            $this->methodBody->add('}');
         } elseif ($this->callback !== null && !$this->callbackOptional) {
-            $body[] = sprintf('$this->logger->info("Dispatching ReturnEvent");');
-            $body[] = sprintf('$returnEvent = new \Tebru\Retrofit\Event\ReturnEvent(null);');
-            $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.return", $returnEvent);');
-            $body[] = sprintf('return $returnEvent->getReturn();');
+            $this->methodBody->add('$this->logger->info("Dispatching ReturnEvent");');
+            $this->methodBody->add('$returnEvent = new \Tebru\Retrofit\Event\ReturnEvent(null);');
+            $this->methodBody->add('$this->eventDispatcher->dispatch("retrofit.return", $returnEvent);');
+            $this->methodBody->add('return $returnEvent->getReturn();');
 
-            return $body;
+            return;
         }
 
         switch ($this->returnType) {
             case 'raw':
-                $body[] = sprintf('$return = (string)$response->getBody();');
+                $this->methodBody->add('$return = (string)$response->getBody();');
                 break;
             case 'array':
-                $body[] = sprintf('$return = json_decode((string)$response->getBody(), true);');
+                $this->methodBody->add('$return = json_decode((string)$response->getBody(), true);');
                 break;
             default:
                 if (!empty($this->deserializationContext)) {
-                    $body[] = sprintf('$context = \JMS\Serializer\DeserializationContext::create();');
-                    $body = $this->createContext($body, $this->deserializationContext);
-                    $body = $this->createDepthContext($body);
-                    $body[] = sprintf('$return = $this->serializer->deserialize((string)$response->getBody(), "%s", "json", $context);', $this->returnType);
+                    $this->methodBody->add('$context = \JMS\Serializer\DeserializationContext::create();');
+                    $this->createContext($this->deserializationContext);
+                    $this->createDepthContext();
+                    $this->methodBody->add('$return = $this->serializer->deserialize((string)$response->getBody(), "%s", "json", $context);', $this->returnType);
                 } else {
-                    $body[] = sprintf('$return = $this->serializer->deserialize((string)$response->getBody(), "%s", "json");', $this->returnType);
+                    $this->methodBody->add('$return = $this->serializer->deserialize((string)$response->getBody(), "%s", "json");', $this->returnType);
                 }
         }
 
-        $body[] = sprintf('$this->logger->info("Dispatching ReturnEvent");');
-        $body[] = sprintf('$returnEvent = new \Tebru\Retrofit\Event\ReturnEvent($return);');
-        $body[] = sprintf('$this->eventDispatcher->dispatch("retrofit.return", $returnEvent);');
-        $body[] = sprintf('return $returnEvent->getReturn();');
-
-        return $body;
+        $this->methodBody->add('$this->logger->info("Dispatching ReturnEvent");');
+        $this->methodBody->add('$returnEvent = new \Tebru\Retrofit\Event\ReturnEvent($return);');
+        $this->methodBody->add('$this->eventDispatcher->dispatch("retrofit.return", $returnEvent);');
+        $this->methodBody->add('return $returnEvent->getReturn();');
     }
 
     /**
      * Build the serialization context
      *
-     * @param array $body
      * @param $context
-     * @return array
      */
-    private function createContext(array $body, &$context)
+    private function createContext(&$context)
     {
         if (!empty($context['groups'])) {
-            $body[] = sprintf('$context->setGroups(%s);', $this->arrayToString($context['groups']));
+            $this->methodBody->add('$context->setGroups(%s);', $this->arrayToString($context['groups']));
         }
 
         if (!empty($context['version'])) {
-            $body[] = sprintf('$context->setVersion(%d);', (int)$context['version']);
+            $this->methodBody->add('$context->setVersion(%d);', (int)$context['version']);
         }
 
         if (!empty($context['serializeNull'])) {
-            $body[] = sprintf('$context->setSerializeNull(%d);', (int)$context['serializeNull']);
+            $this->methodBody->add('$context->setSerializeNull(%d);', (int)$context['serializeNull']);
         }
 
         if (!empty($context['enableMaxDepthChecks'])) {
-            $body[] = sprintf('$context->enableMaxDepthChecks();');
+            $this->methodBody->add('$context->enableMaxDepthChecks();');
         }
 
         if (!empty($context['attributes'])) {
             foreach ($context['attributes'] as $key => $value) {
-                $body[] = sprintf('$context->setAttribute("%s", "%s");', $key, $value);
+                $this->methodBody->add('$context->setAttribute("%s", "%s");', $key, $value);
             }
         }
-
-        return $body;
     }
 
     /**
      * Build the serializer depth context
-     *
-     * @param array $body
-     * @return array
      */
-    private function createDepthContext(array $body)
+    private function createDepthContext()
     {
         if (empty($this->deserializationContext['depth'])) {
-            return $body;
+            return;
         }
 
         $contextDepth = (int)$this->deserializationContext['depth'];
-        $body[] = sprintf('while ($context->getDepth() > %d) { $context->decreaseDepth(); }', $contextDepth);
-        $body[] = sprintf('while ($context->getDepth() < %d) { $context->increaseDepth(); }', $contextDepth);
-
-        return $body;
+        $this->methodBody->add('while ($context->getDepth() > %d) { $context->decreaseDepth(); }', $contextDepth);
+        $this->methodBody->add('while ($context->getDepth() < %d) { $context->increaseDepth(); }', $contextDepth);
     }
 
     /**
