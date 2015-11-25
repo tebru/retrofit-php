@@ -12,6 +12,7 @@ use Psr\Log\NullLogger;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Tebru;
+use Tebru\Retrofit\Adapter\HttpClientAdapter;
 use Tebru\Retrofit\Exception\RetrofitException;
 use Tebru\Retrofit\HttpClient\ClientProvider;
 
@@ -88,12 +89,27 @@ class RestAdapterBuilder
      *
      * Currently only supports guzzle clients
      *
+     * @deprecated Will be removed in v3. Use setClientAdapter() instead.
      * @param mixed $httpClient
      * @return $this
      */
     public function setHttpClient($httpClient)
     {
         $this->clientProvider->setClient($httpClient);
+
+        return $this;
+    }
+
+    /**
+     * Set the http client adapter to make requests
+     *
+     * @param HttpClientAdapter $clientAdapter
+     * @return $this
+     * @throws RetrofitException
+     */
+    public function setClientAdapter(HttpClientAdapter $clientAdapter)
+    {
+        $this->clientProvider->setClient($clientAdapter);
 
         return $this;
     }

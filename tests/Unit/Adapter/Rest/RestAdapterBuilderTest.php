@@ -6,11 +6,14 @@
 
 namespace Tebru\Retrofit\Test\Unit\Adapter\Rest;
 
+use GuzzleHttp\Client;
 use JMS\Serializer\SerializerBuilder;
 use Mockery;
-use Tebru\Retrofit\Adapter\HttpClientAdapter;
+use Monolog\Logger;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Tebru\Retrofit\Adapter\Rest\RestAdapter;
 use Tebru\Retrofit\Adapter\Rest\RestAdapterBuilder;
+use Tebru\Retrofit\HttpClient\Adapter\Guzzle\GuzzleV6ClientAdapter;
 use Tebru\Retrofit\Test\MockeryTestCase;
 
 /**
@@ -35,12 +38,45 @@ class RestAdapterBuilderTest extends MockeryTestCase
         RestAdapter::builder()->build();
     }
 
-    public function testWillUseCustomSerializer()
+    public function testSetHttpClient()
+    {
+        $client = new Client();
+        $restAdapter = $this->getRestAdapterBuilder()->setHttpClient($client)->build();
+
+        $this->assertAttributeInstanceOf(GuzzleV6ClientAdapter::class, 'httpClient', $restAdapter);
+    }
+
+    public function testSetClientAdapter()
+    {
+        $client = new Client();
+        $clientAdapter = new GuzzleV6ClientAdapter($client);
+        $restAdapter = $this->getRestAdapterBuilder()->setClientAdapter($clientAdapter)->build();
+
+        $this->assertAttributeInstanceOf(GuzzleV6ClientAdapter::class, 'httpClient', $restAdapter);
+    }
+
+    public function testSetSerializer()
     {
         $serializer = SerializerBuilder::create()->build();
-        $restAdapter = $this->getRestAdapterBuilder()->setSerializer($serializer);
+        $restAdapter = $this->getRestAdapterBuilder()->setSerializer($serializer)->build();
 
-        $this->assertAttributeEquals($serializer, 'serializer', $restAdapter);
+        $this->assertAttributeSame($serializer, 'serializer', $restAdapter);
+    }
+
+    public function testSetEventDispatcher()
+    {
+        $eventDispatcher = Mockery::mock(EventDispatcherInterface::class);
+        $restAdapter = $this->getRestAdapterBuilder()->setEventDispatcher($eventDispatcher)->build();
+
+        $this->assertAttributeSame($eventDispatcher, 'eventDispatcher', $restAdapter);
+    }
+
+    public function testSetLogger()
+    {
+        $logger = Mockery::mock(Logger::class);
+        $restAdapter = $this->getRestAdapterBuilder()->setLogger($logger)->build();
+
+        $this->assertAttributeSame($logger, 'logger', $restAdapter);
     }
 
     /**
@@ -48,8 +84,6 @@ class RestAdapterBuilderTest extends MockeryTestCase
      */
     private function getRestAdapterBuilder()
     {
-        return RestAdapter::builder()
-            ->setBaseUrl('http://example.com')
-            ->setHttpClient(Mockery::mock(HttpClientAdapter::class));
+        return RestAdapter::builder()->setBaseUrl('http://example.com');
     }
 }
