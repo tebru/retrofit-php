@@ -6,8 +6,8 @@
         "jms/serializer": ">=0.11, <2.0",
         "symfony/console": "^2.0.5",
         "tebru/assert": "^0.2",
-        "tebru/dynamo": "^0.2",
-        "tebru/retrofit-http-clients": "^0.5",
+        "tebru/dynamo": "^0.2.1",
+        "tebru/retrofit-http-clients": "^0.5.1",
         "symfony/event-dispatcher": "^2.3",
         "guzzlehttp/psr7": "^1.0",
         "monolog/monolog": "~1.0"

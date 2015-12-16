@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "031184d65cdbc4824311555c92a79535",
-    "content-hash": "88bd9b3370ce1316017b544061dffe93",
+    "hash": "92350e060a974bdba503dfe3c2c81782",
+    "content-hash": "aa3c33494daee2b7ea8ce5f94c703b01",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -982,16 +982,16 @@
         },
         {
             "name": "tebru/dynamo",
-            "version": "v0.2.0",
+            "version": "v0.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tebru/dynamo.git",
-                "reference": "afa96fbe1b847f728c0fc30384e2c9cba84592ac"
+                "reference": "1624f9aebcae91378bdcf5dc16285b6f661cd5e7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tebru/dynamo/zipball/afa96fbe1b847f728c0fc30384e2c9cba84592ac",
-                "reference": "afa96fbe1b847f728c0fc30384e2c9cba84592ac",
+                "url": "https://api.github.com/repos/tebru/dynamo/zipball/1624f9aebcae91378bdcf5dc16285b6f661cd5e7",
+                "reference": "1624f9aebcae91378bdcf5dc16285b6f661cd5e7",
                 "shasum": ""
             },
             "require": {
@@ -1027,20 +1027,20 @@
                 }
             ],
             "description": "Generates PHP classes from an interface based on doctrine annotations",
-            "time": "2015-11-04 02:04:06"
+            "time": "2015-12-16 06:15:31"
         },
         {
             "name": "tebru/retrofit-http-clients",
-            "version": "v0.5.0",
+            "version": "v0.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tebru/retrofit-http-clients.git",
-                "reference": "c7f23e3b2153d86d2d023bf89421a91fcb728035"
+                "reference": "9a0e2be1f4ad0dbcc09a0127554791d115ef3c74"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tebru/retrofit-http-clients/zipball/c7f23e3b2153d86d2d023bf89421a91fcb728035",
-                "reference": "c7f23e3b2153d86d2d023bf89421a91fcb728035",
+                "url": "https://api.github.com/repos/tebru/retrofit-http-clients/zipball/9a0e2be1f4ad0dbcc09a0127554791d115ef3c74",
+                "reference": "9a0e2be1f4ad0dbcc09a0127554791d115ef3c74",
                 "shasum": ""
             },
             "require": {
@@ -1068,7 +1068,7 @@
                 }
             ],
             "description": "Retrofit for PHP - A PHP REST client.",
-            "time": "2015-10-14 14:47:27"
+            "time": "2015-12-16 05:55:10"
         }
     ],
     "packages-dev": [
