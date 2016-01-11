@@ -10,6 +10,7 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use JMS\Serializer\SerializerBuilder;
 use JMS\Serializer\SerializerInterface;
+use LogicException;
 use Mockery;
 use Tebru\Retrofit\Adapter\HttpClientAdapter;
 use Tebru\Retrofit\Adapter\Rest\RestAdapter;
@@ -46,7 +47,29 @@ trait ClientMocks
     protected function getHttpClient(Response $response, $method, $uri, $headers = [], $body = null, $baseUrl = 'http://mockservice.com')
     {
         $httpClient = Mockery::mock(HttpClientAdapter::class);
-        $httpClient->shouldReceive('send')->times(1)->with($method, $baseUrl . $uri, $headers, $body)->andReturn($response);
+        $request = new Request($method, $baseUrl . $uri, $headers, $body);
+        $request->getBody();
+
+        $httpClient->shouldReceive('send')->times(1)->with(Mockery::on(function ($argument) use ($request) {
+            /** @var Request $argument */
+            if ($request->getMethod() !== $argument->getMethod()) {
+                throw new LogicException('Request methods not equal');
+            }
+
+            if ((string)$request->getUri() !== (string)$argument->getUri()) {
+                throw new LogicException('Request uris not equal');
+            }
+
+            if ($request->getHeaders() !== $argument->getHeaders()) {
+                throw new LogicException('Request headers not equal');
+            }
+
+            if ((string)$request->getBody() !== (string)$argument->getBody()) {
+                throw new LogicException('Request bodies not equal');
+            }
+
+            return true;
+        }))->andReturn($response);
 
         return $httpClient;
     }

@@ -342,9 +342,9 @@ class MethodBodyBuilder
             // if we have regular queries, add them to the query builder
             if (!empty($this->queries)) {
                 $queryArray = $this->arrayToString($this->queries);
-                $this->methodBody->add('$queryString = urldecode(http_build_query(%s + %s));', $queryArray, $this->queryMap);
+                $this->methodBody->add('$queryString = rawurldecode(http_build_query(%s + %s));', $queryArray, $this->queryMap);
             } else {
-                $this->methodBody->add('$queryString = urldecode(http_build_query(%s));', $this->queryMap);
+                $this->methodBody->add('$queryString = rawurldecode(http_build_query(%s));', $this->queryMap);
             }
 
             $this->methodBody->add('$requestUrl = %s . "%s?" . $queryString;', $baseUrl, $this->uri);
@@ -352,7 +352,7 @@ class MethodBodyBuilder
             // if we have queries, add them to the request url
         } elseif (!empty($this->queries)) {
             $queryArray = $this->arrayToString($this->queries);
-            $this->methodBody->add('$queryString = urldecode(http_build_query(%s));', $queryArray);
+            $this->methodBody->add('$queryString = rawurldecode(http_build_query(%s));', $queryArray);
             $this->methodBody->add('$requestUrl = %s . "%s" . "?" . $queryString;', $baseUrl, $this->uri);
         } else {
             $this->methodBody->add('$requestUrl = %s . "%s";', $baseUrl, $this->uri);
@@ -432,7 +432,7 @@ class MethodBodyBuilder
     private function createResponse()
     {
         $this->methodBody->add('$request = new \GuzzleHttp\Psr7\Request("%s", $requestUrl, $headers, $body);', strtoupper($this->requestMethod));
-        $this->methodBody->add('$this->logger->debug("Created Request", ["request" => ["method" => $request->getMethod(), "uri" => urldecode((string)$request->getUri()), "headers" => $request->getHeaders(), "body" => (string)$request->getBody()]]);');
+        $this->methodBody->add('$this->logger->debug("Created Request", ["request" => ["method" => $request->getMethod(), "uri" => rawurldecode((string)$request->getUri()), "headers" => $request->getHeaders(), "body" => (string)$request->getBody()]]);');
         $this->methodBody->add('$this->logger->info("Dispatching BeforeSendEvent");');
         $this->methodBody->add('$beforeSendEvent = new \Tebru\Retrofit\Event\BeforeSendEvent($request);');
         $this->methodBody->add('$this->eventDispatcher->dispatch("retrofit.beforeSend", $beforeSendEvent);');
@@ -445,14 +445,14 @@ class MethodBodyBuilder
             $this->methodBody->add('$response = $this->client->sendAsync($request, %s);', $this->callback);
             $this->methodBody->add('} else {');
             $this->methodBody->add('$this->logger->info("Sending Synchronous Request");');
-            $this->methodBody->add('$response = $this->client->send($request->getMethod(), urldecode((string)$request->getUri()), $request->getHeaders(), (string)$request->getBody());');
+            $this->methodBody->add('$response = $this->client->send($request);');
             $this->methodBody->add('}');
         } elseif ($this->callback !== null && !$this->callbackOptional) {
             $this->methodBody->add('$this->logger->info("Sending Asynchronous Request");');
             $this->methodBody->add('$response = $this->client->sendAsync($request, %s);', $this->callback);
         } else {
             $this->methodBody->add('$this->logger->info("Sending Synchronous Request");');
-            $this->methodBody->add('$response = $this->client->send($request->getMethod(), urldecode((string)$request->getUri()), $request->getHeaders(), (string)$request->getBody());');
+            $this->methodBody->add('$response = $this->client->send($request);');
         }
 
         $this->methodBody->add('} catch (\Exception $exception) {');

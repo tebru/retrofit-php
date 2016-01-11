@@ -20,13 +20,10 @@ interface HttpClientAdapter
     /**
      * Make a request
      *
-     * @param string $method
-     * @param string $uri
-     * @param array $headers
-     * @param string $body
+     * @param RequestInterface $request
      * @return ResponseInterface
      */
-    public function send($method, $uri, array $headers = [], $body = null);
+    public function send(RequestInterface $request);
 
     /**
      * Make an async request
