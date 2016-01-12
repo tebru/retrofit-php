@@ -342,9 +342,9 @@ class MethodBodyBuilder
             // if we have regular queries, add them to the query builder
             if (!empty($this->queries)) {
                 $queryArray = $this->arrayToString($this->queries);
-                $this->methodBody->add('$queryString = rawurldecode(http_build_query(%s + %s));', $queryArray, $this->queryMap);
+                $this->methodBody->add('$queryString = http_build_query(%s + %s);', $queryArray, $this->queryMap);
             } else {
-                $this->methodBody->add('$queryString = rawurldecode(http_build_query(%s));', $this->queryMap);
+                $this->methodBody->add('$queryString = http_build_query(%s);', $this->queryMap);
             }
 
             $this->methodBody->add('$requestUrl = %s . "%s?" . $queryString;', $baseUrl, $this->uri);
@@ -352,7 +352,7 @@ class MethodBodyBuilder
             // if we have queries, add them to the request url
         } elseif (!empty($this->queries)) {
             $queryArray = $this->arrayToString($this->queries);
-            $this->methodBody->add('$queryString = rawurldecode(http_build_query(%s));', $queryArray);
+            $this->methodBody->add('$queryString = http_build_query(%s);', $queryArray);
             $this->methodBody->add('$requestUrl = %s . "%s" . "?" . $queryString;', $baseUrl, $this->uri);
         } else {
             $this->methodBody->add('$requestUrl = %s . "%s";', $baseUrl, $this->uri);
