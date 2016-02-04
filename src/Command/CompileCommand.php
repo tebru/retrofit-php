@@ -16,6 +16,7 @@ use Tebru\Retrofit\Retrofit;
  * Class CompileCommand
  *
  * @author Nate Brunette <n@tebru.net>
+ * @codeCoverageIgnore
  */
 class CompileCommand extends Command
 {

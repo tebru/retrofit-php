@@ -8,11 +8,9 @@
         </testsuite>
     </testsuites>
     <filter>
-        <blacklist>
-            <directory>vendor</directory>
-            <directory>tests</directory>
-            <directory>cache</directory>
-        </blacklist>
+        <whitelist>
+            <directory>src</directory>
+        </whitelist>
     </filter>
     <logging>
         <log type="coverage-clover" target="build/logs/clover.xml"/>
