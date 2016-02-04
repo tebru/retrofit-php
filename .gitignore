@@ -1,7 +1,4 @@
-/.idea
 /vendor
 /node_modules
-/bin/composer.phar
 /cache
-*.iml
 /build
