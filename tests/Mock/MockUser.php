@@ -23,6 +23,7 @@ class MockUser implements JsonSerializable
 
     /**
      * @JMS\Type("string")
+     * @JMS\Groups({"Default"})
      */
     public $name;
 

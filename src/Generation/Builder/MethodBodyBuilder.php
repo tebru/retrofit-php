@@ -491,22 +491,26 @@ class MethodBodyBuilder
             return;
         }
 
-        switch ($this->returnType) {
-            case 'raw':
-                $this->methodBody->add('$return = (string)$response->getBody();');
-                break;
-            case 'array':
-                $this->methodBody->add('$return = json_decode((string)$response->getBody(), true);');
-                break;
-            default:
-                if (!empty($this->deserializationContext)) {
-                    $this->methodBody->add('$context = \JMS\Serializer\DeserializationContext::create();');
-                    $this->createContext($this->deserializationContext);
-                    $this->createDepthContext();
-                    $this->methodBody->add('$return = $this->serializer->deserialize((string)$response->getBody(), "%s", "json", $context);', $this->returnType);
-                } else {
-                    $this->methodBody->add('$return = $this->serializer->deserialize((string)$response->getBody(), "%s", "json");', $this->returnType);
-                }
+        $matches = [];
+        $returnType = $this->returnType;
+        $responseReturn = false;
+        preg_match('/^Response<(.+)>$/', $returnType, $matches);
+
+        if (isset($matches[1])) {
+            $returnType = $matches[1];
+            $responseReturn = true;
+        }
+
+        $this->methodBody->add(
+            '$retrofitResponse = new \Tebru\Retrofit\Http\Response($response, "%s", $this->serializer, %s);',
+            $returnType,
+            $this->arrayToString($this->deserializationContext)
+        );
+
+        if ($responseReturn) {
+            $this->methodBody->add('$return = $retrofitResponse;');
+        } else {
+            $this->methodBody->add('$return = $retrofitResponse->body();');
         }
 
         $this->methodBody->add('$this->logger->info("Dispatching ReturnEvent");');
@@ -531,7 +535,7 @@ class MethodBodyBuilder
         }
 
         if (!empty($context['serializeNull'])) {
-            $this->methodBody->add('$context->setSerializeNull(%d);', (int)$context['serializeNull']);
+            $this->methodBody->add('$context->setSerializeNull(%d);', (bool)$context['serializeNull']);
         }
 
         if (!empty($context['enableMaxDepthChecks'])) {
@@ -546,20 +550,6 @@ class MethodBodyBuilder
     }
 
     /**
-     * Build the serializer depth context
-     */
-    private function createDepthContext()
-    {
-        if (empty($this->deserializationContext['depth'])) {
-            return;
-        }
-
-        $contextDepth = (int)$this->deserializationContext['depth'];
-        $this->methodBody->add('while ($context->getDepth() > %d) { $context->decreaseDepth(); }', $contextDepth);
-        $this->methodBody->add('while ($context->getDepth() < %d) { $context->increaseDepth(); }', $contextDepth);
-    }
-
-    /**
      * Create a string representation of an array
      *
      * @param array $array
@@ -567,12 +557,8 @@ class MethodBodyBuilder
      */
     private function arrayToString(array $array)
     {
-        $parts = [];
-        foreach ($array as $key => $value) {
-            $parts[] = (false !== strpos($value, '$')) ? sprintf('"%s" => %s', $key, $value) : sprintf('"%s" => "%s"', $key, $value);
-        }
-
-        $string = sprintf('[%s]', implode(', ', $parts));
+        $string = var_export($array, true);
+        $string = preg_replace('/\'\$(.+)\'/', '$' . '\\1', $string);
 
         return $string;
     }

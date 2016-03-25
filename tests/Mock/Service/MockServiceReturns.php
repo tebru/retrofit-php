@@ -35,4 +35,22 @@ interface MockServiceReturns
      * @Rest\Returns("Tebru\Retrofit\Test\Mock\MockUser")
      */
     public function deserializedReturn();
+
+    /**
+     * @Rest\GET("/get")
+     * @Rest\Returns("Response<array>")
+     */
+    public function responseReturnArray();
+
+    /**
+     * @Rest\GET("/get")
+     * @Rest\Returns("Response<raw>")
+     */
+    public function responseReturnRaw();
+
+    /**
+     * @Rest\GET("/get")
+     * @Rest\Returns("Response<Tebru\Retrofit\Test\Mock\MockUser>")
+     */
+    public function responseReturnObject();
 }

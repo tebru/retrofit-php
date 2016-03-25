@@ -96,7 +96,7 @@ trait ClientMocks
     protected function getClient($service, HttpClientAdapter $httpClient, SerializerInterface $serializer)
     {
         $builder = RestAdapter::builder()->setBaseUrl('http://mockservice.com');
-        $builder->setHttpClient($httpClient);
+        $builder->setClientAdapter($httpClient);
         $builder->setSerializer($serializer);
 
         return $builder->build()->create($service);
