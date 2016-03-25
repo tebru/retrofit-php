@@ -87,9 +87,18 @@ different variable name using the `var=` parameter on this annotation.
 ----------
 Defines what type of object a request returns, so that it may be deserialized.
  
-The default is array. Other acceptable values are raw or any type specified 
+The default is `array`. Other acceptable values are `raw` or any type specified 
 in the Serializer documentation. A raw return will return the API response as
 a string.
+
+If you need the entire response back, you can ask for a typed response.
+
+    @Returns(Response<raw>)
+    @Returns(Response<array>)
+    @Returns(Response<My\Object>)
+
+This will return a PSR-7 Response object with an added method `body()`.  Calling
+this method will return the type of body you need, raw, array, or an object.
 
 `@BaseUrl`
 ----------
