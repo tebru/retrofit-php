@@ -65,7 +65,6 @@ class Response implements ResponseInterface
      */
     public function body()
     {
-        $response = null;
         $responseBody = (string) $this->response->getBody();
         switch ($this->returnType) {
             case self::FORMAT_RAW:
