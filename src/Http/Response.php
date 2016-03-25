@@ -38,6 +38,14 @@ class Response implements ResponseInterface
      */
     private $context;
 
+    /**
+     * Constructor
+     *
+     * @param ResponseInterface $response
+     * @param string $returnType
+     * @param SerializerInterface $serializer
+     * @param array $context
+     */
     public function __construct(
         ResponseInterface $response,
         $returnType,
@@ -50,6 +58,11 @@ class Response implements ResponseInterface
         $this->context = $context;
     }
 
+    /**
+     * Get the body specified by the Returns annotation
+     *
+     * @return mixed
+     */
     public function body()
     {
         $response = null;
