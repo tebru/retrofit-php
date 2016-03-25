@@ -42,31 +42,23 @@ class RestAdapter
     private $eventDispatcher;
 
     /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
      * Constructor
      *
      * @param string $baseUrl
      * @param HttpClientAdapter $httpClient
      * @param SerializerInterface $serializer
      * @param EventDispatcherInterface $eventDispatcher
-     * @param LoggerInterface $logger
      */
     public function __construct(
         $baseUrl,
         HttpClientAdapter $httpClient,
         SerializerInterface $serializer,
-        EventDispatcherInterface $eventDispatcher,
-        LoggerInterface $logger
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->baseUrl = $baseUrl;
         $this->httpClient = $httpClient;
         $this->serializer = $serializer;
         $this->eventDispatcher = $eventDispatcher;
-        $this->logger = $logger;
     }
 
     /**
@@ -108,6 +100,6 @@ class RestAdapter
             throw new RetrofitException(sprintf('Could not create client. "%s" should be a class or interface.', $service));
         }
 
-        return new $class($this->baseUrl, $this->httpClient, $this->serializer, $this->eventDispatcher, $this->logger);
+        return new $class($this->baseUrl, $this->httpClient, $this->serializer, $this->eventDispatcher);
     }
 }

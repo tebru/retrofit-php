@@ -31,7 +31,10 @@ trait ClientMocks
     protected function getResponse($responseBody = '[]')
     {
         $response = Mockery::mock(Response::class);
-        $response->shouldReceive('getBody')->times(1)->with()->andReturn($responseBody);
+        $response->shouldReceive('getBody')->times(2)->with()->andReturn($responseBody);
+        $response->shouldReceive('getStatusCode')->times(1)->with()->andReturn(200);
+        $response->shouldReceive('getReasonPhrase')->times(1)->with()->andReturn('');
+        $response->shouldReceive('getHeaders')->times(1)->with()->andReturn([]);
 
         return $response;
     }

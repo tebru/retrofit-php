@@ -10,10 +10,12 @@ use GuzzleHttp\Client;
 use JMS\Serializer\SerializerBuilder;
 use Mockery;
 use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Tebru\Retrofit\Adapter\Rest\RestAdapter;
 use Tebru\Retrofit\Adapter\Rest\RestAdapterBuilder;
 use Tebru\Retrofit\HttpClient\Adapter\Guzzle\GuzzleV6ClientAdapter;
+use Tebru\Retrofit\Subscriber\LogSubscriber;
 use Tebru\Retrofit\Test\MockeryTestCase;
 
 /**
@@ -66,17 +68,35 @@ class RestAdapterBuilderTest extends MockeryTestCase
     public function testSetEventDispatcher()
     {
         $eventDispatcher = Mockery::mock(EventDispatcherInterface::class);
+        $eventDispatcher->shouldReceive('addSubscriber')->times(1);
+
         $restAdapter = $this->getRestAdapterBuilder()->setEventDispatcher($eventDispatcher)->build();
 
         $this->assertAttributeSame($eventDispatcher, 'eventDispatcher', $restAdapter);
     }
 
+    public function testOverrideLogSubscriber()
+    {
+        $eventDispatcher = Mockery::mock(EventDispatcherInterface::class);
+        $eventDispatcher->shouldReceive('addSubscriber')->times(1);
+
+        $subscriber = new LogSubscriber(Mockery::mock(LoggerInterface::class));
+        $restAdapterBuilder = $this->getRestAdapterBuilder();
+        $restAdapterBuilder->setEventDispatcher($eventDispatcher);
+        $restAdapterBuilder->addSubscriber($subscriber);
+        $restAdapterBuilder->ignoreLogSubscriber();
+        $restAdapterBuilder->build();
+
+        $this->assertAttributeSame([$subscriber], 'subscribers', $restAdapterBuilder);
+    }
+
     public function testSetLogger()
     {
         $logger = Mockery::mock(Logger::class);
-        $restAdapter = $this->getRestAdapterBuilder()->setLogger($logger)->build();
+        $builder = $this->getRestAdapterBuilder();
+        $builder->setLogger($logger)->build();
 
-        $this->assertAttributeSame($logger, 'logger', $restAdapter);
+        $this->assertAttributeSame($logger, 'logger', $builder);
     }
 
     /**

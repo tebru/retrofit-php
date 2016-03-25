@@ -432,7 +432,6 @@ class MethodBodyBuilder
     private function createResponse()
     {
         $this->methodBody->add('$request = new \GuzzleHttp\Psr7\Request("%s", $requestUrl, $headers, $body);', strtoupper($this->requestMethod));
-        $this->methodBody->add('$this->logger->debug("Created Request", ["request" => ["method" => $request->getMethod(), "uri" => rawurldecode((string)$request->getUri()), "headers" => $request->getHeaders(), "body" => (string)$request->getBody()]]);');
         $this->methodBody->add('$beforeSendEvent = new \Tebru\Retrofit\Event\BeforeSendEvent($request);');
         $this->methodBody->add('$this->eventDispatcher->dispatch("retrofit.beforeSend", $beforeSendEvent);');
         $this->methodBody->add('$request = $beforeSendEvent->getRequest();');
@@ -451,13 +450,11 @@ class MethodBodyBuilder
         }
 
         $this->methodBody->add('} catch (\Exception $exception) {');
-        $this->methodBody->add('$this->logger->error("Caught Exception", ["exception" => $exception]);');
         $this->methodBody->add('$apiExceptionEvent = new \Tebru\Retrofit\Event\ApiExceptionEvent($exception, $request);');
         $this->methodBody->add('$this->eventDispatcher->dispatch("retrofit.apiException", $apiExceptionEvent);');
         $this->methodBody->add('$exception = $apiExceptionEvent->getException();');
         $this->methodBody->add('throw new \Tebru\Retrofit\Exception\RetrofitApiException(get_class($this), $exception->getMessage(), $exception->getCode(), $exception);');
         $this->methodBody->add('}');
-        $this->methodBody->add('$this->logger->debug("API Response", ["response" => $response]);');
         $this->methodBody->add('$afterSendEvent = new \Tebru\Retrofit\Event\AfterSendEvent($request, $response);');
         $this->methodBody->add('$this->eventDispatcher->dispatch("retrofit.afterSend", $afterSendEvent);');
         $this->methodBody->add('$response = $afterSendEvent->getResponse();');

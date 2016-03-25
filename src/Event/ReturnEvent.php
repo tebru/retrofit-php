@@ -15,6 +15,8 @@ use Symfony\Component\EventDispatcher\Event;
  */
 class ReturnEvent extends Event
 {
+    const NAME = 'retrofit.return';
+
     /**
      * @var mixed
      */

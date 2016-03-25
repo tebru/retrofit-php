@@ -17,6 +17,8 @@ use Symfony\Component\EventDispatcher\Event;
  */
 class ApiExceptionEvent extends Event
 {
+    const NAME = 'retrofit.apiException';
+
     /**
      * @var Exception
      */

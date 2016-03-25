@@ -34,7 +34,7 @@ class RetrofitAdapterTest extends MockeryTestCase
 
         $this->adapter = RestAdapter::builder()
             ->setBaseUrl('')
-            ->setHttpClient(Mockery::mock(HttpClientAdapter::class))
+            ->setClientAdapter(Mockery::mock(HttpClientAdapter::class))
             ->build();
     }
 
@@ -59,10 +59,11 @@ class RetrofitAdapterTest extends MockeryTestCase
         $httpClient = Mockery::mock(HttpClientAdapter::class);
         $serializer = Mockery::mock(Serializer::class);
         $eventDispatcher = Mockery::mock(EventDispatcherInterface::class);
+        $eventDispatcher->shouldReceive('addSubscriber')->times(1);
         $logger = Mockery::mock(LoggerInterface::class);
         $adapter = RestAdapter::builder()
             ->setBaseUrl('')
-            ->setHttpClient($httpClient)
+            ->setClientAdapter($httpClient)
             ->setSerializer($serializer)
             ->setEventDispatcher($eventDispatcher)
             ->setLogger($logger)

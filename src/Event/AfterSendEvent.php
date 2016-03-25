@@ -17,6 +17,8 @@ use Symfony\Component\EventDispatcher\Event;
  */
 class AfterSendEvent extends Event
 {
+    const NAME = 'retrofit.afterSend';
+
     /**
      * @var RequestInterface
      */

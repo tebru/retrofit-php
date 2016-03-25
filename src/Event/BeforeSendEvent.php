@@ -16,6 +16,8 @@ use Symfony\Component\EventDispatcher\Event;
  */
 class BeforeSendEvent extends Event
 {
+    const NAME = 'retrofit.beforeSend';
+
     /**
      * A PSR-7 Request object
      *

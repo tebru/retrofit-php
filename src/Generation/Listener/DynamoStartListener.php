@@ -43,13 +43,11 @@ class DynamoStartListener
         $client = new PropertyModel($classModel, 'client');
         $serializer = new PropertyModel($classModel, 'serializer');
         $eventDispatcher = new PropertyModel($classModel, 'eventDispatcher');
-        $logger = new PropertyModel($classModel, 'logger');
 
         $classModel->addProperty($baseUrl);
         $classModel->addProperty($client);
         $classModel->addProperty($serializer);
         $classModel->addProperty($eventDispatcher);
-        $classModel->addProperty($logger);
     }
 
     /**
@@ -72,21 +70,16 @@ class DynamoStartListener
         $eventDispatcher = new ParameterModel($methodModel, 'eventDispatcher', false);
         $eventDispatcher->setTypeHint('\Symfony\Component\EventDispatcher\EventDispatcherInterface');
 
-        $logger = new ParameterModel($methodModel, 'logger', false);
-        $logger->setTypeHint('\Psr\Log\LoggerInterface');
-
         $methodModel->addParameter($baseUrl);
         $methodModel->addParameter($client);
         $methodModel->addParameter($serializer);
         $methodModel->addParameter($eventDispatcher);
-        $methodModel->addParameter($logger);
 
         $methodBody = [
             '$this->baseUrl = $baseUrl;',
             '$this->client = $client;',
             '$this->serializer = $serializer;',
             '$this->eventDispatcher = $eventDispatcher;',
-            '$this->logger = $logger;',
         ];
 
         $methodModel->setBody(implode($methodBody));

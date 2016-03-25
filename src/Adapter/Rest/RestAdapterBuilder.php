@@ -5,16 +5,19 @@
  */
 
 namespace Tebru\Retrofit\Adapter\Rest;
+
 use JMS\Serializer\SerializerBuilder;
 use JMS\Serializer\SerializerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Tebru;
 use Tebru\Retrofit\Adapter\HttpClientAdapter;
 use Tebru\Retrofit\Exception\RetrofitException;
 use Tebru\Retrofit\HttpClient\ClientProvider;
+use Tebru\Retrofit\Subscriber\LogSubscriber;
 
 /**
  * Class RestAdapterBuilder
@@ -52,6 +55,18 @@ class RestAdapterBuilder
      * @var EventDispatcherInterface
      */
     private $eventDispatcher;
+
+    /**
+     * Array of event subscribers
+     *
+     * @var EventSubscriberInterface[]
+     */
+    private $subscribers = [];
+
+    /**
+     * Determine if we should use the default log subscriber
+     */
+    private $useLogSubscriber = true;
 
     /**
      * Psr logger
@@ -141,6 +156,31 @@ class RestAdapterBuilder
     }
 
     /**
+     * Add a subscriber
+     *
+     * @param EventSubscriberInterface $subscriber
+     * @return $this
+     */
+    public function addSubscriber(EventSubscriberInterface $subscriber)
+    {
+        $this->subscribers[] = $subscriber;
+
+        return $this;
+    }
+
+    /**
+     * Do not use the default log subscriber;
+     *
+     * @return $this
+     */
+    public function ignoreLogSubscriber()
+    {
+        $this->useLogSubscriber = false;
+
+        return $this;
+    }
+
+    /**
      * @param LoggerInterface $logger
      * @return $this
      */
@@ -171,16 +211,23 @@ class RestAdapterBuilder
             $this->eventDispatcher = new EventDispatcher();
         }
 
+        foreach ($this->subscribers as $subscriber) {
+            $this->eventDispatcher->addSubscriber($subscriber);
+        }
+
         if (null === $this->logger) {
             $this->logger = new NullLogger();
+        }
+
+        if ($this->useLogSubscriber) {
+            $this->eventDispatcher->addSubscriber(new LogSubscriber($this->logger));
         }
 
         $adapter = new RestAdapter(
             $this->baseUrl,
             $this->clientProvider->getClient(),
             $this->serializer,
-            $this->eventDispatcher,
-            $this->logger
+            $this->eventDispatcher
         );
 
         return $adapter;
