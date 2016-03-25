@@ -433,7 +433,6 @@ class MethodBodyBuilder
     {
         $this->methodBody->add('$request = new \GuzzleHttp\Psr7\Request("%s", $requestUrl, $headers, $body);', strtoupper($this->requestMethod));
         $this->methodBody->add('$this->logger->debug("Created Request", ["request" => ["method" => $request->getMethod(), "uri" => rawurldecode((string)$request->getUri()), "headers" => $request->getHeaders(), "body" => (string)$request->getBody()]]);');
-        $this->methodBody->add('$this->logger->info("Dispatching BeforeSendEvent");');
         $this->methodBody->add('$beforeSendEvent = new \Tebru\Retrofit\Event\BeforeSendEvent($request);');
         $this->methodBody->add('$this->eventDispatcher->dispatch("retrofit.beforeSend", $beforeSendEvent);');
         $this->methodBody->add('$request = $beforeSendEvent->getRequest();');
@@ -441,30 +440,24 @@ class MethodBodyBuilder
 
         if ($this->callback !== null && $this->callbackOptional) {
             $this->methodBody->add('if (%s !== null) {', $this->callback);
-            $this->methodBody->add('$this->logger->info("Sending Asynchronous Request");');
             $this->methodBody->add('$response = $this->client->sendAsync($request, %s);', $this->callback);
             $this->methodBody->add('} else {');
-            $this->methodBody->add('$this->logger->info("Sending Synchronous Request");');
             $this->methodBody->add('$response = $this->client->send($request);');
             $this->methodBody->add('}');
         } elseif ($this->callback !== null && !$this->callbackOptional) {
-            $this->methodBody->add('$this->logger->info("Sending Asynchronous Request");');
             $this->methodBody->add('$response = $this->client->sendAsync($request, %s);', $this->callback);
         } else {
-            $this->methodBody->add('$this->logger->info("Sending Synchronous Request");');
             $this->methodBody->add('$response = $this->client->send($request);');
         }
 
         $this->methodBody->add('} catch (\Exception $exception) {');
         $this->methodBody->add('$this->logger->error("Caught Exception", ["exception" => $exception]);');
-        $this->methodBody->add('$this->logger->info("Dispatching ApiExceptionEvent");');
         $this->methodBody->add('$apiExceptionEvent = new \Tebru\Retrofit\Event\ApiExceptionEvent($exception, $request);');
         $this->methodBody->add('$this->eventDispatcher->dispatch("retrofit.apiException", $apiExceptionEvent);');
         $this->methodBody->add('$exception = $apiExceptionEvent->getException();');
         $this->methodBody->add('throw new \Tebru\Retrofit\Exception\RetrofitApiException(get_class($this), $exception->getMessage(), $exception->getCode(), $exception);');
         $this->methodBody->add('}');
         $this->methodBody->add('$this->logger->debug("API Response", ["response" => $response]);');
-        $this->methodBody->add('$this->logger->info("Dispatching AfterSendEvent");');
         $this->methodBody->add('$afterSendEvent = new \Tebru\Retrofit\Event\AfterSendEvent($request, $response);');
         $this->methodBody->add('$this->eventDispatcher->dispatch("retrofit.afterSend", $afterSendEvent);');
         $this->methodBody->add('$response = $afterSendEvent->getResponse();');
@@ -477,13 +470,11 @@ class MethodBodyBuilder
     {
         if ($this->callback !== null && $this->callbackOptional) {
             $this->methodBody->add('if (%s !== null) {', $this->callback);
-            $this->methodBody->add('$this->logger->info("Dispatching ReturnEvent");');
             $this->methodBody->add('$returnEvent = new \Tebru\Retrofit\Event\ReturnEvent(null);');
             $this->methodBody->add('$this->eventDispatcher->dispatch("retrofit.return", $returnEvent);');
             $this->methodBody->add('return $returnEvent->getReturn();');
             $this->methodBody->add('}');
         } elseif ($this->callback !== null && !$this->callbackOptional) {
-            $this->methodBody->add('$this->logger->info("Dispatching ReturnEvent");');
             $this->methodBody->add('$returnEvent = new \Tebru\Retrofit\Event\ReturnEvent(null);');
             $this->methodBody->add('$this->eventDispatcher->dispatch("retrofit.return", $returnEvent);');
             $this->methodBody->add('return $returnEvent->getReturn();');
@@ -513,7 +504,6 @@ class MethodBodyBuilder
             $this->methodBody->add('$return = $retrofitResponse->body();');
         }
 
-        $this->methodBody->add('$this->logger->info("Dispatching ReturnEvent");');
         $this->methodBody->add('$returnEvent = new \Tebru\Retrofit\Event\ReturnEvent($return);');
         $this->methodBody->add('$this->eventDispatcher->dispatch("retrofit.return", $returnEvent);');
         $this->methodBody->add('return $returnEvent->getReturn();');
