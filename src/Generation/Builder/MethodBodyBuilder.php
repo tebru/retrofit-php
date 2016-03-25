@@ -325,7 +325,7 @@ class MethodBodyBuilder
         $this->createResponse();
         $this->createReturns();
 
-        return (string)$this->methodBody;
+        return (string) $this->methodBody;
     }
 
     /**
@@ -518,11 +518,11 @@ class MethodBodyBuilder
         }
 
         if (!empty($context['version'])) {
-            $this->methodBody->add('$context->setVersion(%d);', (int)$context['version']);
+            $this->methodBody->add('$context->setVersion(%d);', (int) $context['version']);
         }
 
         if (!empty($context['serializeNull'])) {
-            $this->methodBody->add('$context->setSerializeNull(%d);', (bool)$context['serializeNull']);
+            $this->methodBody->add('$context->setSerializeNull(%d);', (bool) $context['serializeNull']);
         }
 
         if (!empty($context['enableMaxDepthChecks'])) {

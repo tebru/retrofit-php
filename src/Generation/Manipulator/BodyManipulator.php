@@ -54,6 +54,6 @@ class BodyManipulator
             return '[]';
         }
 
-        return (string)$variable;
+        return (string) $variable;
     }
 }

@@ -66,7 +66,7 @@ class BeforeSendEvent extends Event
      */
     public function getRequestUrl()
     {
-        return (string)$this->request->getUri();
+        return (string) $this->request->getUri();
     }
 
     /**
@@ -84,6 +84,6 @@ class BeforeSendEvent extends Event
      */
     public function getBody()
     {
-        return (string)$this->request->getBody();
+        return (string) $this->request->getBody();
     }
 }
