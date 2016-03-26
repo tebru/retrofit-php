@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0dd075c0a7f15902e1e6c57b5bd74eda",
-    "content-hash": "22fa9aea9b9c61361d6b60cdafcaf796",
+    "hash": "0aa2639c2ea405bb746c164a028c629d",
+    "content-hash": "7b2e672c89b09f39ff856aff280a33e6",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1031,16 +1031,16 @@
         },
         {
             "name": "tebru/retrofit-http-clients",
-            "version": "v0.6.5",
+            "version": "v0.6.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tebru/retrofit-http-clients.git",
-                "reference": "78ce3db89f29907f1c40f6869942a7cbaf1f4b02"
+                "reference": "33a02061c5a5f934ef8f1d12cf5051da092205da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tebru/retrofit-http-clients/zipball/78ce3db89f29907f1c40f6869942a7cbaf1f4b02",
-                "reference": "78ce3db89f29907f1c40f6869942a7cbaf1f4b02",
+                "url": "https://api.github.com/repos/tebru/retrofit-http-clients/zipball/33a02061c5a5f934ef8f1d12cf5051da092205da",
+                "reference": "33a02061c5a5f934ef8f1d12cf5051da092205da",
                 "shasum": ""
             },
             "require": {
@@ -1068,7 +1068,7 @@
                 }
             ],
             "description": "Retrofit for PHP - A PHP REST client.",
-            "time": "2016-03-25 19:26:16"
+            "time": "2016-03-26 00:05:41"
         }
     ],
     "packages-dev": [
