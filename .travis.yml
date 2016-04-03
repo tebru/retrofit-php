@@ -16,4 +16,4 @@ script:
   - vendor/bin/phpunit
 
 after_script:
-  - php vendor/bin/coveralls -v
+  - php bin/coveralls.phar -v
