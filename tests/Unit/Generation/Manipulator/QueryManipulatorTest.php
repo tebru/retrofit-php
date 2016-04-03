@@ -6,15 +6,15 @@
 
 namespace Tebru\Retrofit\Test\Unit\Generation\Manipulator;
 
-use Tebru\Retrofit\Generation\Manipulator\BodyManipulator;
+use Tebru\Retrofit\Generation\Manipulator\QueryManipulator;
 use Tebru\Retrofit\Test\MockeryTestCase;
 
 /**
- * Class BodyManipulatorTest
+ * Class QueryManipulatorTest
  *
  * @author Nate Brunette <n@tebru.net>
  */
-class BodyManipulatorTest extends MockeryTestCase
+class QueryManipulatorTest extends MockeryTestCase
 {
     public function testBoolToString()
     {
@@ -45,38 +45,38 @@ class BodyManipulatorTest extends MockeryTestCase
             ],
         ];
 
-        $result = BodyManipulator::boolToString($array);
+        $result = QueryManipulator::boolToString($array);
 
         $this->assertSame($expected, $result);
     }
 
     public function testVarToStringWithNull()
     {
-        $this->assertSame('null', BodyManipulator::varToString(null));
+        $this->assertSame('null', QueryManipulator::varToString(null));
     }
 
     public function testVarToStringWithTrue()
     {
-        $this->assertSame('true', BodyManipulator::varToString(true));
+        $this->assertSame('true', QueryManipulator::varToString(true));
     }
 
     public function testVarToStringWithFalse()
     {
-        $this->assertSame('false', BodyManipulator::varToString(false));
+        $this->assertSame('false', QueryManipulator::varToString(false));
     }
 
     public function testVarToStringWithArray()
     {
-        $this->assertSame('[]', BodyManipulator::varToString([]));
+        $this->assertSame('[]', QueryManipulator::varToString([]));
     }
 
     public function testVarToStringWithInt()
     {
-        $this->assertSame('1', BodyManipulator::varToString(1));
+        $this->assertSame('1', QueryManipulator::varToString(1));
     }
 
     public function testVarToStringWithString()
     {
-        $this->assertSame('string', BodyManipulator::varToString('string'));
+        $this->assertSame('string', QueryManipulator::varToString('string'));
     }
 }

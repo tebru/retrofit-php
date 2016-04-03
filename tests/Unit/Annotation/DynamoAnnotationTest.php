@@ -11,6 +11,7 @@ use Tebru\Dynamo\Annotation\DynamoAnnotation;
 use Tebru\Retrofit\Annotation\BaseUrl;
 use Tebru\Retrofit\Annotation\Body;
 use Tebru\Retrofit\Annotation\DELETE;
+use Tebru\Retrofit\Annotation\FormUrlEncoded;
 use Tebru\Retrofit\Annotation\GET;
 use Tebru\Retrofit\Annotation\HEAD;
 use Tebru\Retrofit\Annotation\Header;
@@ -63,6 +64,7 @@ class DynamoAnnotationTest extends MockeryTestCase
             [Header::class, Header::NAME, true],
             [Headers::class, Headers::NAME, false],
             [JsonBody::class, JsonBody::NAME, false],
+            [FormUrlEncoded::class, FormUrlEncoded::NAME, false],
             [Multipart::class, Multipart::NAME, false],
             [Part::class, Part::NAME, true],
             [Query::class, Query::NAME, true],

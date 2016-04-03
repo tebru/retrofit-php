@@ -58,6 +58,7 @@ class MethodBodyBuilderTest extends MockeryTestCase
     {
         $builder = new MethodBodyBuilder();
         $builder->setRequestMethod('GET');
+        $builder->setFormUrlEncoded(true);
         $builder->setBaseUrl('$this->baseUrl');
         $builder->setUri('/path');
         $builder->setQueries(['foo' => 'bar']);
@@ -73,6 +74,7 @@ class MethodBodyBuilderTest extends MockeryTestCase
     {
         $builder = new MethodBodyBuilder();
         $builder->setRequestMethod('GET');
+        $builder->setFormUrlEncoded(true);
         $builder->setBaseUrl('$this->baseUrl');
         $builder->setUri('/path');
         $builder->setQueryMap('$map');
@@ -87,6 +89,7 @@ class MethodBodyBuilderTest extends MockeryTestCase
     {
         $builder = new MethodBodyBuilder();
         $builder->setRequestMethod('GET');
+        $builder->setFormUrlEncoded(true);
         $builder->setBaseUrl('$this->baseUrl');
         $builder->setUri('/path');
         $builder->setQueries(['foo' => 'bar']);
@@ -107,53 +110,248 @@ class MethodBodyBuilderTest extends MockeryTestCase
         $builder->build();
     }
 
-    public function testSimpleBody()
+    public function testJsonBodyFromArray()
     {
         $builder = new MethodBodyBuilder();
         $builder->setRequestMethod('POST');
-        $builder->setBaseUrl('$this->baseUrl');
-        $builder->setUri('/path');
-        $builder->setBody('$body');
-        $builder->setBodyIsObject(false);
-        $builder->setBodyIsArray(true);
-        $builder->setReturnType('raw');
-
-        $response = $builder->build();
-
-        $this->assertResponse($response, 'simple_body');
-    }
-
-    public function testJsonBody()
-    {
-        $builder = new MethodBodyBuilder();
-        $builder->setRequestMethod('POST');
+        $builder->setHeaders(['Content-Type' => 'application/json']);
         $builder->setBaseUrl('$this->baseUrl');
         $builder->setUri('/path');
         $builder->setBody('$body');
         $builder->setBodyIsObject(false);
         $builder->setBodyIsArray(true);
         $builder->setJsonEncode(true);
-        $builder->setReturnType('raw');
 
         $response = $builder->build();
 
-        $this->assertResponse($response, 'json_body');
+        $this->assertResponse($response, 'json_body_from_array');
     }
 
-    public function testSimpleBodyString()
+    public function testJsonBodyFromObject()
     {
         $builder = new MethodBodyBuilder();
         $builder->setRequestMethod('POST');
+        $builder->setHeaders(['Content-Type' => 'application/json']);
         $builder->setBaseUrl('$this->baseUrl');
         $builder->setUri('/path');
         $builder->setBody('$body');
-        $builder->setBodyIsObject(false);
-        $builder->setBodyIsArray(false);
-        $builder->setReturnType('Response<array>');
+        $context = ['groups' => ['test' => 'group'], 'version' => 1, 'serializeNull' => true, 'enableMaxDepthChecks' => true, 'attributes' => ['foo' => 'bar']];
+        $builder->setSerializationContext($context);
+        $builder->setBodyIsObject(true);
+        $builder->setJsonEncode(true);
 
         $response = $builder->build();
 
-        $this->assertResponse($response, 'simple_body_string');
+        $this->assertResponse($response, 'json_body_from_object');
+    }
+
+    public function testJsonBodyFromSerializableObject()
+    {
+        $builder = new MethodBodyBuilder();
+        $builder->setRequestMethod('POST');
+        $builder->setHeaders(['Content-Type' => 'application/json']);
+        $builder->setBaseUrl('$this->baseUrl');
+        $builder->setUri('/path');
+        $builder->setBody('$body');
+        $builder->setBodyIsObject(true);
+        $builder->setBodyIsJsonSerializable(true);
+        $builder->setJsonEncode(true);
+
+        $response = $builder->build();
+
+        $this->assertResponse($response, 'json_body_from_serializable_object');
+    }
+
+    public function testJsonBodyFromParts()
+    {
+        $builder = new MethodBodyBuilder();
+        $builder->setRequestMethod('POST');
+        $builder->setHeaders(['Content-Type' => 'application/json']);
+        $builder->setBaseUrl('$this->baseUrl');
+        $builder->setUri('/path');
+        $builder->setBodyParts(['foo' => '$bar']);
+        $builder->setJsonEncode(true);
+
+        $response = $builder->build();
+
+        $this->assertResponse($response, 'json_body_from_parts');
+    }
+
+    public function testJsonBodyFromString()
+    {
+        $builder = new MethodBodyBuilder();
+        $builder->setRequestMethod('POST');
+        $builder->setHeaders(['Content-Type' => 'application/json']);
+        $builder->setBaseUrl('$this->baseUrl');
+        $builder->setUri('/path');
+        $builder->setBody('$fooBody');
+        $builder->setJsonEncode(true);
+
+        $response = $builder->build();
+
+        $this->assertResponse($response, 'json_body_from_string');
+    }
+
+    public function testFormBodyFromArray()
+    {
+        $builder = new MethodBodyBuilder();
+        $builder->setRequestMethod('POST');
+        $builder->setHeaders(['Content-Type' => 'application/x-www-form-urlencoded']);
+        $builder->setBaseUrl('$this->baseUrl');
+        $builder->setUri('/path');
+        $builder->setBody('$body');
+        $builder->setBodyIsArray(true);
+        $builder->setFormUrlEncoded(true);
+
+        $response = $builder->build();
+
+        $this->assertResponse($response, 'form_body_from_array');
+    }
+
+    public function testFormBodyFromObject()
+    {
+        $builder = new MethodBodyBuilder();
+        $builder->setRequestMethod('POST');
+        $builder->setHeaders(['Content-Type' => 'application/x-www-form-urlencoded']);
+        $builder->setBaseUrl('$this->baseUrl');
+        $builder->setUri('/path');
+        $builder->setBody('$body');
+        $context = ['groups' => ['test' => 'group'], 'version' => 1, 'serializeNull' => true, 'enableMaxDepthChecks' => true, 'attributes' => ['foo' => 'bar']];
+        $builder->setSerializationContext($context);
+        $builder->setBodyIsObject(true);
+        $builder->setFormUrlEncoded(true);
+
+        $response = $builder->build();
+
+        $this->assertResponse($response, 'form_body_from_object');
+    }
+
+    public function testFormBodyFromSerializableObject()
+    {
+        $builder = new MethodBodyBuilder();
+        $builder->setRequestMethod('POST');
+        $builder->setHeaders(['Content-Type' => 'application/x-www-form-urlencoded']);
+        $builder->setBaseUrl('$this->baseUrl');
+        $builder->setUri('/path');
+        $builder->setBody('$body');
+        $builder->setBodyIsObject(true);
+        $builder->setBodyIsJsonSerializable(true);
+        $builder->setFormUrlEncoded(true);
+
+        $response = $builder->build();
+
+        $this->assertResponse($response, 'form_body_from_serializable_object');
+    }
+
+    public function testFormBodyFromParts()
+    {
+        $builder = new MethodBodyBuilder();
+        $builder->setRequestMethod('POST');
+        $builder->setHeaders(['Content-Type' => 'application/x-www-form-urlencoded']);
+        $builder->setBaseUrl('$this->baseUrl');
+        $builder->setUri('/path');
+        $builder->setBodyParts(['foo' => '$bar']);
+        $builder->setFormUrlEncoded(true);
+
+        $response = $builder->build();
+
+        $this->assertResponse($response, 'form_body_from_parts');
+    }
+
+    public function testFormBodyFromString()
+    {
+        $builder = new MethodBodyBuilder();
+        $builder->setRequestMethod('POST');
+        $builder->setHeaders(['Content-Type' => 'application/json']);
+        $builder->setBaseUrl('$this->baseUrl');
+        $builder->setUri('/path');
+        $builder->setBody('$fooBody');
+        $builder->setFormUrlEncoded(true);
+
+        $response = $builder->build();
+
+        $this->assertResponse($response, 'form_body_from_string');
+    }
+
+    public function testMultipartFromArray()
+    {
+        $builder = new MethodBodyBuilder();
+        $builder->setRequestMethod('POST');
+        $builder->setHeaders(['Content-Type' => 'multipart/form-data']);
+        $builder->setBaseUrl('$this->baseUrl');
+        $builder->setUri('/path');
+        $builder->setBody('$body');
+        $builder->setBodyIsArray(true);
+        $builder->setMultipartEncoded(true);
+
+        $response = $builder->build();
+
+        $this->assertResponse($response, 'multipart_body_from_array');
+    }
+
+    public function testMultipartFromObject()
+    {
+        $builder = new MethodBodyBuilder();
+        $builder->setRequestMethod('POST');
+        $builder->setHeaders(['Content-Type' => 'multipart/form-data']);
+        $builder->setBaseUrl('$this->baseUrl');
+        $builder->setUri('/path');
+        $builder->setBody('$body');
+        $context = ['groups' => ['test' => 'group'], 'version' => 1, 'serializeNull' => true, 'enableMaxDepthChecks' => true, 'attributes' => ['foo' => 'bar']];
+        $builder->setSerializationContext($context);
+        $builder->setBodyIsObject(true);
+        $builder->setMultipartEncoded(true);
+
+        $response = $builder->build();
+
+        $this->assertResponse($response, 'multipart_body_from_object');
+    }
+
+    public function testMultipartFromSerializableObject()
+    {
+        $builder = new MethodBodyBuilder();
+        $builder->setRequestMethod('POST');
+        $builder->setHeaders(['Content-Type' => 'multipart/form-data']);
+        $builder->setBaseUrl('$this->baseUrl');
+        $builder->setUri('/path');
+        $builder->setBody('$body');
+        $builder->setBodyIsObject(true);
+        $builder->setBodyIsJsonSerializable(true);
+        $builder->setMultipartEncoded(true);
+
+        $response = $builder->build();
+
+        $this->assertResponse($response, 'multipart_body_from_serializable_object');
+    }
+
+    public function testMultipartFromParts()
+    {
+        $builder = new MethodBodyBuilder();
+        $builder->setRequestMethod('POST');
+        $builder->setHeaders(['Content-Type' => 'multipart/form-data']);
+        $builder->setBaseUrl('$this->baseUrl');
+        $builder->setUri('/path');
+        $builder->setBodyParts(['foo' => '$bar']);
+        $builder->setMultipartEncoded(true);
+
+        $response = $builder->build();
+
+        $this->assertResponse($response, 'multipart_body_from_parts');
+    }
+
+    public function testMultipartBodyFromString()
+    {
+        $builder = new MethodBodyBuilder();
+        $builder->setRequestMethod('POST');
+        $builder->setHeaders(['Content-Type' => 'application/json']);
+        $builder->setBaseUrl('$this->baseUrl');
+        $builder->setUri('/path');
+        $builder->setBody('$fooBody');
+        $builder->setMultipartEncoded(true);
+
+        $response = $builder->build();
+
+        $this->assertResponse($response, 'multipart_body_from_string');
     }
 
     /**
@@ -164,85 +362,18 @@ class MethodBodyBuilderTest extends MockeryTestCase
     {
         $builder = new MethodBodyBuilder();
         $builder->setRequestMethod('POST');
+        $builder->setFormUrlEncoded(true);
         $builder->setUri('/path');
         $builder->setBody('$body');
         $builder->setBodyParts(['foo' => 'bar']);
         $builder->build();
     }
 
-    public function testCanBuildPostRequest()
-    {
-        $builder = new MethodBodyBuilder();
-        $builder->setRequestMethod('POST');
-        $builder->setBaseUrl('$this->baseUrl');
-        $builder->setUri('/path');
-        $builder->setBody('$body');
-        $builder->setBodyIsObject(true);
-        $builder->setJsonEncode(true);
-        $builder->setHeaders(['Content-Type' => 'application/json']);
-        $context = ['groups' => ['test' => 'group'], 'version' => 1, 'serializeNull' => true, 'enableMaxDepthChecks' => true, 'attributes' => ['foo' => 'bar']];
-        $builder->setSerializationContext($context);
-        $context['depth'] = 2;
-        $builder->setDeserializationContext($context);
-        $builder->setReturnType(MockUser::class);
-
-        $response = $builder->build();
-
-        $this->assertResponse($response, 'can_build_post_request');
-    }
-
-    public function testCanBuildPostRequestParts()
-    {
-        $builder = new MethodBodyBuilder();
-        $builder->setRequestMethod('POST');
-        $builder->setBaseUrl('$this->baseUrl');
-        $builder->setUri('/path');
-        $builder->setBodyParts(['foo' => 'bar']);
-        $context['serializeNull'] = true;
-        $builder->setDeserializationContext($context);
-        $builder->setReturnType(MockUser::class);
-
-        $response = $builder->build();
-
-        $this->assertResponse($response, 'can_build_post_request_parts');
-    }
-
-    public function testCanBuildPostRequestPartsJsonEncoded()
-    {
-        $builder = new MethodBodyBuilder();
-        $builder->setRequestMethod('POST');
-        $builder->setBaseUrl('$this->baseUrl');
-        $builder->setUri('/path');
-        $builder->setBodyParts(['foo' => 'bar']);
-        $builder->setJsonEncode(true);
-        $context['serializeNull'] = true;
-        $builder->setDeserializationContext($context);
-        $builder->setReturnType(MockUser::class);
-
-        $response = $builder->build();
-
-        $this->assertResponse($response, 'can_build_post_request_parts_json_encoded');
-    }
-
-    public function testBodyObjectFormEncoded()
-    {
-        $builder = new MethodBodyBuilder();
-        $builder->setRequestMethod('POST');
-        $builder->setBaseUrl('$this->baseUrl');
-        $builder->setUri('/path');
-        $builder->setBody('$body');
-        $builder->setBodyIsObject(true);
-        $builder->setReturnType(MockUser::class);
-
-        $response = $builder->build();
-
-        $this->assertResponse($response, 'body_object_form_encoded');
-    }
-
     public function testBodyOptional()
     {
         $builder = new MethodBodyBuilder();
         $builder->setRequestMethod('POST');
+        $builder->setFormUrlEncoded(true);
         $builder->setBaseUrl('$this->baseUrl');
         $builder->setUri('/path');
         $builder->setBody('$body');
@@ -256,26 +387,26 @@ class MethodBodyBuilderTest extends MockeryTestCase
         $this->assertResponse($response, 'body_optional');
     }
 
-    public function testBodyJsonSerializable()
+    public function testResponseReturn()
     {
         $builder = new MethodBodyBuilder();
-        $builder->setRequestMethod('POST');
+        $builder->setRequestMethod('GET');
         $builder->setBaseUrl('$this->baseUrl');
         $builder->setUri('/path');
-        $builder->setBody('$body');
-        $builder->setBodyIsObject(true);
-        $builder->setBodyIsJsonSerializable(true);
-        $builder->setReturnType(MockUser::class);
+        $context = ['groups' => ['test' => 'group'], 'version' => 1, 'serializeNull' => true, 'enableMaxDepthChecks' => true, 'attributes' => ['foo' => 'bar']];
+        $builder->setDeserializationContext($context);
+        $builder->setReturnType('Response<Tebru\Retrofit\Test\Mock\MockUser>');
 
         $response = $builder->build();
 
-        $this->assertResponse($response, 'body_json_serializable');
+        $this->assertResponse($response, 'response_return');
     }
 
     public function testOptionalCallback()
     {
         $builder = new MethodBodyBuilder();
         $builder->setRequestMethod('GET');
+        $builder->setFormUrlEncoded(true);
         $builder->setBaseUrl('$this->baseUrl');
         $builder->setUri('/get');
         $builder->setCallback('$callback');
@@ -291,6 +422,7 @@ class MethodBodyBuilderTest extends MockeryTestCase
     {
         $builder = new MethodBodyBuilder();
         $builder->setRequestMethod('GET');
+        $builder->setFormUrlEncoded(true);
         $builder->setBaseUrl('$this->baseUrl');
         $builder->setUri('/get');
         $builder->setCallback('$callback');

@@ -1,8 +1,10 @@
 <?php
 
 $requestUrl = $this->baseUrl . '/path';
-$headers = array();
-$body = $body;
+$headers = array('Content-Type' => 'application/x-www-form-urlencoded');
+$bodyArray = $body->jsonSerialize();
+$bodyArray = \Tebru\Retrofit\Generation\Manipulator\QueryManipulator::boolToString($bodyArray);
+$body = http_build_query($bodyArray);
 $request = new \GuzzleHttp\Psr7\Request('POST', $requestUrl, $headers, $body);
 $beforeSendEvent = new \Tebru\Retrofit\Event\BeforeSendEvent($request);
 $this->eventDispatcher->dispatch('retrofit.beforeSend', $beforeSendEvent);
@@ -19,7 +21,7 @@ $afterSendEvent = new \Tebru\Retrofit\Event\AfterSendEvent($request, $response);
 $this->eventDispatcher->dispatch('retrofit.afterSend', $afterSendEvent);
 $response = $afterSendEvent->getResponse();
 $retrofitResponse = new \Tebru\Retrofit\Http\Response($response, 'array', $this->serializer, array());
-$return = $retrofitResponse;
+$return = $retrofitResponse->body();
 $returnEvent = new \Tebru\Retrofit\Event\ReturnEvent($return);
 $this->eventDispatcher->dispatch('retrofit.return', $returnEvent);
 return $returnEvent->getReturn();

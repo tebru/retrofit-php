@@ -1,16 +1,23 @@
 <?php
 
 $requestUrl = $this->baseUrl . '/path';
-$headers = array();
-if (empty($body)) {
-    $body = null;
-} else {
-    $bodySerializationContext = \JMS\Serializer\SerializationContext::create();
-    $serializedBody = $this->serializer->serialize($body, 'json', $bodySerializationContext);
-    $bodyArray = json_decode($serializedBody, true);
-    $bodyArray = \Tebru\Retrofit\Generation\Manipulator\QueryManipulator::boolToString($bodyArray);
-    $body = http_build_query($bodyArray);
+$headers = array('Content-Type' => 'multipart/form-data');
+$bodyArray = $body;
+$bodyParts = array();
+foreach ($bodyArray as $key => $value) {
+    $file = null;
+    if (is_resource($value)) {
+        $file = $value;
+    }
+    if (is_string($value)) {
+        $file = fopen($value, 'r');
+    }
+    if (!is_resource($file)) {
+        throw new \LogicException('Expected resource or file path');
+    }
+    $bodyParts[] = array('name' => $key, 'contents' => $file);
 }
+$body = new \GuzzleHttp\Psr7\MultipartStream($bodyParts);
 $request = new \GuzzleHttp\Psr7\Request('POST', $requestUrl, $headers, $body);
 $beforeSendEvent = new \Tebru\Retrofit\Event\BeforeSendEvent($request);
 $this->eventDispatcher->dispatch('retrofit.beforeSend', $beforeSendEvent);
@@ -26,7 +33,7 @@ try {
 $afterSendEvent = new \Tebru\Retrofit\Event\AfterSendEvent($request, $response);
 $this->eventDispatcher->dispatch('retrofit.afterSend', $afterSendEvent);
 $response = $afterSendEvent->getResponse();
-$retrofitResponse = new \Tebru\Retrofit\Http\Response($response, 'Tebru\\Retrofit\\Test\\Mock\\MockUser', $this->serializer, array());
+$retrofitResponse = new \Tebru\Retrofit\Http\Response($response, 'array', $this->serializer, array());
 $return = $retrofitResponse->body();
 $returnEvent = new \Tebru\Retrofit\Event\ReturnEvent($return);
 $this->eventDispatcher->dispatch('retrofit.return', $returnEvent);

@@ -19,12 +19,14 @@ interface MockServiceBody
     /**
      * @Rest\POST("/post")
      * @Rest\Body("myBody")
+     * @Rest\FormUrlEncoded()
      */
     public function simpleBody(array $myBody);
 
     /**
      * @Rest\POST("/post")
      * @Rest\Body("myBody", var="foo")
+     * @Rest\FormUrlEncoded()
      */
     public function bodyChangeName(array $foo);
 
@@ -45,18 +47,21 @@ interface MockServiceBody
     /**
      * @Rest\POST("/post")
      * @Rest\Body("user")
+     * @Rest\FormUrlEncoded()
      */
     public function objectBodyAsFromEncoded(MockUser $user);
 
     /**
      * @Rest\POST("/post")
      * @Rest\Body("user")
+     * @Rest\FormUrlEncoded()
      */
     public function objectBodyOptional(MockUser $user = null);
 
     /**
      * @Rest\POST("/post")
      * @Rest\Body("user", jsonSerializable=true)
+     * @Rest\FormUrlEncoded()
      */
     public function objectBodyJsonSerializable(MockUser $user);
 
@@ -64,6 +69,7 @@ interface MockServiceBody
      * @Rest\POST("/post")
      * @Rest\Part("foo")
      * @Rest\Part("bar")
+     * @Rest\FormUrlEncoded()
      */
     public function parts($foo, $bar);
 
@@ -71,6 +77,7 @@ interface MockServiceBody
      * @Rest\POST("/post")
      * @Rest\Part("foo", var="bar")
      * @Rest\Part("bar", var="foo")
+     * @Rest\FormUrlEncoded()
      */
     public function partsChangeName($bar, $foo);
 
@@ -85,7 +92,6 @@ interface MockServiceBody
      * @Rest\POST("/post")
      * @Rest\Body("user")
      * @Rest\JsonBody
-     * @return
      */
     public function objectJsonBody(MockUser $user);
 
@@ -112,4 +118,11 @@ interface MockServiceBody
      * @Rest\Multipart()
      */
     public function multipart(array $bar);
+
+    /**
+     * @Rest\POST("/post")
+     * @Rest\Part("foo")
+     * @Rest\Multipart()
+     */
+    public function multipartWithParts($foo);
 }

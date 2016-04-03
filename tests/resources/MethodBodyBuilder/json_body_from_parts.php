@@ -1,8 +1,8 @@
 <?php
 
 $requestUrl = $this->baseUrl . '/path';
-$headers = array();
-$body = http_build_query(array('foo' => 'bar'));
+$headers = array('Content-Type' => 'application/json');
+$body = json_encode(array('foo' => $bar));
 $request = new \GuzzleHttp\Psr7\Request('POST', $requestUrl, $headers, $body);
 $beforeSendEvent = new \Tebru\Retrofit\Event\BeforeSendEvent($request);
 $this->eventDispatcher->dispatch('retrofit.beforeSend', $beforeSendEvent);
@@ -18,7 +18,7 @@ try {
 $afterSendEvent = new \Tebru\Retrofit\Event\AfterSendEvent($request, $response);
 $this->eventDispatcher->dispatch('retrofit.afterSend', $afterSendEvent);
 $response = $afterSendEvent->getResponse();
-$retrofitResponse = new \Tebru\Retrofit\Http\Response($response, 'Tebru\\Retrofit\\Test\\Mock\\MockUser', $this->serializer, array('serializeNull' => true));
+$retrofitResponse = new \Tebru\Retrofit\Http\Response($response, 'array', $this->serializer, array());
 $return = $retrofitResponse->body();
 $returnEvent = new \Tebru\Retrofit\Event\ReturnEvent($return);
 $this->eventDispatcher->dispatch('retrofit.return', $returnEvent);

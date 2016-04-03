@@ -8,7 +8,7 @@ namespace Tebru\Retrofit\Generation\Handler;
 
 use Tebru\Retrofit\Annotation\Body;
 use Tebru\Retrofit\Annotation\Part;
-use Tebru\Retrofit\Generation\Manipulator\BodyManipulator;
+use Tebru\Retrofit\Generation\Manipulator\QueryManipulator;
 
 /**
  * Class RequestBodyHandler
@@ -42,7 +42,7 @@ class RequestBodyHandler extends Handler
 
         $this->methodBodyBuilder->setBodyIsObject($parameter->isObject());
         $this->methodBodyBuilder->setBodyIsOptional($parameter->isOptional());
-        $this->methodBodyBuilder->setBodyDefaultValue(BodyManipulator::varToString($parameter->getDefaultValue()));
+        $this->methodBodyBuilder->setBodyDefaultValue(QueryManipulator::varToString($parameter->getDefaultValue()));
         $this->methodBodyBuilder->setBodyIsJsonSerializable($bodyAnnotation->isJsonSerializable());
         $this->methodBodyBuilder->setBodyIsArray($parameter->isArray());
         $this->methodBodyBuilder->setBody($bodyAnnotation->getVariable());

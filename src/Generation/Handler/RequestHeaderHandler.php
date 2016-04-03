@@ -6,10 +6,13 @@
 
 namespace Tebru\Retrofit\Generation\Handler;
 
+use Tebru\Retrofit\Annotation\Body;
+use Tebru\Retrofit\Annotation\FormUrlEncoded;
 use Tebru\Retrofit\Annotation\Header;
 use Tebru\Retrofit\Annotation\Headers;
 use Tebru\Retrofit\Annotation\JsonBody;
 use Tebru\Retrofit\Annotation\Multipart;
+use Tebru\Retrofit\Annotation\Part;
 
 /**
  * Class RequestHeaderHandler
@@ -73,7 +76,7 @@ class RequestHeaderHandler extends Handler
     }
 
     /**
-     * Add a content type header if it's a json request
+     * Add a content type header
      *
      * @param array $headers
      * @return array
@@ -87,15 +90,33 @@ class RequestHeaderHandler extends Handler
             return $headers;
         }
 
+        if ($this->annotations->exists(FormUrlEncoded::NAME)) {
+            $this->methodBodyBuilder->setFormUrlEncoded(true);
+            $headers['Content-Type'] = 'application/x-www-form-urlencoded';
+
+            return $headers;
+        }
+
         if ($this->annotations->exists(Multipart::NAME)) {
+            $this->methodBodyBuilder->setMultipartEncoded(true);
             $headers['Content-Type'] = 'multipart/form-data';
 
             return $headers;
         }
 
-        if (!isset($headers['Content-Type'])) {
-            $headers['Content-Type'] = 'application/x-www-form-urlencoded';
+        // if there is a body, display warning
+        if ($this->annotations->exists(Body::NAME) || $this->annotations->exists(Part::NAME)) {
+            trigger_error('The default content type is changing in the next'
+                . ' major version of Retrofit from application/x-www-form-urlencoded'
+                . ' to application/json.  In order to ensure a clean upgrade, make'
+                . ' sure you specify a specific content type with the proper annotation'
+            );
+        // @codeCoverageIgnoreStart
         }
+        // @codeCoverageIgnoreEnd
+
+        $this->methodBodyBuilder->setFormUrlEncoded(true);
+        $headers['Content-Type'] = 'application/x-www-form-urlencoded';
 
         return $headers;
     }

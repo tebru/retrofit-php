@@ -1,11 +1,17 @@
 <?php
 
 $requestUrl = $this->baseUrl . '/path';
-$headers = array();
-$body = $this->serializer->serialize($body, 'json');
-$body = json_decode($body, true);
-$body = \Tebru\Retrofit\Generation\Manipulator\BodyManipulator::boolToString($body);
-$body = http_build_query($body);
+$headers = array('Content-Type' => 'application/x-www-form-urlencoded');
+$bodySerializationContext = \JMS\Serializer\SerializationContext::create();
+$bodySerializationContext->setGroups(array('test' => 'group'));
+$bodySerializationContext->setVersion(1);
+$bodySerializationContext->setSerializeNull(1);
+$bodySerializationContext->enableMaxDepthChecks();
+$bodySerializationContext->setAttribute('foo', 'bar');
+$serializedBody = $this->serializer->serialize($body, 'json', $bodySerializationContext);
+$bodyArray = json_decode($serializedBody, true);
+$bodyArray = \Tebru\Retrofit\Generation\Manipulator\QueryManipulator::boolToString($bodyArray);
+$body = http_build_query($bodyArray);
 $request = new \GuzzleHttp\Psr7\Request('POST', $requestUrl, $headers, $body);
 $beforeSendEvent = new \Tebru\Retrofit\Event\BeforeSendEvent($request);
 $this->eventDispatcher->dispatch('retrofit.beforeSend', $beforeSendEvent);
@@ -21,7 +27,7 @@ try {
 $afterSendEvent = new \Tebru\Retrofit\Event\AfterSendEvent($request, $response);
 $this->eventDispatcher->dispatch('retrofit.afterSend', $afterSendEvent);
 $response = $afterSendEvent->getResponse();
-$retrofitResponse = new \Tebru\Retrofit\Http\Response($response, 'Tebru\\Retrofit\\Test\\Mock\\MockUser', $this->serializer, array());
+$retrofitResponse = new \Tebru\Retrofit\Http\Response($response, 'array', $this->serializer, array());
 $return = $retrofitResponse->body();
 $returnEvent = new \Tebru\Retrofit\Event\ReturnEvent($return);
 $this->eventDispatcher->dispatch('retrofit.return', $returnEvent);

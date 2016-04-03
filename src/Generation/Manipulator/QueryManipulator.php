@@ -7,11 +7,11 @@
 namespace Tebru\Retrofit\Generation\Manipulator;
 
 /**
- * Class BodyManipulator
+ * Class QueryManipulator
  *
  * @author Nate Brunette <n@tebru.net>
  */
-class BodyManipulator
+class QueryManipulator
 {
     /**
      * Convert booleans to string so that they're not passed as 0 and 1

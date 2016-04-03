@@ -6,6 +6,7 @@
 
 namespace Tebru\Retrofit\Test\Functional;
 
+use GuzzleHttp\Psr7\MultipartStream;
 use Tebru\Retrofit\Test\Mock\Service\MockServiceBody;
 use Tebru\Retrofit\Test\Mock\Traits\ClientMocks;
 use Tebru\Retrofit\Test\MockeryTestCase;
@@ -178,11 +179,25 @@ class BodyClientGenerationTest extends MockeryTestCase
     public function testHeaderMultipartBody()
     {
         $headers = ['Host' => ['mockservice.com'], 'Content-Type' => ['multipart/form-data']];
-        $body = ['foo' => 'bar'];
-        $httpClient = $this->getHttpClient($this->getResponse(), 'POST', '/post', $headers, http_build_query($body));
+        $file = fopen(__FILE__, 'r');
+        $body = new MultipartStream([['name' => 'foo', 'contents' => $file]]);
+        $httpClient = $this->getHttpClient($this->getResponse(), 'POST', '/post', $headers, $body);
         /** @var MockServiceBody $client */
         $client = $this->getClient(MockServiceBody::class, $httpClient, $this->getSerializer());
-        $response = $client->multipart($body);
+        $response = $client->multipart(['foo' => __FILE__]);
+
+        $this->assertSame([], $response);
+    }
+
+    public function testHeaderMultipartBodyWithParts()
+    {
+        $headers = ['Host' => ['mockservice.com'], 'Content-Type' => ['multipart/form-data']];
+        $file = fopen(__FILE__, 'r');
+        $body = new MultipartStream([['name' => 'foo', 'contents' => $file]]);
+        $httpClient = $this->getHttpClient($this->getResponse(), 'POST', '/post', $headers, $body);
+        /** @var MockServiceBody $client */
+        $client = $this->getClient(MockServiceBody::class, $httpClient, $this->getSerializer());
+        $response = $client->multipartWithParts(__DIR__ . '/BodyClientGenerationTest.php');
 
         $this->assertSame([], $response);
     }

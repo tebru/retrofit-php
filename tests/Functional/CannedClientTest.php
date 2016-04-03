@@ -107,5 +107,4 @@ class CannedClientTest extends MockeryTestCase
         $expected = json_encode(['id' => 4, 'title' => 'My New Other Title']);
         $this->assertJsonStringEqualsJsonString($expected, $response);
     }
-
 }

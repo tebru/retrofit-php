@@ -118,6 +118,20 @@ class MethodBodyBuilder
     private $jsonEncode = false;
 
     /**
+     * If the body should be sent form urlencoded
+     *
+     * @var bool
+     */
+    private $formUrlEncoded = false;
+
+    /**
+     * If the body should be sent as multipart
+     *
+     * @var bool
+     */
+    private $multipartEncoded = false;
+
+    /**
      * Method return type
      *
      * @var string
@@ -273,6 +287,22 @@ class MethodBodyBuilder
     }
 
     /**
+     * @param boolean $formUrlEncoded
+     */
+    public function setFormUrlEncoded($formUrlEncoded)
+    {
+        $this->formUrlEncoded = $formUrlEncoded;
+    }
+
+    /**
+     * @param boolean $multipartEncoded
+     */
+    public function setMultipartEncoded($multipartEncoded)
+    {
+        $this->multipartEncoded = $multipartEncoded;
+    }
+
+    /**
      * @param string $returnType
      */
     public function setReturnType($returnType)
@@ -319,6 +349,8 @@ class MethodBodyBuilder
      */
     public function build()
     {
+        Tebru\assertThat(null === $this->body || empty($this->bodyParts), 'Cannot have both @Body and @Part annotations');
+
         $this->createRequestUrl();
         $this->createHeaders();
         $this->createBody();
@@ -378,52 +410,146 @@ class MethodBodyBuilder
      */
     private function createBody()
     {
+        // body should be null if there isn't a body or parts
         if (null === $this->body && empty($this->bodyParts)) {
             $this->methodBody->add('$body = null;');
 
             return;
         }
 
-        Tebru\assertThat(null === $this->body || empty($this->bodyParts), 'Cannot have both @Body and @Part annotations');
+        // if body is optional and 'empty' it should be null
+        if ($this->bodyIsOptional) {
+            $this->methodBody->add('if (empty(%s)) { $body = null; } else {', $this->body);
+        }
 
-        if ($this->bodyIsObject) {
-            if ($this->bodyIsOptional) {
-                $this->methodBody->add('if (null !== %s) {', $this->body);
+        $this->doCreateBody();
+
+        if ($this->bodyIsOptional) {
+            $this->methodBody->add('}');
+        }
+    }
+
+    /**
+     * Logic to actually create body
+     */
+    private function doCreateBody()
+    {
+        // check if body is a string, set variable if it doesn't already equal '$body'
+        if (!$this->bodyIsArray && !$this->bodyIsObject && empty($this->bodyParts)) {
+            if ('$body' !== $this->body) {
+                $this->methodBody->add('$body = %s;', $this->body);
             }
 
+            return;
+        }
+
+        // if we're json encoding, we don't need the body as an array first
+        if ($this->jsonEncode) {
+            $this->createBodyJson();
+
+            return;
+        }
+
+        // otherwise, we do need to convert the body to an array
+        $this->createBodyArray();
+
+        if ($this->formUrlEncoded) {
+            $this->methodBody->add('$bodyArray = \Tebru\Retrofit\Generation\Manipulator\QueryManipulator::boolToString($bodyArray);');
+            $this->methodBody->add('$body = http_build_query($bodyArray);');
+
+            return;
+        }
+
+        // body is multipart
+        $this->methodBody->add('$bodyParts = [];');
+        $this->methodBody->add('foreach ($bodyArray as $key => $value) {');
+        $this->methodBody->add('$file = null;');
+        $this->methodBody->add('if (is_resource($value)) { $file = $value; }');
+        $this->methodBody->add('if (is_string($value)) { $file = fopen($value, "r"); }');
+        $this->methodBody->add('if (!is_resource($file)) { throw new \LogicException("Expected resource or file path"); }');
+        $this->methodBody->add('$bodyParts[] = ["name" => $key, "contents" => $file];');
+        $this->methodBody->add('}');
+
+        $this->methodBody->add('$body = new \GuzzleHttp\Psr7\MultipartStream($bodyParts);');
+    }
+
+    /**
+     * Create json body
+     */
+    private function createBodyJson()
+    {
+        // json encode arrays
+        if ($this->bodyIsArray) {
+            $this->methodBody->add('$body = json_encode(%s);', $this->body);
+
+            return;
+        }
+
+        // if parts exist, json encode the parts
+        if (!empty($this->bodyParts)) {
+            $this->methodBody->add('$body = json_encode(%s);', $this->arrayToString($this->bodyParts));
+
+            return;
+        }
+
+        // if it's an object, serialize it unless it implements \JsonSerializable
+        if ($this->bodyIsObject) {
             if ($this->bodyIsJsonSerializable) {
                 $this->methodBody->add('$body = json_encode(%s);', $this->body);
-            } else {
-                if (!empty($this->serializationContext)) {
-                    $this->methodBody->add('$context = \JMS\Serializer\SerializationContext::create();');
-                    $this->createContext($this->serializationContext);
-                    $this->methodBody->add('$body = $this->serializer->serialize(%s, "json", $context);', $this->body);
-                } else {
-                    $this->methodBody->add('$body = $this->serializer->serialize(%s, "json");', $this->body);
-                }
+
+                return;
             }
 
-
-            if (false === $this->jsonEncode) {
-                $this->methodBody->add('$body = json_decode($body, true);');
-                $this->methodBody->add('$body = \Tebru\Retrofit\Generation\Manipulator\BodyManipulator::boolToString($body);');
-                $this->methodBody->add('$body = http_build_query($body);');
-            }
-
-            if ($this->bodyIsOptional) {
-                $this->methodBody->add('} else { $body = %s; }', $this->bodyDefaultValue);
-            }
-        } elseif ($this->bodyIsArray) {
-            (true === $this->jsonEncode)
-                ? $this->methodBody->add('$body = json_encode(%s);', $this->body)
-                : $this->methodBody->add('$body = http_build_query(%s);', $this->body);
-        } elseif (null !== $this->body) {
-            $this->methodBody->add('$body = %s;', $this->body);
-        } else {
-            (true === $this->jsonEncode)
-                ? $this->methodBody->add('$body = json_encode(%s);', $this->arrayToString($this->bodyParts))
-                : $this->methodBody->add('$body = http_build_query(%s);', $this->arrayToString($this->bodyParts));
+            $this->serializeObject('$bodySerializationContext', '$body', $this->body);
         }
+    }
+
+    /**
+     * Normalize body as array
+     */
+    private function createBodyArray()
+    {
+        // if it's already an array, set to variable
+        if ($this->bodyIsArray) {
+            $this->methodBody->add('$bodyArray = %s;', $this->body);
+
+            return;
+        }
+
+        // if parts exist, set to variable
+        if (!empty($this->bodyParts)) {
+            $this->methodBody->add('$bodyArray = %s;', $this->arrayToString($this->bodyParts));
+
+            return;
+        }
+
+        // if it implements \JsonSerializable, call jsonSerialize() to get array
+        if ($this->bodyIsJsonSerializable) {
+            $this->methodBody->add('$bodyArray = %s->jsonSerialize();', $this->body);
+
+            return;
+        }
+
+        // otherwise, serialize and json_decode()
+        $this->serializeObject('$bodySerializationContext', '$serializedBody', $this->body);
+        $this->methodBody->add('$bodyArray = json_decode($serializedBody, true);');
+    }
+
+    /**
+     * Helper method to serialize an object
+     *
+     * @param string $contextVar
+     * @param string $bodyVar
+     * @param string $object
+     */
+    private function serializeObject($contextVar, $bodyVar, $object)
+    {
+        $this->methodBody->add('%s = \JMS\Serializer\SerializationContext::create();', $contextVar);
+        if (!empty($this->serializationContext)) {
+            $this->createContext($contextVar, $this->serializationContext);
+        }
+
+        $this->methodBody->add('%s = $this->serializer->serialize(%s, "json", %s);', $bodyVar, $object, $contextVar);
     }
 
     /**
@@ -509,29 +635,30 @@ class MethodBodyBuilder
     /**
      * Build the serialization context
      *
+     * @param $contextVar
      * @param $context
      */
-    private function createContext(&$context)
+    private function createContext($contextVar, &$context)
     {
         if (!empty($context['groups'])) {
-            $this->methodBody->add('$context->setGroups(%s);', $this->arrayToString($context['groups']));
+            $this->methodBody->add('%s->setGroups(%s);', $contextVar, $this->arrayToString($context['groups']));
         }
 
         if (!empty($context['version'])) {
-            $this->methodBody->add('$context->setVersion(%d);', (int) $context['version']);
+            $this->methodBody->add('%s->setVersion(%d);', $contextVar, (int) $context['version']);
         }
 
         if (!empty($context['serializeNull'])) {
-            $this->methodBody->add('$context->setSerializeNull(%d);', (bool) $context['serializeNull']);
+            $this->methodBody->add('%s->setSerializeNull(%d);', $contextVar, (bool) $context['serializeNull']);
         }
 
         if (!empty($context['enableMaxDepthChecks'])) {
-            $this->methodBody->add('$context->enableMaxDepthChecks();');
+            $this->methodBody->add('%s->enableMaxDepthChecks();', $contextVar);
         }
 
         if (!empty($context['attributes'])) {
             foreach ($context['attributes'] as $key => $value) {
-                $this->methodBody->add('$context->setAttribute("%s", "%s");', $key, $value);
+                $this->methodBody->add('%s->setAttribute("%s", "%s");', $contextVar, $key, $value);
             }
         }
     }

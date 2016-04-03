@@ -6,6 +6,7 @@
 
 namespace Tebru\Retrofit\Test\Mock\Traits;
 
+use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use JMS\Serializer\SerializerBuilder;
@@ -67,9 +68,17 @@ trait ClientMocks
                 throw new LogicException('Request headers not equal');
             }
 
-            if ((string)$request->getBody() !== (string)$argument->getBody()) {
-                throw new LogicException('Request bodies not equal');
+            // check for multipart stream
+            if (MultipartStream::class === get_class($request->getBody())) {
+                if ($request->getBody()->getSize() !== $argument->getBody()->getSize()){
+                    throw new LogicException('Multipart bodies not equal');
+                }
+            } else {
+                if ((string)$request->getBody() !== (string)$argument->getBody()) {
+                    throw new LogicException('Request bodies not equal');
+                }
             }
+
 
             return true;
         }))->andReturn($response);
