@@ -137,7 +137,7 @@ class RequestHeaderHandlerTest extends MockeryTestCase
         $annotationCollection->shouldReceive('exists')->times(1)->with(Multipart::NAME)->andReturn(true);
 
         $methodBodyBuilder->shouldReceive('setHeaders')->times(1)->with(['headerskey' => 'headersvalue', 'foo' => '$foo', 'Content-Type' => 'multipart/form-data'])->andReturnNull();
-        $methodBodyBuilder->shouldReceive('setMultipart')->times(1)->with(true)->andReturnNull();
+        $methodBodyBuilder->shouldReceive('setMultipartEncoded')->times(1)->with(true)->andReturnNull();
 
         $handler = new RequestHeaderHandler($methodModel, $methodBodyBuilder, $annotationCollection);
 

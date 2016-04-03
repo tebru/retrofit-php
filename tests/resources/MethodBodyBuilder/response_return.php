@@ -18,7 +18,7 @@ try {
 $afterSendEvent = new \Tebru\Retrofit\Event\AfterSendEvent($request, $response);
 $this->eventDispatcher->dispatch('retrofit.afterSend', $afterSendEvent);
 $response = $afterSendEvent->getResponse();
-$retrofitResponse = new \Tebru\Retrofit\Http\Response($response, 'array', $this->serializer, array());
+$retrofitResponse = new \Tebru\Retrofit\Http\Response($response, 'Tebru\\Retrofit\\Test\\Mock\\MockUser', $this->serializer, array('groups' => array('test' => 'group'), 'version' => 1, 'serializeNull' => true, 'enableMaxDepthChecks' => true, 'attributes' => array('foo' => 'bar')));
 $return = $retrofitResponse;
 $returnEvent = new \Tebru\Retrofit\Event\ReturnEvent($return);
 $this->eventDispatcher->dispatch('retrofit.return', $returnEvent);
