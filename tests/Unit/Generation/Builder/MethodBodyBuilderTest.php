@@ -384,7 +384,6 @@ class MethodBodyBuilderTest extends MockeryTestCase
         $builder->setBody('$body');
         $builder->setBodyIsObject(true);
         $builder->setBodyIsOptional(true);
-        $builder->setBodyDefaultValue('null');
         $builder->setReturnType(MockUser::class);
 
         $response = $builder->build();

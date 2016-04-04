@@ -90,13 +90,6 @@ class MethodBodyBuilder
     private $bodyIsOptional = false;
 
     /**
-     * The default body value
-     *
-     * @var mixed
-     */
-    private $bodyDefaultValue;
-
-    /**
      * True if the body implements \JsonSerializable
      *
      * @var boolean
@@ -259,14 +252,6 @@ class MethodBodyBuilder
     public function setBodyIsOptional($bodyIsOptional)
     {
         $this->bodyIsOptional = $bodyIsOptional;
-    }
-
-    /**
-     * @param mixed $bodyDefaultValue
-     */
-    public function setBodyDefaultValue($bodyDefaultValue)
-    {
-        $this->bodyDefaultValue = $bodyDefaultValue;
     }
 
     /**
@@ -479,16 +464,18 @@ class MethodBodyBuilder
         }
 
         // body is multipart
-        $this->methodBody->add('$bodyParts = [];');
-        $this->methodBody->add('foreach ($bodyArray as $key => $value) {');
-        $this->methodBody->add('$file = null;');
-        $this->methodBody->add('if (is_resource($value)) { $file = $value; }');
-        $this->methodBody->add('if (is_string($value)) { $file = fopen($value, "r"); }');
-        $this->methodBody->add('if (!is_resource($file)) { throw new \LogicException("Expected resource or file path"); }');
-        $this->methodBody->add('$bodyParts[] = ["name" => $key, "contents" => $file];');
-        $this->methodBody->add('}');
+        if ($this->multipartEncoded) {
+            $this->methodBody->add('$bodyParts = [];');
+            $this->methodBody->add('foreach ($bodyArray as $key => $value) {');
+            $this->methodBody->add('$file = null;');
+            $this->methodBody->add('if (is_resource($value)) { $file = $value; }');
+            $this->methodBody->add('if (is_string($value)) { $file = fopen($value, "r"); }');
+            $this->methodBody->add('if (!is_resource($file)) { throw new \LogicException("Expected resource or file path"); }');
+            $this->methodBody->add('$bodyParts[] = ["name" => $key, "contents" => $file];');
+            $this->methodBody->add('}');
 
-        $this->methodBody->add('$body = new \GuzzleHttp\Psr7\MultipartStream($bodyParts, "%s");', $this->boundaryId);
+            $this->methodBody->add('$body = new \GuzzleHttp\Psr7\MultipartStream($bodyParts, "%s");', $this->boundaryId);
+        }
     }
 
     /**
