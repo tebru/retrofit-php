@@ -24,7 +24,7 @@ foreach ($bodyArray as $key => $value) {
     }
     $bodyParts[] = array('name' => $key, 'contents' => $file);
 }
-$body = new \GuzzleHttp\Psr7\MultipartStream($bodyParts);
+$body = new \GuzzleHttp\Psr7\MultipartStream($bodyParts, '1234');
 $request = new \GuzzleHttp\Psr7\Request('POST', $requestUrl, $headers, $body);
 $beforeSendEvent = new \Tebru\Retrofit\Event\BeforeSendEvent($request);
 $this->eventDispatcher->dispatch('retrofit.beforeSend', $beforeSendEvent);

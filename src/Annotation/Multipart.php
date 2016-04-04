@@ -21,6 +21,33 @@ class Multipart implements DynamoAnnotation
     const NAME = 'multipart';
 
     /**
+     * If boundary is specified
+     *
+     * @var string
+     */
+    private $boundary;
+
+    /**
+     * Constructor
+     *
+     * @param array $params
+     */
+    public function __construct(array $params)
+    {
+        $this->boundary = (isset($params['boundary'])) ? $params['boundary'] : null;
+    }
+
+    /**
+     * Get the boundary
+     *
+     * @return string
+     */
+    public function getBoundary()
+    {
+        return $this->boundary;
+    }
+
+    /**
      * The name of the annotation or class of annotations
      *
      * @return string

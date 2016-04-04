@@ -283,6 +283,7 @@ class MethodBodyBuilderTest extends MockeryTestCase
         $builder->setBody('$body');
         $builder->setBodyIsArray(true);
         $builder->setMultipartEncoded(true);
+        $builder->setBoundaryId('1234');
 
         $response = $builder->build();
 
@@ -301,6 +302,7 @@ class MethodBodyBuilderTest extends MockeryTestCase
         $builder->setSerializationContext($context);
         $builder->setBodyIsObject(true);
         $builder->setMultipartEncoded(true);
+        $builder->setBoundaryId('1234');
 
         $response = $builder->build();
 
@@ -318,6 +320,7 @@ class MethodBodyBuilderTest extends MockeryTestCase
         $builder->setBodyIsObject(true);
         $builder->setBodyIsJsonSerializable(true);
         $builder->setMultipartEncoded(true);
+        $builder->setBoundaryId('1234');
 
         $response = $builder->build();
 
@@ -333,6 +336,7 @@ class MethodBodyBuilderTest extends MockeryTestCase
         $builder->setUri('/path');
         $builder->setBodyParts(['foo' => '$bar']);
         $builder->setMultipartEncoded(true);
+        $builder->setBoundaryId('1234');
 
         $response = $builder->build();
 
@@ -348,6 +352,7 @@ class MethodBodyBuilderTest extends MockeryTestCase
         $builder->setUri('/path');
         $builder->setBody('$fooBody');
         $builder->setMultipartEncoded(true);
+        $builder->setBoundaryId('1234');
 
         $response = $builder->build();
 

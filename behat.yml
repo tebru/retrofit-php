@@ -1,0 +1,8 @@
+default:
+    suites:
+        default:
+            contexts:
+                - Tebru\Retrofit\Test\Feature\Context\SetupContext
+                - Tebru\Retrofit\Test\Feature\Context\FeatureContext
+            paths:
+                features: %paths.base%/tests/Feature

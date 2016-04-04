@@ -122,6 +122,7 @@ class RequestHeaderHandlerTest extends MockeryTestCase
         $annotationCollection = Mockery::mock(AnnotationCollection::class);
         $headerAnnotation = Mockery::mock(Header::class);
         $headersAnnotation = Mockery::mock(Headers::class);
+        $multipartAnnotation = Mockery::mock(Multipart::class);
 
         $annotationCollection->shouldReceive('exists')->times(1)->with(Header::NAME)->andReturn(true);
         $annotationCollection->shouldReceive('get')->times(1)->with(Header::NAME)->andReturn([$headerAnnotation]);
@@ -130,14 +131,18 @@ class RequestHeaderHandlerTest extends MockeryTestCase
 
         $annotationCollection->shouldReceive('exists')->times(1)->with(Headers::NAME)->andReturn(true);
         $annotationCollection->shouldReceive('get')->times(1)->with(Headers::NAME)->andReturn($headersAnnotation);
+        $annotationCollection->shouldReceive('get')->times(1)->with(Multipart::NAME)->andReturn($multipartAnnotation);
         $headersAnnotation->shouldReceive('getHeaders')->times(1)->withNoArgs()->andReturn(['headerskey' => 'headersvalue']);
 
         $annotationCollection->shouldReceive('exists')->times(1)->with(JsonBody::NAME)->andReturn(false);
         $annotationCollection->shouldReceive('exists')->times(1)->with(FormUrlEncoded::NAME)->andReturn(false);
         $annotationCollection->shouldReceive('exists')->times(1)->with(Multipart::NAME)->andReturn(true);
 
-        $methodBodyBuilder->shouldReceive('setHeaders')->times(1)->with(['headerskey' => 'headersvalue', 'foo' => '$foo', 'Content-Type' => 'multipart/form-data'])->andReturnNull();
+        $methodBodyBuilder->shouldReceive('setHeaders')->times(1)->with(['headerskey' => 'headersvalue', 'foo' => '$foo', 'Content-Type' => 'multipart/form-data; boundary=1234'])->andReturnNull();
+        $methodBodyBuilder->shouldReceive('setBoundaryId')->times(1)->with('1234')->andReturnNull();
         $methodBodyBuilder->shouldReceive('setMultipartEncoded')->times(1)->with(true)->andReturnNull();
+
+        $multipartAnnotation->shouldReceive('getBoundary')->times(2)->with()->andReturn('1234');
 
         $handler = new RequestHeaderHandler($methodModel, $methodBodyBuilder, $annotationCollection);
 

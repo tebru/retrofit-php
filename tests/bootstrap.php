@@ -14,6 +14,6 @@ AnnotationRegistry::registerLoader([$loader, 'loadClass']);
 define('TEST_DIR', __DIR__);
 
 $retrofit = Retrofit::builder()
-->setCacheDir(__DIR__ . '/../cache/tests')
-->build();
+    ->setCacheDir(__DIR__ . '/../cache/tests')
+    ->build();
 $retrofit->cacheAll(__DIR__ . '/Mock');

@@ -1,6 +1,7 @@
 <?php
 
-$queryString = http_build_query(array('foo' => 'bar'));
+$queryArray = \Tebru\Retrofit\Generation\Manipulator\QueryManipulator::boolToString(array('foo' => 'bar'));
+$queryString = http_build_query($queryArray);
 $requestUrl = $this->baseUrl . '/path' . '?' . $queryString;
 $headers = array();
 $body = null;

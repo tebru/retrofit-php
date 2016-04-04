@@ -1,0 +1,11 @@
+/bin/
+/build/
+/composer.phar
+/vendor/
+/web/bundles/
+/app/bootstrap.php.cache
+/app/cache/*
+!app/cache/.gitkeep
+/app/logs/*
+!app/logs/.gitkeep
+/app/phpunit.xml

@@ -6,14 +6,20 @@ php:
   - 5.6
   - 7.0
 
+matrix:
+    include:
+        - php: 5.5
+          env: dependencies=lowest
+
 before_script:
-  - composer install --dev --no-interaction
+  - composer install --no-interaction -o
+  - if [ "$dependencies" = "lowest" ]; then composer update -o --prefer-lowest; fi;
 
 script:
   - mkdir -p build/logs
-  - npm install canned
-  - nohup node ./node_modules/canned/bin/canned -p 5000 tests/canned >/dev/null 2>&1 &
+  - tests/Api/app/console server:start
   - vendor/bin/phpunit
+  - vendor/bin/behat
 
 after_script:
   - php bin/coveralls.phar -v

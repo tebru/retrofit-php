@@ -1,0 +1,207 @@
+<?php
+/*
+ * Copyright (c) 2015 Nate Brunette.
+ * Distributed under the MIT License (http://opensource.org/licenses/MIT)
+ */
+
+namespace Tebru\Retrofit\Test\Mock;
+
+use Tebru\Retrofit\Annotation\Body;
+use Tebru\Retrofit\Annotation\FormUrlEncoded;
+use Tebru\Retrofit\Annotation\GET;
+use Tebru\Retrofit\Annotation\Header;
+use Tebru\Retrofit\Annotation\Headers;
+use Tebru\Retrofit\Annotation\JsonBody;
+use Tebru\Retrofit\Annotation\Multipart;
+use Tebru\Retrofit\Annotation\Part;
+use Tebru\Retrofit\Annotation\POST;
+use Tebru\Retrofit\Annotation\Query;
+use Tebru\Retrofit\Annotation\QueryMap;
+use Tebru\Retrofit\Test\Mock\Api\MockApiUser;
+use Tebru\Retrofit\Test\Mock\Api\MockApiUserSerializable;
+use Tebru\Retrofit\Test\Mock\Api\MockAvatar;
+use Tebru\Retrofit\Test\Mock\Api\MockAvatarSerializable;
+
+/**
+ * Interface ApiClient
+ *
+ * @author Nate Brunette <n@tebru.net>
+ */
+interface ApiClient
+{
+    /**
+     * @GET("/api/basic/user")
+     */
+    public function getUser();
+
+    /**
+     * @GET("/api/basic/user/{id}")
+     */
+    public function getUserById($id);
+
+    /**
+     * @GET("/api/basic/user")
+     * @Query("name")
+     */
+    public function getUserByQuery($name);
+
+    /**
+     * @GET("/api/basic/user")
+     * @QueryMap("queries")
+     */
+    public function getUserByMultipleQuery(array $queries);
+
+    /**
+     * @POST("/api/basic/user")
+     * @Body("user")
+     * @JsonBody()
+     */
+    public function createUserArrayJson(array $user);
+
+    /**
+     * @POST("/api/basic/user")
+     * @Body("user")
+     * @FormUrlEncoded()
+     */
+    public function createUserArrayForm(array $user);
+
+    /**
+     * @POST("/api/basic/user")
+     * @Body("user")
+     * @JsonBody()
+     */
+    public function createUserObjectJson(MockApiUser $user);
+
+    /**
+     * @POST("/api/basic/user")
+     * @Body("user")
+     * @FormUrlEncoded()
+     */
+    public function createUserObjectForm(MockApiUser $user);
+
+    /**
+     * @POST("/api/basic/user")
+     * @Body("user", jsonSerializable=true)
+     * @JsonBody()
+     */
+    public function createUserJsonObjectJson(MockApiUserSerializable $user);
+
+    /**
+     * @POST("/api/basic/user")
+     * @Body("user", jsonSerializable=true)
+     * @FormUrlEncoded()
+     */
+    public function createUserJsonObjectForm(MockApiUserSerializable $user);
+
+    /**
+     * @POST("/api/basic/user")
+     * @Body("user")
+     * @JsonBody()
+     */
+    public function createUserStringJson($user);
+
+    /**
+     * @POST("/api/basic/user")
+     * @Body("user")
+     * @FormUrlEncoded()
+     */
+    public function createUserStringForm($user);
+
+    /**
+     * @POST("/api/basic/user")
+     * @Part("name")
+     * @Part("age")
+     * @Part("enabled")
+     * @JsonBody()
+     */
+    public function createUserPartsJson($name, $age, $enabled = false);
+
+    /**
+     * @POST("/api/basic/user")
+     * @Part("name")
+     * @Part("age")
+     * @Part("enabled")
+     * @FormUrlEncoded()
+     */
+    public function createUserPartsForm($name, $age, $enabled = true);
+
+    /**
+     * @POST("/api/basic/user-avatar")
+     * @Body("avatar")
+     * @Multipart(boundary="fooboundary")
+     */
+    public function uploadAvatarArrayString(array $avatar);
+
+    /**
+     * @POST("/api/basic/user-avatar")
+     * @Body("avatar")
+     * @Multipart(boundary="fooboundary")
+     */
+    public function uploadAvatarArrayResource(array $avatar);
+
+    /**
+     * @POST("/api/basic/user-avatar")
+     * @Body("avatar")
+     * @Multipart(boundary="fooboundary")
+     */
+    public function uploadAvatarObjectString(MockAvatar $avatar);
+
+    /**
+     * @POST("/api/basic/user-avatar")
+     * @Body("avatar")
+     * @Multipart(boundary="fooboundary")
+     */
+    public function uploadAvatarObjectResource(MockAvatar $avatar);
+
+    /**
+     * @POST("/api/basic/user-avatar")
+     * @Body("avatar", jsonSerializable=true)
+     * @Multipart(boundary="fooboundary")
+     */
+    public function uploadAvatarJsonObjectString(MockAvatarSerializable $avatar);
+
+    /**
+     * @POST("/api/basic/user-avatar")
+     * @Body("avatar", jsonSerializable=true)
+     * @Multipart(boundary="fooboundary")
+     */
+    public function uploadAvatarJsonObjectResource(MockAvatarSerializable $avatar);
+
+    /**
+     * @POST("/api/basic/user-avatar")
+     * @Part("avatar")
+     * @Multipart(boundary="fooboundary")
+     */
+    public function uploadAvatarPartsString($avatar);
+
+    /**
+     * @POST("/api/basic/user-avatar")
+     * @Part("avatar")
+     * @Multipart(boundary="fooboundary")
+     */
+    public function uploadAvatarPartsResource($avatar);
+
+    /**
+     * @POST("/api/basic/user-avatar")
+     * @Body("avatar")
+     * @Multipart(boundary="fooboundary")
+     */
+    public function uploadAvatarStringString($avatar);
+
+    /**
+     * @POST("/api/basic/user-avatar")
+     * @Body("avatar")
+     * @Multipart(boundary="fooboundary")
+     */
+    public function uploadAvatarStringResource($avatar);
+
+    /**
+     * @GET("/api/basic/user")
+     * @Headers({
+     *     "a: 1",
+     *     "b: 2"
+     * })
+     * @Header("c", var="header")
+     */
+    public function headers($header);
+}

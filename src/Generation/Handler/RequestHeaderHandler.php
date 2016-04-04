@@ -99,7 +99,13 @@ class RequestHeaderHandler extends Handler
 
         if ($this->annotations->exists(Multipart::NAME)) {
             $this->methodBodyBuilder->setMultipartEncoded(true);
-            $headers['Content-Type'] = 'multipart/form-data';
+
+            /** @var Multipart $annotation */
+            $annotation = $this->annotations->get(Multipart::NAME);
+            $boundary = $annotation->getBoundary() ? $annotation->getBoundary() : null;
+            $this->methodBodyBuilder->setBoundaryId($boundary);
+
+            $headers['Content-Type'] = 'multipart/form-data; boundary=' . $boundary;
 
             return $headers;
         }

@@ -9,11 +9,11 @@ namespace Tebru\Retrofit\Test\Unit\Adapter\Rest;
 use GuzzleHttp\Client;
 use JMS\Serializer\SerializerBuilder;
 use Mockery;
-use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Tebru\Retrofit\Adapter\Rest\RestAdapter;
 use Tebru\Retrofit\Adapter\Rest\RestAdapterBuilder;
+use Tebru\Retrofit\HttpClient\Adapter\Guzzle\GuzzleV5ClientAdapter;
 use Tebru\Retrofit\HttpClient\Adapter\Guzzle\GuzzleV6ClientAdapter;
 use Tebru\Retrofit\Subscriber\LogSubscriber;
 use Tebru\Retrofit\Test\MockeryTestCase;
@@ -43,18 +43,34 @@ class RestAdapterBuilderTest extends MockeryTestCase
     public function testSetHttpClient()
     {
         $client = new Client();
-        $restAdapter = $this->getRestAdapterBuilder()->setHttpClient($client)->build();
 
-        $this->assertAttributeInstanceOf(GuzzleV6ClientAdapter::class, 'httpClient', $restAdapter);
+        if (version_compare(Client::VERSION, '6', '<')) {
+            $restAdapter = $this->getRestAdapterBuilder()->setHttpClient($client)->build();
+
+            $this->assertAttributeInstanceOf(GuzzleV5ClientAdapter::class, 'httpClient', $restAdapter);
+        } else {
+            $restAdapter = $this->getRestAdapterBuilder()->setHttpClient($client)->build();
+
+            $this->assertAttributeInstanceOf(GuzzleV6ClientAdapter::class, 'httpClient', $restAdapter);
+        }
     }
 
     public function testSetClientAdapter()
     {
         $client = new Client();
-        $clientAdapter = new GuzzleV6ClientAdapter($client);
-        $restAdapter = $this->getRestAdapterBuilder()->setClientAdapter($clientAdapter)->build();
 
-        $this->assertAttributeInstanceOf(GuzzleV6ClientAdapter::class, 'httpClient', $restAdapter);
+        if (version_compare(Client::VERSION, '6', '<')) {
+            $clientAdapter = new GuzzleV5ClientAdapter($client);
+            $restAdapter = $this->getRestAdapterBuilder()->setClientAdapter($clientAdapter)->build();
+
+            $this->assertAttributeInstanceOf(GuzzleV5ClientAdapter::class, 'httpClient', $restAdapter);
+        } else {
+            $clientAdapter = new GuzzleV6ClientAdapter($client);
+            $restAdapter = $this->getRestAdapterBuilder()->setClientAdapter($clientAdapter)->build();
+
+            $this->assertAttributeInstanceOf(GuzzleV6ClientAdapter::class, 'httpClient', $restAdapter);
+        }
+
     }
 
     public function testSetSerializer()
@@ -92,7 +108,7 @@ class RestAdapterBuilderTest extends MockeryTestCase
 
     public function testSetLogger()
     {
-        $logger = Mockery::mock(Logger::class);
+        $logger = Mockery::mock(LoggerInterface::class);
         $builder = $this->getRestAdapterBuilder();
         $builder->setLogger($logger)->build();
 

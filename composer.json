@@ -3,19 +3,25 @@
     "description": "Retrofit for PHP - A PHP REST client.",
     "require": {
         "php": ">= 5.4",
-        "jms/serializer": ">=0.11, <2.0",
-        "symfony/console": "^2.0.5",
+        "jms/serializer": ">=0.16, <2.0",
+        "symfony/console": "^2.0.5|^3.0",
         "tebru/assert": "^0.2",
-        "tebru/dynamo": "^0.3.0",
+        "tebru/dynamo": "^0.3.1",
         "tebru/retrofit-http-clients": "^0.6.6",
-        "symfony/event-dispatcher": "^2.3",
+        "symfony/event-dispatcher": "^2.3|^3.0",
         "guzzlehttp/psr7": "^1.0",
-        "monolog/monolog": "~1.0"
+        "psr/log": "^1.0"
     },
     "require-dev": {
-        "mockery/mockery": "0.9.*",
-        "phpunit/phpunit": "4.4.*",
-        "guzzlehttp/guzzle": "^6.0"
+        "mockery/mockery": "^0.9.4",
+        "phpunit/phpunit": ">= 4, < 6",
+        "guzzlehttp/guzzle": "^5.3|^6.0",
+        "symfony/symfony": "^2.8|^3.0",
+        "sensio/framework-extra-bundle": "^3.0.2",
+        "incenteev/composer-parameter-handler": "~2.0",
+        "sensio/distribution-bundle": "^5.0",
+        "behat/behat": "^3.1",
+        "monolog/monolog": "^1.18"
     },
     "license": "MIT",
     "authors": [
@@ -31,8 +37,17 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tebru\\Retrofit\\Test\\": "tests/"
+            "Tebru\\Retrofit\\Test\\": "tests/",
+            "AppBundle\\": "tests/Api/src/AppBundle"
         }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap"
+        ]
+    },
+    "extra": {
+        "symfony-app-dir": "tests/Api/app"
     },
     "suggest": {
         "guzzlehttp/guzzle": "Required to make requests"

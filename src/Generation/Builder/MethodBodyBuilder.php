@@ -167,6 +167,13 @@ class MethodBodyBuilder
     private $callbackOptional = false;
 
     /**
+     * Boundary Id for multipart requests
+     *
+     * @var string
+     */
+    private $boundaryId;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -303,6 +310,14 @@ class MethodBodyBuilder
     }
 
     /**
+     * @param string $boundaryId
+     */
+    public function setBoundaryId($boundaryId)
+    {
+        $this->boundaryId = $boundaryId;
+    }
+
+    /**
      * @param string $returnType
      */
     public function setReturnType($returnType)
@@ -374,9 +389,11 @@ class MethodBodyBuilder
             // if we have regular queries, add them to the query builder
             if (!empty($this->queries)) {
                 $queryArray = $this->arrayToString($this->queries);
-                $this->methodBody->add('$queryString = http_build_query(%s + %s);', $queryArray, $this->queryMap);
+                $this->methodBody->add('$queryArray = \Tebru\Retrofit\Generation\Manipulator\QueryManipulator::boolToString(%s + %s);', $queryArray, $this->queryMap);
+                $this->methodBody->add('$queryString = http_build_query($queryArray);');
             } else {
-                $this->methodBody->add('$queryString = http_build_query(%s);', $this->queryMap);
+                $this->methodBody->add('$queryArray = \Tebru\Retrofit\Generation\Manipulator\QueryManipulator::boolToString(%s);', $this->queryMap);
+                $this->methodBody->add('$queryString = http_build_query($queryArray);');
             }
 
             $this->methodBody->add('$requestUrl = %s . "%s?" . $queryString;', $baseUrl, $this->uri);
@@ -384,7 +401,8 @@ class MethodBodyBuilder
             // if we have queries, add them to the request url
         } elseif (!empty($this->queries)) {
             $queryArray = $this->arrayToString($this->queries);
-            $this->methodBody->add('$queryString = http_build_query(%s);', $queryArray);
+            $this->methodBody->add('$queryArray = \Tebru\Retrofit\Generation\Manipulator\QueryManipulator::boolToString(%s);', $queryArray);
+            $this->methodBody->add('$queryString = http_build_query($queryArray);');
             $this->methodBody->add('$requestUrl = %s . "%s" . "?" . $queryString;', $baseUrl, $this->uri);
         } else {
             $this->methodBody->add('$requestUrl = %s . "%s";', $baseUrl, $this->uri);
@@ -470,7 +488,7 @@ class MethodBodyBuilder
         $this->methodBody->add('$bodyParts[] = ["name" => $key, "contents" => $file];');
         $this->methodBody->add('}');
 
-        $this->methodBody->add('$body = new \GuzzleHttp\Psr7\MultipartStream($bodyParts);');
+        $this->methodBody->add('$body = new \GuzzleHttp\Psr7\MultipartStream($bodyParts, "%s");', $this->boundaryId);
     }
 
     /**
