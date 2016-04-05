@@ -112,10 +112,11 @@ class RequestHeaderHandler extends Handler
 
         // if there is a body, display warning
         if ($this->annotations->exists(Body::NAME) || $this->annotations->exists(Part::NAME)) {
-            trigger_error('The default content type is changing in the next'
+            trigger_error('Retrofit Deprecation: The default content type is changing in the next'
                 . ' major version of Retrofit from application/x-www-form-urlencoded'
                 . ' to application/json.  In order to ensure a clean upgrade, make'
-                . ' sure you specify a specific content type with the proper annotation'
+                . ' sure you specify a specific content type with the proper annotation',
+                E_USER_DEPRECATED
             );
         // @codeCoverageIgnoreStart
         }
