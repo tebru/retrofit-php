@@ -167,6 +167,11 @@ class MethodBodyBuilder
     private $boundaryId;
 
     /**
+     * @var string
+     */
+    private $responseType;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -340,6 +345,14 @@ class MethodBodyBuilder
     public function setCallbackOptional($callbackOptional)
     {
         $this->callbackOptional = $callbackOptional;
+    }
+
+    /**
+     * @param string $responseType
+     */
+    public function setResponseType($responseType)
+    {
+        $this->responseType = $responseType;
     }
 
     /**
@@ -610,15 +623,8 @@ class MethodBodyBuilder
             return;
         }
 
-        $matches = [];
-        $returnType = $this->returnType;
-        $responseReturn = false;
-        preg_match('/^Response<(.+)>$/', $returnType, $matches);
-
-        if (isset($matches[1])) {
-            $returnType = $matches[1];
-            $responseReturn = true;
-        }
+        $returnType = (null === $this->responseType) ? $this->returnType : $this->responseType;
+        $responseReturn = (null !== $this->responseType);
 
         $this->methodBody->add(
             '$retrofitResponse = new \Tebru\Retrofit\Http\Response($response, "%s", $this->serializer, %s);',

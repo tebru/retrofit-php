@@ -25,6 +25,7 @@ use Tebru\Retrofit\Annotation\POST;
 use Tebru\Retrofit\Annotation\PUT;
 use Tebru\Retrofit\Annotation\Query;
 use Tebru\Retrofit\Annotation\QueryMap;
+use Tebru\Retrofit\Annotation\ResponseType;
 use Tebru\Retrofit\Annotation\Returns;
 use Tebru\Retrofit\Annotation\Serializer\DeserializationContext;
 use Tebru\Retrofit\Annotation\Serializer\SerializationContext;
@@ -70,6 +71,7 @@ class DynamoAnnotationTest extends MockeryTestCase
             [Query::class, Query::NAME, true],
             [QueryMap::class, QueryMap::NAME, false],
             [Returns::class, Returns::NAME, false],
+            [ResponseType::class, ResponseType::NAME, false],
             [SerializationContext::class, SerializationContext::NAME, false],
             [DeserializationContext::class, DeserializationContext::NAME, false],
         ];

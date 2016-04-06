@@ -399,7 +399,8 @@ class MethodBodyBuilderTest extends MockeryTestCase
         $builder->setUri('/path');
         $context = ['groups' => ['test' => 'group'], 'version' => 1, 'serializeNull' => true, 'enableMaxDepthChecks' => true, 'attributes' => ['foo' => 'bar']];
         $builder->setDeserializationContext($context);
-        $builder->setReturnType('Response<Tebru\Retrofit\Test\Mock\MockUser>');
+        $builder->setReturnType('Response');
+        $builder->setResponseType('Tebru\Retrofit\Test\Mock\MockUser');
 
         $response = $builder->build();
 

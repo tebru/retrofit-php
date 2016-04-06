@@ -6,7 +6,9 @@
 
 namespace Tebru\Retrofit\Generation\Handler;
 
+use Tebru\Retrofit\Annotation\ResponseType;
 use Tebru\Retrofit\Annotation\Returns;
+use Tebru\Retrofit\Exception\RetrofitException;
 
 /**
  * Class ReturnHandler
@@ -24,6 +26,19 @@ class ReturnHandler extends Handler
 
         /** @var Returns $returnAnnotation */
         $returnAnnotation = $this->annotations->get(Returns::NAME);
-        $this->methodBodyBuilder->setReturnType($returnAnnotation->getReturn());
+        $return = $returnAnnotation->getReturn();
+        $this->methodBodyBuilder->setReturnType($return);
+
+        if ('Response' === $return) {
+            if (!$this->annotations->exists(ResponseType::NAME)) {
+                throw new RetrofitException('When using a Response return type, an @ResponseType must also be set.');
+            }
+
+            /** @var ResponseType $responseAnnotation */
+            $responseAnnotation = $this->annotations->get(ResponseType::NAME);
+            $responseType = $responseAnnotation->getType();
+
+            $this->methodBodyBuilder->setResponseType($responseType);
+        }
     }
 }

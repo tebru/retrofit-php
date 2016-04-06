@@ -17,6 +17,8 @@ use Tebru\Retrofit\Annotation\Part;
 use Tebru\Retrofit\Annotation\POST;
 use Tebru\Retrofit\Annotation\Query;
 use Tebru\Retrofit\Annotation\QueryMap;
+use Tebru\Retrofit\Annotation\ResponseType;
+use Tebru\Retrofit\Annotation\Returns;
 use Tebru\Retrofit\Test\Mock\Api\MockApiUser;
 use Tebru\Retrofit\Test\Mock\Api\MockApiUserSerializable;
 use Tebru\Retrofit\Test\Mock\Api\MockAvatar;
@@ -204,4 +206,29 @@ interface ApiClient
      * @Header("c", var="header")
      */
     public function headers($header);
+
+    /**
+     * @GET("/api/basic/user")
+     * @Returns("Tebru\Retrofit\Test\Mock\Api\MockApiResponse")
+     */
+    public function getUserReturnMockApiResponse();
+
+    /**
+     * @GET("/api/basic/user")
+     * @Returns("Response")
+     * @ResponseType("Tebru\Retrofit\Test\Mock\Api\MockApiResponse")
+     */
+    public function getUserReturnRetrofitResponse();
+
+    /**
+     * @GET("/api/basic/user")
+     * @Returns("array")
+     */
+    public function getUserReturnArrayResponse();
+
+    /**
+     * @GET("/api/basic/user")
+     * @Returns("raw")
+     */
+    public function getUserReturnRawResponse();
 }

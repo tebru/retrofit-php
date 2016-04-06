@@ -49,7 +49,7 @@ class RequestHeaderHandlerTest extends MockeryTestCase
     }
 
     /**
-     * @expectedException \PHPUnit_Framework_Error_Notice
+     * @expectedException \PHPUnit_Framework_Error_Deprecated
      */
     public function testAnnotationNotExistsWithBody()
     {

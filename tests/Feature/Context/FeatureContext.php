@@ -7,14 +7,15 @@
 namespace Tebru\Retrofit\Test\Feature\Context;
 
 use Behat\Behat\Context\Context;
-use Behat\Behat\Tester\Exception\PendingException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\MultipartStream;
 use PHPUnit_Framework_Assert as Assert;
 use Tebru\Retrofit\Adapter\Rest\RestAdapter;
 use Tebru\Retrofit\Exception\RetrofitException;
+use Tebru\Retrofit\Http\Response;
 use Tebru\Retrofit\HttpClient\Adapter\Guzzle\GuzzleV5ClientAdapter;
 use Tebru\Retrofit\HttpClient\Adapter\Guzzle\GuzzleV6ClientAdapter;
+use Tebru\Retrofit\Test\Mock\Api\MockApiResponse;
 use Tebru\Retrofit\Test\Mock\Api\MockApiUser;
 use Tebru\Retrofit\Test\Mock\Api\MockApiUserSerializable;
 use Tebru\Retrofit\Test\Mock\Api\MockAvatar;
@@ -306,9 +307,70 @@ class FeatureContext implements Context
     }
 
     /**
+     * @When /^I get a user and receive a mock api response$/
+     */
+    public function iGetAUserAndReceiveAMockApiResponse()
+    {
+        $this->setExpectations('GET', '/api/basic/user');
+        $client = $this->getClient();
+        $this->response = $client->getUserReturnMockApiResponse();
+    }
+
+    /**
+     * @When /^I get a user and receive a retrofit response$/
+     */
+    public function iGetAUserAndReceiveARetrofitResponse()
+    {
+        $this->setExpectations('GET', '/api/basic/user');
+        $client = $this->getClient();
+
+        /** @var Response $response */
+        $response = $client->getUserReturnRetrofitResponse();
+
+        Assert::assertInstanceOf(Response::class, $response);
+
+        $this->response = $response->body();
+    }
+
+    /**
+     * @When /^I get a user and receive an array response$/
+     */
+    public function iGetAUserAndReceiveAnArrayResponse()
+    {
+        $this->setExpectations('GET', '/api/basic/user');
+        $client = $this->getClient();
+        $this->response = $client->getUserReturnArrayResponse();
+    }
+
+    /**
+     * @When /^I get a user and receive a raw response$/
+     */
+    public function iGetAUserAndReceiveARawResponse()
+    {
+        $this->setExpectations('GET', '/api/basic/user');
+        $client = $this->getClient();
+        $response = $client->getUserReturnRawResponse();
+
+        Assert::assertTrue(is_string($response));
+
+        $this->response = json_decode($response, true);
+    }
+
+    /**
      * @Then /^The response validates$/
      */
     public function theResponseValidates()
+    {
+        if (is_array($this->response)) {
+            $this->validateArrayResponse();
+        }
+
+        if ($this->response instanceof MockApiResponse) {
+            $this->validateMockApiResponse();
+        }
+    }
+
+    private function validateArrayResponse()
     {
         Assert::assertSame($this->method, $this->response['method']);
         Assert::assertSame($this->path, $this->response['path']);
@@ -322,6 +384,26 @@ class FeatureContext implements Context
 
         foreach ($this->files as $key => $value) {
             Assert::assertSame($this->files[$key]['name'], $this->response['files'][$key]['name']);
+        }
+    }
+
+    private function validateMockApiResponse()
+    {
+        /** @var MockApiResponse $response */
+        $response = $this->response;
+
+        Assert::assertSame($this->method, $response->getMethod());
+        Assert::assertSame($this->path, $response->getPath());
+        Assert::assertSame($this->queryParams, $response->getQueryParams());
+        Assert::assertSame($this->content, $response->getContent());
+        Assert::assertSame($this->user, $response->getUser());
+
+        foreach ($this->headers as $key => $value) {
+            Assert::assertSame($value, $response->getHeaders()[$key]);
+        }
+
+        foreach ($this->files as $key => $value) {
+            Assert::assertSame($this->files[$key]['name'], $response->getFiles()[$key]['name']);
         }
     }
 

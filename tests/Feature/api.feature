@@ -95,3 +95,19 @@ Feature: I can make API requests
   Scenario: Test headers
     When I set headers
     Then The response validates
+
+  Scenario: Get a user returning mock api response
+    When I get a user and receive a mock api response
+    Then The response validates
+
+  Scenario: Get a user returning retrofit response
+    When I get a user and receive a retrofit response
+    Then The response validates
+
+  Scenario: Get a user returning retrofit response
+    When I get a user and receive an array response
+    Then The response validates
+
+  Scenario: Get a user returning retrofit response
+    When I get a user and receive a raw response
+    Then The response validates
