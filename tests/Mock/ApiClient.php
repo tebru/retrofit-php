@@ -28,6 +28,8 @@ use Tebru\Retrofit\Test\Mock\Api\MockAvatarSerializable;
  * Interface ApiClient
  *
  * @author Nate Brunette <n@tebru.net>
+ *
+ * @Headers({"Accept-Content: application/json"})
  */
 interface ApiClient
 {
@@ -52,6 +54,12 @@ interface ApiClient
      * @QueryMap("queries")
      */
     public function getUserByMultipleQuery(array $queries);
+
+    /**
+     * @GET("/api/basic/user?limit=1")
+     * @Query("name")
+     */
+    public function getUserByQueryLimit($name);
 
     /**
      * @POST("/api/basic/user")
@@ -199,13 +207,9 @@ interface ApiClient
 
     /**
      * @GET("/api/basic/user")
-     * @Headers({
-     *     "a: 1",
-     *     "b: 2"
-     * })
-     * @Header("c", var="header")
+     * @Header("Accept-Language", var="language")
      */
-    public function headers($header);
+    public function getUserWithFrenchLanguage($language);
 
     /**
      * @GET("/api/basic/user")

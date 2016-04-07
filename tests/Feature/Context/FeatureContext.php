@@ -110,6 +110,16 @@ class FeatureContext implements Context
     }
 
     /**
+     * @When /^I get a user by name and limit 1$/
+     */
+    public function iGetAUserByNameAndLimit1()
+    {
+        $this->setExpectations('GET', '/api/basic/user', ['limit' => '1', 'name' => 'Nate']);
+        $client = $this->getClient();
+        $this->response = $client->getUserByQueryLimit('Nate');
+    }
+
+    /**
      * @When I create a user from :type as :format
      */
     public function iCreateAUser($type, $format)
@@ -296,14 +306,15 @@ class FeatureContext implements Context
     }
 
     /**
-     * @When /^I set headers$/
+     * @When /^I get a user with french language$/
      */
-    public function iSetHeaders()
+    public function iGetAUserWithFrenchLanguage()
     {
-        $headers = array_merge($this->getHeaders(), ['a' => ['1'], 'b' => ['2'], 'c' => ['3']]);
+        $headers = $this->getHeaders();
+        $headers['accept-language'] = ['fr'];
         $this->setExpectations('GET', '/api/basic/user', [], $headers);
         $client = $this->getClient();
-        $this->response = $client->headers(3);
+        $this->response = $client->getUserWithFrenchLanguage('fr');
     }
 
     /**
@@ -410,6 +421,7 @@ class FeatureContext implements Context
     private function getHeaders($contentType = 'application/x-www-form-urlencoded')
     {
         return [
+            'accept-content' => ['application/json'],
             'host' => ['127.0.0.1:8000'],
             'authorization' => ['Basic dXNlcjpwYXNzd29yZA=='],
             'content-type' => [$contentType],

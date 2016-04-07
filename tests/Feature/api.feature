@@ -16,6 +16,10 @@ Feature: I can make API requests
     When I get a user by name and age
     Then The response validates
 
+  Scenario: Fetch a user by name and limit 1
+    When I get a user by name and limit 1
+    Then The response validates
+
   Scenario: Create a user (array, json)
     When I create a user from "array" as "json"
     Then The response validates
@@ -92,8 +96,8 @@ Feature: I can make API requests
     When I upload an avatar as "resource" from "string"
     Then The response validates
 
-  Scenario: Test headers
-    When I set headers
+  Scenario: Get user with french language
+    When I get a user with french language
     Then The response validates
 
   Scenario: Get a user returning mock api response
