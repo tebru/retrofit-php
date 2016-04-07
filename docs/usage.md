@@ -208,7 +208,9 @@ They can also be set individually on methods with `@Header` and map to a method 
 Returning
 ---------
 
-Use `@Returns` to specify a return type.  The default is `array`.  Other acceptable values are `raw` or any type specified in the JMS Serializer documentation.  A `raw` return will return the API response as a string.
+Use `@Returns` to specify a return type.  The default is `array`.  Other
+acceptable values are `raw` or any type specified in the JMS Serializer
+documentation.  A `raw` return will return the API response as a string.
 
     /**
      * @GET("/users/{user}/list")
@@ -216,6 +218,20 @@ Use `@Returns` to specify a return type.  The default is `array`.  Other accepta
      */
     public function listRepos($user);
 
+Additionally, `Response` can be a value in `@Returns`.  This annotation
+requires `@ResponseType` as well.  The value in `@ResponseType` must be
+a value that can be passed into `@Returns`
+
+    /**
+     * @GET("/users/{user}/list")
+     * @Returns("Response")
+     * @ResponseType("array")
+     */
+    public function listRepos($user);
+
+This will return a PSR-7 compliant response that will contain an additional
+method `body()`.  Calling this method will return the body in the format
+specified with the `@ResponseType` annotation.
 
 Events
 ------
