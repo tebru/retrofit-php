@@ -18,7 +18,7 @@ class MockAvatarSerializable extends MockAvatar implements JsonSerializable
     /**
      * {@inheritdoc}
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return ['avatar' => $this->getAvatar()];
     }

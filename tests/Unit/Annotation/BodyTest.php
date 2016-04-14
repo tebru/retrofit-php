@@ -6,6 +6,7 @@
 
 namespace Tebru\Retrofit\Test\Unit\Annotation;
 
+use PHPUnit_Framework_Error_Deprecated;
 use Tebru\Retrofit\Annotation\Body;
 use Tebru\Retrofit\Test\MockeryTestCase;
 
@@ -16,9 +17,32 @@ use Tebru\Retrofit\Test\MockeryTestCase;
  */
 class BodyTest extends MockeryTestCase
 {
-    public function testJsonSerializable()
+    /**
+     * @expectedException PHPUnit_Framework_Error_Deprecated
+     */
+    public function testJsonSerializableIsDeprecatedInConstructor()
     {
-        $body = new Body(['value' => '$body', 'jsonSerializable' => true]);
+        new Body(['value' => '$body', 'jsonSerializable' => true]);
+    }
+
+    public function testJsonSerializableConstructor()
+    {
+        PHPUnit_Framework_Error_Deprecated::$enabled = false;
+        $errorLevel = error_reporting();
+        error_reporting(0);
+
+        new Body(['value' => '$body', 'jsonSerializable' => true]);
+
+        error_reporting($errorLevel);
+        PHPUnit_Framework_Error_Deprecated::$enabled = true;
+    }
+
+    /**
+     * @expectedException PHPUnit_Framework_Error_Deprecated
+     */
+    public function testJsonSerializableIsDeprecated()
+    {
+        $body = new Body(['value' => '$body']);
         $this->assertTrue($body->isJsonSerializable());
     }
 }

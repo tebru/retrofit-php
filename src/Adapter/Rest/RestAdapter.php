@@ -6,7 +6,7 @@
 
 namespace Tebru\Retrofit\Adapter\Rest;
 
-use JMS\Serializer\SerializerInterface;
+use JMS\Serializer\Serializer;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Tebru\Retrofit\Adapter\HttpClientAdapter;
 use Tebru\Retrofit\Exception\RetrofitException;
@@ -31,7 +31,7 @@ class RestAdapter
     private $httpClient;
 
     /**
-     * @var SerializerInterface $serializer
+     * @var Serializer $serializer
      */
     private $serializer;
 
@@ -45,13 +45,13 @@ class RestAdapter
      *
      * @param string $baseUrl
      * @param HttpClientAdapter $httpClient
-     * @param SerializerInterface $serializer
+     * @param Serializer $serializer
      * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(
         $baseUrl,
         HttpClientAdapter $httpClient,
-        SerializerInterface $serializer,
+        Serializer $serializer,
         EventDispatcherInterface $eventDispatcher
     ) {
         $this->baseUrl = $baseUrl;

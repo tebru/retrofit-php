@@ -1,98 +1,113 @@
 <?php
 /*
- * Copyright (c) 2015 Nate Brunette.
+ * Copyright (c) Nate Brunette.
  * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
 namespace Tebru\Retrofit\Test\Unit\Generation\Handler;
 
 use Mockery;
-use Tebru\Dynamo\Collection\AnnotationCollection;
-use Tebru\Dynamo\Model\MethodModel;
-use Tebru\Retrofit\Annotation\ResponseType;
-use Tebru\Retrofit\Annotation\Returns;
-use Tebru\Retrofit\Generation\Builder\MethodBodyBuilder;
+use Mockery\MockInterface;
+use Tebru\Retrofit\Exception\RetrofitException;
 use Tebru\Retrofit\Generation\Handler\ReturnHandler;
-use Tebru\Retrofit\Test\MockeryTestCase;
+use Tebru\Retrofit\Generation\Provider\AnnotationProvider;
+use Tebru\Retrofit\Http\Response;
+use Tebru\Retrofit\Test\Mock\MockUser;
 
 /**
  * Class ReturnHandlerTest
  *
  * @author Nate Brunette <n@tebru.net>
  */
-class ReturnHandlerTest extends MockeryTestCase
+class ReturnHandlerTest extends AbstractHandlerTest
 {
-    public function testAnnotationNotExists()
+    public function testReturnSyncArray()
     {
-        $methodModel = Mockery::mock(MethodModel::class);
-        $methodBodyBuilder = Mockery::mock(MethodBodyBuilder::class);
-        $annotationCollection = Mockery::mock(AnnotationCollection::class);
+        $annotationProvider = Mockery::mock(AnnotationProvider::class);
+        $annotationProvider->shouldReceive('getCallback')->times(1)->with()->andReturn(null);
+        $annotationProvider->shouldReceive('getReturnType')->times(1)->with()->andReturn(null);
+        $annotationProvider->shouldReceive('getResponseType')->times(1)->with()->andReturn(null);
+        $annotationProvider->shouldReceive('getDeserializationContext')->times(1)->with()->andReturn(null);
 
-        $annotationCollection->shouldReceive('exists')->times(1)->with(Returns::NAME)->andReturn(false);
-
-        $handler = new ReturnHandler($methodModel, $methodBodyBuilder, $annotationCollection);
-
-        $this->assertNull($handler->handle());
+        $this->assert($annotationProvider, __FUNCTION__);
     }
 
-    public function testAnnotationExists()
+    public function testReturnSyncRaw()
     {
-        $methodModel = Mockery::mock(MethodModel::class);
-        $methodBodyBuilder = Mockery::mock(MethodBodyBuilder::class);
-        $annotationCollection = Mockery::mock(AnnotationCollection::class);
-        $returnAnnotation = Mockery::mock(Returns::class);
+        $annotationProvider = Mockery::mock(AnnotationProvider::class);
+        $annotationProvider->shouldReceive('getCallback')->times(1)->with()->andReturn(null);
+        $annotationProvider->shouldReceive('getReturnType')->times(1)->with()->andReturn(null);
+        $annotationProvider->shouldReceive('getResponseType')->times(2)->with()->andReturn('raw');
+        $annotationProvider->shouldReceive('getDeserializationContext')->times(1)->with()->andReturn(null);
 
-        $annotationCollection->shouldReceive('exists')->times(1)->with(Returns::NAME)->andReturn(true);
-        $annotationCollection->shouldReceive('get')->times(1)->with(Returns::NAME)->andReturn($returnAnnotation);
-        $returnAnnotation->shouldReceive('getReturn')->times(1)->withNoArgs()->andReturn('array');
-        $methodBodyBuilder->shouldReceive('setReturnType')->times(1)->with('array')->andReturnNull();
-
-        $handler = new ReturnHandler($methodModel, $methodBodyBuilder, $annotationCollection);
-
-        $this->assertNull($handler->handle());
+        $this->assert($annotationProvider, __FUNCTION__);
     }
 
-    public function testResponseWithType()
+    public function testReturnSyncObject()
     {
-        $methodModel = Mockery::mock(MethodModel::class);
-        $methodBodyBuilder = Mockery::mock(MethodBodyBuilder::class);
-        $annotationCollection = Mockery::mock(AnnotationCollection::class);
-        $returnAnnotation = Mockery::mock(Returns::class);
-        $responseAnnotation = Mockery::mock(ResponseType::class);
+        $annotationProvider = Mockery::mock(AnnotationProvider::class);
+        $annotationProvider->shouldReceive('getCallback')->times(1)->with()->andReturn(null);
+        $annotationProvider->shouldReceive('getReturnType')->times(2)->with()->andReturn(MockUser::class);
+        $annotationProvider->shouldReceive('getResponseType')->times(1)->with()->andReturn(null);
+        $annotationProvider->shouldReceive('getDeserializationContext')->times(1)->with()->andReturn(null);
 
-        $annotationCollection->shouldReceive('exists')->times(1)->with(Returns::NAME)->andReturn(true);
-        $annotationCollection->shouldReceive('exists')->times(1)->with(ResponseType::NAME)->andReturn(true);
-        $annotationCollection->shouldReceive('get')->times(1)->with(Returns::NAME)->andReturn($returnAnnotation);
-        $annotationCollection->shouldReceive('get')->times(1)->with(ResponseType::NAME)->andReturn($responseAnnotation);
-        $returnAnnotation->shouldReceive('getReturn')->times(1)->withNoArgs()->andReturn('Response');
-        $responseAnnotation->shouldReceive('getType')->times(1)->withNoArgs()->andReturn('array');
-        $methodBodyBuilder->shouldReceive('setReturnType')->times(1)->with('Response')->andReturnNull();
-        $methodBodyBuilder->shouldReceive('setResponseType')->times(1)->with('array')->andReturnNull();
+        $this->assert($annotationProvider, __FUNCTION__);
+    }
 
-        $handler = new ReturnHandler($methodModel, $methodBodyBuilder, $annotationCollection);
+    public function testReturnSyncResponse()
+    {
+        $annotationProvider = Mockery::mock(AnnotationProvider::class);
+        $annotationProvider->shouldReceive('getCallback')->times(1)->with()->andReturn(null);
+        $annotationProvider->shouldReceive('getReturnType')->times(2)->with()->andReturn('Response');
+        $annotationProvider->shouldReceive('getResponseType')->times(2)->with()->andReturn(MockUser::class);
+        $annotationProvider->shouldReceive('getDeserializationContext')->times(1)->with()->andReturn(null);
 
-        $this->assertNull($handler->handle());
+        $this->assert($annotationProvider, __FUNCTION__);
     }
 
     /**
      * @expectedException \Tebru\Retrofit\Exception\RetrofitException
-     * @expectedExceptionMessage When using a Response return type, an @ResponseType must also be set.
+     * @expectedExceptionMessage A method return a Response must include a @ResponseType annotation.
      */
-    public function testResponseWithoutTypeThrowsException()
+    public function testReturnSyncResponseThrowsException()
     {
-        $methodModel = Mockery::mock(MethodModel::class);
-        $methodBodyBuilder = Mockery::mock(MethodBodyBuilder::class);
-        $annotationCollection = Mockery::mock(AnnotationCollection::class);
-        $returnAnnotation = Mockery::mock(Returns::class);
+        $annotationProvider = Mockery::mock(AnnotationProvider::class);
+        $annotationProvider->shouldReceive('getCallback')->times(1)->with()->andReturn(null);
+        $annotationProvider->shouldReceive('getReturnType')->times(2)->with()->andReturn('Response');
+        $annotationProvider->shouldReceive('getResponseType')->times(1)->with()->andReturn(null);
+        $annotationProvider->shouldReceive('getDeserializationContext')->times(1)->with()->andReturn(null);
 
-        $annotationCollection->shouldReceive('exists')->times(1)->with(Returns::NAME)->andReturn(true);
-        $annotationCollection->shouldReceive('exists')->times(1)->with(ResponseType::NAME)->andReturn(false);
-        $annotationCollection->shouldReceive('get')->times(1)->with(Returns::NAME)->andReturn($returnAnnotation);
-        $returnAnnotation->shouldReceive('getReturn')->times(1)->withNoArgs()->andReturn('Response');
-        $methodBodyBuilder->shouldReceive('setReturnType')->times(1)->with('Response')->andReturnNull();
+        $this->assert($annotationProvider, __FUNCTION__);
+    }
 
-        $handler = new ReturnHandler($methodModel, $methodBodyBuilder, $annotationCollection);
+    public function testReturnAsyncNotOptional()
+    {
+        $annotationProvider = Mockery::mock(AnnotationProvider::class);
+        $annotationProvider->shouldReceive('getCallback')->times(1)->with()->andReturn('$callback');
+        $annotationProvider->shouldReceive('isCallbackOptional')->times(1)->with()->andReturn(false);
 
-        $this->assertNull($handler->handle());
+        $this->assert($annotationProvider, __FUNCTION__);
+    }
+
+    public function testReturnAsyncOptional()
+    {
+        $annotationProvider = Mockery::mock(AnnotationProvider::class);
+        $annotationProvider->shouldReceive('getCallback')->times(1)->with()->andReturn('$callback');
+        $annotationProvider->shouldReceive('isCallbackOptional')->times(1)->with()->andReturn(true);
+        $annotationProvider->shouldReceive('getReturnType')->times(1)->with()->andReturn(null);
+        $annotationProvider->shouldReceive('getResponseType')->times(1)->with()->andReturn(null);
+        $annotationProvider->shouldReceive('getDeserializationContext')->times(1)->with()->andReturn(null);
+
+        $this->assert($annotationProvider, __FUNCTION__);
+    }
+
+    private function assert(MockInterface $annotationProvider, $method)
+    {
+        $context = $this->getHandlerContext($annotationProvider);
+
+        $handler = new ReturnHandler();
+        $handler($context);
+
+        $this->assertResponse($method);
     }
 }

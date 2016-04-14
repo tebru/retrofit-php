@@ -6,39 +6,75 @@
 
 namespace Tebru\Retrofit\Generation\Handler;
 
-use Tebru\Retrofit\Annotation\ResponseType;
-use Tebru\Retrofit\Annotation\Returns;
 use Tebru\Retrofit\Exception\RetrofitException;
+use Tebru\Retrofit\Generation\Handler;
+use Tebru\Retrofit\Generation\HandlerContext;
 
 /**
  * Class ReturnHandler
  *
  * @author Nate Brunette <n@tebru.net>
  */
-class ReturnHandler extends Handler
+class ReturnHandler implements Handler
 {
-    /** {@inheritdoc} */
-    public function handle()
+    /**
+     * Create request object and handle send/response
+     *
+     * @param HandlerContext $context
+     * @return null
+     * @throws RetrofitException
+     */
+    public function __invoke(HandlerContext $context)
     {
-        if (!$this->annotations->exists(Returns::NAME)) {
-            return null;
-        }
+        $callback = $context->annotations()->getCallback();
 
-        /** @var Returns $returnAnnotation */
-        $returnAnnotation = $this->annotations->get(Returns::NAME);
-        $return = $returnAnnotation->getReturn();
-        $this->methodBodyBuilder->setReturnType($return);
+        if ($callback !== null) {
+            if ($context->annotations()->isCallbackOptional()) {
+                $context->body()->add('if (%s !== null) {', $callback);
+                $context->body()->add('$returnEvent = new \Tebru\Retrofit\Event\ReturnEvent(null);');
+                $context->body()->add('$this->eventDispatcher->dispatch("retrofit.return", $returnEvent);');
+                $context->body()->add('return $returnEvent->getReturn();');
+                $context->body()->add('}');
+            } else {
+                $context->body()->add('$returnEvent = new \Tebru\Retrofit\Event\ReturnEvent(null);');
+                $context->body()->add('$this->eventDispatcher->dispatch("retrofit.return", $returnEvent);');
+                $context->body()->add('return $returnEvent->getReturn();');
 
-        if ('Response' === $return) {
-            if (!$this->annotations->exists(ResponseType::NAME)) {
-                throw new RetrofitException('When using a Response return type, an @ResponseType must also be set.');
+                return;
             }
-
-            /** @var ResponseType $responseAnnotation */
-            $responseAnnotation = $this->annotations->get(ResponseType::NAME);
-            $responseType = $responseAnnotation->getType();
-
-            $this->methodBodyBuilder->setResponseType($responseType);
         }
-    }
+
+        $returnType = 'array';
+        if (null !== $context->annotations()->getReturnType()) {
+            $returnType = $context->annotations()->getReturnType();
+        }
+
+        $responseReturn = (null !== $context->annotations()->getResponseType());
+        if ($responseReturn) {
+            $returnType = $context->annotations()->getResponseType();
+        }
+
+        $deserializationContext = (null !== $context->annotations()->getDeserializationContext())
+            ? $context->annotations()->getDeserializationContext()
+            : [];
+
+        if ('Response' === $returnType && false === $responseReturn) {
+            throw new RetrofitException('A method return a Response must include a @ResponseType annotation.');
+        }
+
+        $context->body()->add(
+            '$retrofitResponse = new \Tebru\Retrofit\Http\Response($response, "%s", $this->serializer, %s);',
+            $returnType,
+            $context->printer()->printArray($deserializationContext)
+        );
+
+        if ($responseReturn) {
+            $context->body()->add('$return = $retrofitResponse;');
+        } else {
+            $context->body()->add('$return = $retrofitResponse->body();');
+        }
+
+        $context->body()->add('$returnEvent = new \Tebru\Retrofit\Event\ReturnEvent($return);');
+        $context->body()->add('$this->eventDispatcher->dispatch("retrofit.return", $returnEvent);');
+        $context->body()->add('return $returnEvent->getReturn();');    }
 }

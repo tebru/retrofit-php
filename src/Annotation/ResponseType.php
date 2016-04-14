@@ -15,6 +15,7 @@ use Tebru\Dynamo\Annotation\DynamoAnnotation;
  * @author Nate Brunette <n@tebru.net>
  *
  * @Annotation
+ * @Target({"CLASS", "METHOD"})
  */
 class ResponseType implements DynamoAnnotation
 {

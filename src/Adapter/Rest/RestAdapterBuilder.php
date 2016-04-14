@@ -6,8 +6,8 @@
 
 namespace Tebru\Retrofit\Adapter\Rest;
 
+use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
-use JMS\Serializer\SerializerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -45,7 +45,7 @@ class RestAdapterBuilder
     /**
      * JMS Serializer
      *
-     * @var SerializerInterface $serializer
+     * @var Serializer $serializer
      */
     private $serializer;
 
@@ -107,6 +107,7 @@ class RestAdapterBuilder
      * @deprecated Will be removed in v3. Use setClientAdapter() instead.
      * @param mixed $httpClient
      * @return $this
+     * @throws RetrofitException
      */
     public function setHttpClient($httpClient)
     {
@@ -132,10 +133,10 @@ class RestAdapterBuilder
     /**
      * Set the serializer used with rest client
      *
-     * @param SerializerInterface $serializer
+     * @param Serializer $serializer
      * @return $this
      */
-    public function setSerializer(SerializerInterface $serializer)
+    public function setSerializer(Serializer $serializer)
     {
         $this->serializer = $serializer;
 

@@ -18,7 +18,7 @@ class MockApiUserSerializable extends MockApiUser implements JsonSerializable
     /**
      * {@inheritdoc}
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return ['name' => $this->getName(), 'age' => $this->getAge(), 'enabled' => $this->isEnabled()];
     }

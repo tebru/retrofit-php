@@ -15,6 +15,7 @@ use Tebru\Retrofit\Exception\RetrofitException;
 use Tebru\Retrofit\Http\Response;
 use Tebru\Retrofit\HttpClient\Adapter\Guzzle\GuzzleV5ClientAdapter;
 use Tebru\Retrofit\HttpClient\Adapter\Guzzle\GuzzleV6ClientAdapter;
+use Tebru\Retrofit\Test\Feature\Context\Callback\GetUserCallback;
 use Tebru\Retrofit\Test\Mock\Api\MockApiResponse;
 use Tebru\Retrofit\Test\Mock\Api\MockApiUser;
 use Tebru\Retrofit\Test\Mock\Api\MockApiUserSerializable;
@@ -210,6 +211,32 @@ class FeatureContext implements Context
     }
 
     /**
+     * @When I create a user optionally
+     */
+    public function iCreateAUserOptionally()
+    {
+        $headers = $this->getHeaders('application/json');
+        $this->setExpectations('POST', '/api/basic/user', [], $headers, null);
+        $client = $this->getClient();
+
+        $this->response = $client->createUserObjectJsonOptional();
+    }
+
+    /**
+     * @When /^I create a user without all fields$/
+     */
+    public function iCreateAUserWithoutAllFields()
+    {
+        $body = new MockApiUser('Nate', 21);
+        $expectedBody = ['name' => 'Nate', 'age' => 21, 'enabled' => null];
+        $headers = $this->getHeaders('application/json');
+
+        $this->setExpectations('POST', '/api/basic/user', [], $headers, $expectedBody);
+        $client = $this->getClient();
+        $this->response = $client->createUserWithoutAllFields($body);
+    }
+
+    /**
      * @When I upload an avatar as :format from :type
      */
     public function iUploadAnAvatar($format, $type)
@@ -368,6 +395,31 @@ class FeatureContext implements Context
     }
 
     /**
+     * @When /^I get a user with a different base url$/
+     */
+    public function iGetAUserWithDifferentBaseUrl()
+    {
+        $this->setExpectations('GET', '/api/basic/user');
+        $client = $this->getClient();
+        $this->response = $client->getUserWithBaseUrl('127.0.0.1:8000/api/basic/user');
+    }
+
+    /**
+     * @When /^I get a user asynchronously$/
+     */
+    public function iGetAUserAsynchronously()
+    {
+        $this->setExpectations('GET', '/api/basic/user');
+        $client = $this->getClient();
+
+        $callback = new GetUserCallback();
+        $client->getUserAsync($callback);
+        $client->wait();
+
+        $this->response = $callback->getResponseBody();
+    }
+
+    /**
      * @Then /^The response validates$/
      */
     public function theResponseValidates()
@@ -435,14 +487,14 @@ class FeatureContext implements Context
         $path,
         array $queryParams = [],
         array $headers = [],
-        array $content = [],
+        $content = [],
         array $files = [],
         array $user = []
     ) {
-        if (empty($headers)) {
+        if (0 === count($headers)) {
             $headers = $this->getHeaders();
         }
-        if (empty($user)) {
+        if (0 === count($user)) {
             $user = ['username' => 'user', 'password' => 'password'];
         }
 
@@ -462,7 +514,7 @@ class FeatureContext implements Context
     private function getClient()
     {
         $defaults = ['auth' => ['user', 'password'], 'exceptions' => false];
-        $clientAdapter = (version_compare(Client::VERSION, '6', '<'))
+        $clientAdapter = version_compare(Client::VERSION, '6', '<')
             ? new GuzzleV5ClientAdapter(new Client(['defaults' => $defaults]))
             : new GuzzleV6ClientAdapter(new Client($defaults));
 

@@ -8,9 +8,16 @@ namespace Tebru\Retrofit\Generation\Listener;
 
 use Tebru;
 use Tebru\Dynamo\Event\MethodEvent;
-use Tebru\Retrofit\Generation\Builder\Factory\MethodBodyBuilderFactory;
-use Tebru\Retrofit\Generation\Handler\Factory\HandlerFactory;
-use Tebru\Retrofit\Generation\Handler\Handler;
+use Tebru\Dynamo\Model\Body;
+use Tebru\Retrofit\Generation\Handler\BodyHandler;
+use Tebru\Retrofit\Generation\HandlerContext;
+use Tebru\Retrofit\Generation\HandlerStack;
+use Tebru\Retrofit\Generation\Handler\HeaderHandler;
+use Tebru\Retrofit\Generation\Handler\ResponseHandler;
+use Tebru\Retrofit\Generation\Handler\ReturnHandler;
+use Tebru\Retrofit\Generation\Handler\UrlHandler;
+use Tebru\Retrofit\Generation\Printer\ArrayPrinter;
+use Tebru\Retrofit\Generation\Provider\AnnotationProvider;
 
 /**
  * Class DynamoMethodListener
@@ -20,32 +27,6 @@ use Tebru\Retrofit\Generation\Handler\Handler;
 class DynamoMethodListener
 {
     /**
-     * Creates annotation handlers
-     *
-     * @var HandlerFactory
-     */
-    private $handlerFactory;
-
-    /**
-     * Creates a new method body builder
-     *
-     * @var MethodBodyBuilderFactory
-     */
-    private $methodBodyBuilderFactory;
-
-    /**
-     * Constructor
-     *
-     * @param HandlerFactory $handlerFactory
-     * @param MethodBodyBuilderFactory $methodBodyBuilderFactory
-     */
-    public function __construct(HandlerFactory $handlerFactory, MethodBodyBuilderFactory $methodBodyBuilderFactory)
-    {
-        $this->handlerFactory = $handlerFactory;
-        $this->methodBodyBuilderFactory = $methodBodyBuilderFactory;
-    }
-
-    /**
      * Handler the event
      *
      * @param MethodEvent $event
@@ -54,24 +35,19 @@ class DynamoMethodListener
     {
         $methodModel = $event->getMethodModel();
         $annotations = $event->getAnnotationCollection();
-        $methodBodyBuilder = $this->methodBodyBuilderFactory->make();
 
-        $handlers = [
-            $this->handlerFactory->baseUrl($methodModel, $methodBodyBuilder, $annotations),
-            $this->handlerFactory->serializationContext($methodModel, $methodBodyBuilder, $annotations),
-            $this->handlerFactory->requestUrl($methodModel, $methodBodyBuilder, $annotations),
-            $this->handlerFactory->requestHeader($methodModel, $methodBodyBuilder, $annotations),
-            $this->handlerFactory->requestBody($methodModel, $methodBodyBuilder, $annotations),
-            $this->handlerFactory->returns($methodModel, $methodBodyBuilder, $annotations),
-            $this->handlerFactory->asyncCallback($methodModel, $methodBodyBuilder, $annotations),
-        ];
+        $annotationProvider = new AnnotationProvider($annotations, $methodModel);
+        $body = new Body();
 
-        /** @var Handler $handler */
-        foreach ($handlers as $handler) {
-            $handler->handle();
-        }
+        $stack = new HandlerStack(new HandlerContext($annotationProvider, $body, new ArrayPrinter()));
+        $stack->push(new UrlHandler());
+        $stack->push(new HeaderHandler());
+        $stack->push(new BodyHandler());
+        $stack->push(new ResponseHandler());
+        $stack->push(new ReturnHandler());
 
-        $body = $methodBodyBuilder->build();
+        $stack->execute();
+
         $methodModel->setBody($body);
     }
 }

@@ -30,6 +30,9 @@ Feature: I can make API requests
 
   Scenario: Create a user (object, json)
     When I create a user from "object" as "json"
+
+  Scenario: Create a user optional
+    When I create a user optionally
     Then The response validates
 
   Scenario: Create a user (object, form)
@@ -58,6 +61,10 @@ Feature: I can make API requests
 
   Scenario: Create a user (parts, form)
     When I create a user from "parts" as "formurlencoded"
+    Then The response validates
+
+  Scenario: Create a user without enabled
+    When I create a user without all fields
     Then The response validates
 
   Scenario: Upload avatar (string, array)
@@ -114,4 +121,12 @@ Feature: I can make API requests
 
   Scenario: Get a user returning retrofit response
     When I get a user and receive a raw response
+    Then The response validates
+
+  Scenario: Get a user with different base url
+    When I get a user with a different base url
+    Then The response validates
+
+  Scenario: Get a user asynchronously
+    When I get a user asynchronously
     Then The response validates

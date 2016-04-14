@@ -65,7 +65,7 @@ class DynamoStartListener
         $client->setTypeHint('\Tebru\Retrofit\Adapter\HttpClientAdapter');
 
         $serializer = new ParameterModel($methodModel, 'serializer', false);
-        $serializer->setTypeHint('\JMS\Serializer\SerializerInterface');
+        $serializer->setTypeHint('\JMS\Serializer\Serializer');
 
         $eventDispatcher = new ParameterModel($methodModel, 'eventDispatcher', false);
         $eventDispatcher->setTypeHint('\Symfony\Component\EventDispatcher\EventDispatcherInterface');

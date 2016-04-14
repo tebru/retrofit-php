@@ -29,13 +29,29 @@ class Body extends VariableMapper implements DynamoAnnotation
      *
      * @var boolean
      */
-    private $jsonSerializable;
+    private $jsonSerializable = false;
 
+    /**
+     * Constructor
+     *
+     * @param array $params
+     * @throws \Exception
+     */
     public function __construct(array $params)
     {
         parent::__construct($params);
 
-        $this->jsonSerializable = (isset($params['jsonSerializable'])) ? $params['jsonSerializable'] : false;
+        if (!array_key_exists('jsonSerializable', $params)) {
+            return;
+        }
+
+        $this->jsonSerializable = $params['jsonSerializable'];
+
+        trigger_error(
+            'Retrofit Deprecation: The jsonSerializable option is getting removed in the next major version'
+            . ' of retrofit.  Implementing \JsonSerializable will be sufficient.',
+            E_USER_DEPRECATED
+        );
     }
 
     /**
@@ -49,10 +65,17 @@ class Body extends VariableMapper implements DynamoAnnotation
     }
 
     /**
+     * @deprecated
      * @return boolean
      */
     public function isJsonSerializable()
     {
+        trigger_error(
+            'Retrofit Deprecation: The jsonSerializable option is getting removed in the next major version'
+            . ' of retrofit.  Implementing \JsonSerializable will be sufficient.',
+            E_USER_DEPRECATED
+        );
+
         return $this->jsonSerializable;
     }
 

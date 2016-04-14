@@ -12,8 +12,6 @@ use Tebru\Dynamo\Event\MethodEvent;
 use Tebru\Dynamo\Event\StartEvent;
 use Tebru\Dynamo\Generator;
 use Tebru\Retrofit\Finder\ServiceResolver;
-use Tebru\Retrofit\Generation\Builder\Factory\MethodBodyBuilderFactory;
-use Tebru\Retrofit\Generation\Handler\Factory\HandlerFactory;
 use Tebru\Retrofit\Generation\Listener\DynamoMethodListener;
 use Tebru\Retrofit\Generation\Listener\DynamoStartListener;
 
@@ -100,7 +98,7 @@ class RetrofitBuilder
         }
 
         $this->eventDispatcher->addListener(StartEvent::NAME, new DynamoStartListener());
-        $this->eventDispatcher->addListener(MethodEvent::NAME, new DynamoMethodListener(new HandlerFactory(), new MethodBodyBuilderFactory()));
+        $this->eventDispatcher->addListener(MethodEvent::NAME, new DynamoMethodListener());
 
         if (null === $this->cacheDir) {
             $this->cacheDir = sys_get_temp_dir() . '/retrofit';

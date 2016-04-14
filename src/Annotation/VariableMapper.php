@@ -62,7 +62,7 @@ abstract class VariableMapper
     /**
      * Get the variable name with '$'
      *
-     * @return string|array
+     * @return string
      */
     public function getVariable()
     {

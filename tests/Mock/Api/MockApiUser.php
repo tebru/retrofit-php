@@ -35,7 +35,7 @@ class MockApiUser
      * @param int $age
      * @param bool $enabled
      */
-    public function __construct($name, $age, $enabled)
+    public function __construct($name = null, $age = null, $enabled = null)
     {
         $this->name = $name;
         $this->age = $age;

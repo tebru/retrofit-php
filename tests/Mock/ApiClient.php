@@ -6,6 +6,7 @@
 
 namespace Tebru\Retrofit\Test\Mock;
 
+use Tebru\Retrofit\Annotation\BaseUrl;
 use Tebru\Retrofit\Annotation\Body;
 use Tebru\Retrofit\Annotation\FormUrlEncoded;
 use Tebru\Retrofit\Annotation\GET;
@@ -19,6 +20,9 @@ use Tebru\Retrofit\Annotation\Query;
 use Tebru\Retrofit\Annotation\QueryMap;
 use Tebru\Retrofit\Annotation\ResponseType;
 use Tebru\Retrofit\Annotation\Returns;
+use Tebru\Retrofit\Annotation\Serializer\SerializationContext;
+use Tebru\Retrofit\Http\AsyncAware;
+use Tebru\Retrofit\Http\Callback;
 use Tebru\Retrofit\Test\Mock\Api\MockApiUser;
 use Tebru\Retrofit\Test\Mock\Api\MockApiUserSerializable;
 use Tebru\Retrofit\Test\Mock\Api\MockAvatar;
@@ -31,7 +35,7 @@ use Tebru\Retrofit\Test\Mock\Api\MockAvatarSerializable;
  *
  * @Headers({"Accept-Content: application/json"})
  */
-interface ApiClient
+interface ApiClient extends AsyncAware
 {
     /**
      * @GET("/api/basic/user")
@@ -85,20 +89,27 @@ interface ApiClient
     /**
      * @POST("/api/basic/user")
      * @Body("user")
+     * @JsonBody()
+     */
+    public function createUserObjectJsonOptional(MockApiUser $user = null);
+
+    /**
+     * @POST("/api/basic/user")
+     * @Body("user")
      * @FormUrlEncoded()
      */
     public function createUserObjectForm(MockApiUser $user);
 
     /**
      * @POST("/api/basic/user")
-     * @Body("user", jsonSerializable=true)
+     * @Body("user")
      * @JsonBody()
      */
     public function createUserJsonObjectJson(MockApiUserSerializable $user);
 
     /**
      * @POST("/api/basic/user")
-     * @Body("user", jsonSerializable=true)
+     * @Body("user")
      * @FormUrlEncoded()
      */
     public function createUserJsonObjectForm(MockApiUserSerializable $user);
@@ -136,6 +147,14 @@ interface ApiClient
     public function createUserPartsForm($name, $age, $enabled = true);
 
     /**
+     * @POST("/api/basic/user")
+     * @Body("user")
+     * @SerializationContext(serializeNull=true, enableMaxDepthChecks=true)
+     * @JsonBody()
+     */
+    public function createUserWithoutAllFields(MockApiUser $user);
+
+    /**
      * @POST("/api/basic/user-avatar")
      * @Body("avatar")
      * @Multipart(boundary="fooboundary")
@@ -165,14 +184,14 @@ interface ApiClient
 
     /**
      * @POST("/api/basic/user-avatar")
-     * @Body("avatar", jsonSerializable=true)
+     * @Body("avatar")
      * @Multipart(boundary="fooboundary")
      */
     public function uploadAvatarJsonObjectString(MockAvatarSerializable $avatar);
 
     /**
      * @POST("/api/basic/user-avatar")
-     * @Body("avatar", jsonSerializable=true)
+     * @Body("avatar")
      * @Multipart(boundary="fooboundary")
      */
     public function uploadAvatarJsonObjectResource(MockAvatarSerializable $avatar);
@@ -235,4 +254,15 @@ interface ApiClient
      * @Returns("raw")
      */
     public function getUserReturnRawResponse();
+
+    /**
+     * @BaseUrl("baseUrl")
+     * @GET("")
+     */
+    public function getUserWithBaseUrl($baseUrl);
+
+    /**
+     * @GET("/api/basic/user")
+     */
+    public function getUserAsync(Callback $callback);
 }

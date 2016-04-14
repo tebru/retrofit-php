@@ -60,7 +60,7 @@ interface MockServiceBody
 
     /**
      * @Rest\POST("/post")
-     * @Rest\Body("user", jsonSerializable=true)
+     * @Rest\Body("user")
      * @Rest\FormUrlEncoded()
      */
     public function objectBodyJsonSerializable(MockUser $user);

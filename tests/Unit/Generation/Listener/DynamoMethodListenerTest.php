@@ -10,16 +10,19 @@ use Mockery;
 use Tebru\Dynamo\Collection\AnnotationCollection;
 use Tebru\Dynamo\Event\MethodEvent;
 use Tebru\Dynamo\Model\MethodModel;
-use Tebru\Retrofit\Generation\Builder\Factory\MethodBodyBuilderFactory;
-use Tebru\Retrofit\Generation\Builder\MethodBodyBuilder;
-use Tebru\Retrofit\Generation\Handler\AsyncHandler;
-use Tebru\Retrofit\Generation\Handler\BaseUrlHandler;
-use Tebru\Retrofit\Generation\Handler\Factory\HandlerFactory;
-use Tebru\Retrofit\Generation\Handler\RequestBodyHandler;
-use Tebru\Retrofit\Generation\Handler\RequestHeaderHandler;
-use Tebru\Retrofit\Generation\Handler\RequestUrlHandler;
-use Tebru\Retrofit\Generation\Handler\ReturnHandler;
-use Tebru\Retrofit\Generation\Handler\SerializationContextHandler;
+use Tebru\Retrofit\Annotation\BaseUrl;
+use Tebru\Retrofit\Annotation\Body;
+use Tebru\Retrofit\Annotation\GET;
+use Tebru\Retrofit\Annotation\Header;
+use Tebru\Retrofit\Annotation\Headers;
+use Tebru\Retrofit\Annotation\HttpRequest;
+use Tebru\Retrofit\Annotation\JsonBody;
+use Tebru\Retrofit\Annotation\Part;
+use Tebru\Retrofit\Annotation\Query;
+use Tebru\Retrofit\Annotation\QueryMap;
+use Tebru\Retrofit\Annotation\ResponseType;
+use Tebru\Retrofit\Annotation\Returns;
+use Tebru\Retrofit\Annotation\Serializer\DeserializationContext;
 use Tebru\Retrofit\Generation\Listener\DynamoMethodListener;
 use Tebru\Retrofit\Test\MockeryTestCase;
 
@@ -30,53 +33,33 @@ use Tebru\Retrofit\Test\MockeryTestCase;
  */
 class DynamoMethodListenerTest extends MockeryTestCase
 {
-    public function testCanCreateListener()
-    {
-        $handlerFactory = Mockery::mock(HandlerFactory::class);
-        $methodBodyBuilderFactory = Mockery::mock(MethodBodyBuilderFactory::class);
-        $listener = new DynamoMethodListener($handlerFactory, $methodBodyBuilderFactory);
-
-        $this->assertInstanceOf(DynamoMethodListener::class, $listener);
-    }
-
     public function testHandleEvent()
     {
-        $handlerFactory = Mockery::mock(HandlerFactory::class);
-        $methodBodyBuilderFactory = Mockery::mock(MethodBodyBuilderFactory::class);
-        $event = Mockery::mock(MethodEvent::class);
-        $methodModel = Mockery::mock(MethodModel::class);
-        $annotationCollection = Mockery::mock(AnnotationCollection::class);
-        $methodBodyBuilder = Mockery::mock(MethodBodyBuilder::class);
-        $baseUrlHandler = Mockery::mock(BaseUrlHandler::class);
-        $serializationContextHandler = Mockery::mock(SerializationContextHandler::class);
-        $requestUrlHandler = Mockery::mock(RequestUrlHandler::class);
-        $requestHeaderHandler = Mockery::mock(RequestHeaderHandler::class);
-        $requestBodyHandler = Mockery::mock(RequestBodyHandler::class);
-        $returnHandler = Mockery::mock(ReturnHandler::class);
-        $asyncHandler = Mockery::mock(AsyncHandler::class);
+        $method = Mockery::mock(MethodModel::class);
+        $annotations = Mockery::mock(AnnotationCollection::class);
+        $requestAnnotation = Mockery::mock(GET::class);
 
-        $event->shouldReceive('getMethodModel')->times(1)->withNoArgs()->andReturn($methodModel);
-        $event->shouldReceive('getAnnotationCollection')->times(1)->withNoArgs()->andReturn($annotationCollection);
-        $methodBodyBuilderFactory->shouldReceive('make')->times(1)->withNoArgs()->andReturn($methodBodyBuilder);
-        $handlerFactory->shouldReceive('baseUrl')->times(1)->with($methodModel, $methodBodyBuilder, $annotationCollection)->andReturn($baseUrlHandler);
-        $handlerFactory->shouldReceive('serializationContext')->times(1)->with($methodModel, $methodBodyBuilder, $annotationCollection)->andReturn($serializationContextHandler);
-        $handlerFactory->shouldReceive('requestUrl')->times(1)->with($methodModel, $methodBodyBuilder, $annotationCollection)->andReturn($requestUrlHandler);
-        $handlerFactory->shouldReceive('requestHeader')->times(1)->with($methodModel, $methodBodyBuilder, $annotationCollection)->andReturn($requestHeaderHandler);
-        $handlerFactory->shouldReceive('requestBody')->times(1)->with($methodModel, $methodBodyBuilder, $annotationCollection)->andReturn($requestBodyHandler);
-        $handlerFactory->shouldReceive('returns')->times(1)->with($methodModel, $methodBodyBuilder, $annotationCollection)->andReturn($returnHandler);
-        $handlerFactory->shouldReceive('asyncCallback')->times(1)->with($methodModel, $methodBodyBuilder, $annotationCollection)->andReturn($asyncHandler);
-        $baseUrlHandler->shouldReceive('handle')->times(1)->withNoArgs()->andReturnNull();
-        $serializationContextHandler->shouldReceive('handle')->times(1)->withNoArgs()->andReturnNull();
-        $requestUrlHandler->shouldReceive('handle')->times(1)->withNoArgs()->andReturnNull();
-        $requestHeaderHandler->shouldReceive('handle')->times(1)->withNoArgs()->andReturnNull();
-        $requestBodyHandler->shouldReceive('handle')->times(1)->withNoArgs()->andReturnNull();
-        $returnHandler->shouldReceive('handle')->times(1)->withNoArgs()->andReturnNull();
-        $asyncHandler->shouldReceive('handle')->times(1)->withNoArgs()->andReturnNull();
-        $methodBodyBuilder->shouldReceive('build')->times(1)->withNoArgs()->andReturn('body');
-        $methodModel->shouldReceive('setBody')->times(1)->with('body')->andReturnNull();
+        $annotations->shouldReceive('exists')->times(1)->with(BaseUrl::NAME)->andReturn(false);
+        $annotations->shouldReceive('exists')->times(1)->with(QueryMap::NAME)->andReturn(false);
+        $annotations->shouldReceive('exists')->times(1)->with(Query::NAME)->andReturn(false);
+        $annotations->shouldReceive('get')->times(3)->with(HttpRequest::NAME)->andReturn($requestAnnotation);
+        $annotations->shouldReceive('exists')->times(1)->with(Header::NAME)->andReturn(false);
+        $annotations->shouldReceive('exists')->times(1)->with(Headers::NAME)->andReturn(false);
+        $annotations->shouldReceive('exists')->times(1)->with(JsonBody::NAME)->andReturn(true);
+        $annotations->shouldReceive('exists')->times(1)->with(Body::NAME)->andReturn(false);
+        $annotations->shouldReceive('exists')->times(1)->with(Part::NAME)->andReturn(false);
+        $annotations->shouldReceive('exists')->times(1)->with(Returns::NAME)->andReturn(false);
+        $annotations->shouldReceive('exists')->times(1)->with(ResponseType::NAME)->andReturn(false);
+        $annotations->shouldReceive('exists')->times(1)->with(DeserializationContext::NAME)->andReturn(false);
 
-        $listener = new DynamoMethodListener($handlerFactory, $methodBodyBuilderFactory);
+        $requestAnnotation->shouldReceive('getPath')->times(1)->with()->andReturn('/get');
+        $requestAnnotation->shouldReceive('getQueries')->times(1)->with()->andReturn([]);
+        $requestAnnotation->shouldReceive('getType')->times(1)->with()->andReturn('GET');
 
-        $this->assertNull($listener($event));
+        $method->shouldReceive('getParameters')->times(2)->with()->andReturn([]);
+        $method->shouldReceive('setBody')->times(1)->andReturn([]);
+
+        $listener = new DynamoMethodListener();
+        $listener(new MethodEvent($method, $annotations));
     }
 }
