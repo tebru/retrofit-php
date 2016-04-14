@@ -399,9 +399,11 @@ class FeatureContext implements Context
      */
     public function iGetAUserWithDifferentBaseUrl()
     {
-        $this->setExpectations('GET', '/api/basic/user');
+        $headers = $this->getHeaders();
+        $headers['host'] = ['localhost:8000'];
+        $this->setExpectations('GET', '/api/basic/user', [], $headers);
         $client = $this->getClient();
-        $this->response = $client->getUserWithBaseUrl('127.0.0.1:8000/api/basic/user');
+        $this->response = $client->getUserWithBaseUrl('http://localhost:8000/api/basic/user');
     }
 
     /**
