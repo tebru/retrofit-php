@@ -15,7 +15,7 @@ namespace Tebru\Retrofit\Annotation\Serializer;
 abstract class JmsSerializerContext
 {
     /**
-     * @var array|string
+     * @var array
      */
     private $groups;
 
@@ -47,7 +47,7 @@ abstract class JmsSerializerContext
     public function __construct(array $params)
     {
         if (array_key_exists('groups', $params)) {
-            $this->groups = $params['groups'];
+            $this->groups = (array) $params['groups'];
             unset($params['groups']);
         }
 
@@ -72,7 +72,7 @@ abstract class JmsSerializerContext
     /**
      * Get Groups
      *
-     * @return mixed
+     * @return array
      */
     public function getGroups()
     {
@@ -92,7 +92,7 @@ abstract class JmsSerializerContext
     /**
      * Get SerializeNull
      *
-     * @return mixed
+     * @return bool
      */
     public function getSerializeNull()
     {
@@ -102,7 +102,7 @@ abstract class JmsSerializerContext
     /**
      * Get enable max depth checks
      *
-     * @return mixed
+     * @return bool
      */
     public function getEnableMaxDepthChecks()
     {
@@ -112,7 +112,7 @@ abstract class JmsSerializerContext
     /**
      * Get Attributes
      *
-     * @return mixed
+     * @return array
      */
     public function getAttributes()
     {
