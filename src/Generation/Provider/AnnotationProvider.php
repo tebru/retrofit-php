@@ -113,8 +113,10 @@ class AnnotationProvider
         $queries = $this->getRequestAnnotation()->getQueries();
 
         if ($this->annotations->exists(Query::NAME)) {
+            $queryAnnotations = $this->annotations->get(Query::NAME);
+
             /** @var Query $queryAnnotation */
-            foreach ($this->annotations->get(Query::NAME) as $queryAnnotation) {
+            foreach ($queryAnnotations as $queryAnnotation) {
                 $queries[$queryAnnotation->getRequestKey()] = $queryAnnotation->getVariable();
             }
 
