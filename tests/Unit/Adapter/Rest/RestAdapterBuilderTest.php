@@ -40,8 +40,18 @@ class RestAdapterBuilderTest extends MockeryTestCase
         RestAdapter::builder()->build();
     }
 
+    /**
+     * @expectedException \PHPUnit_Framework_Error_Deprecated
+     */
+    public function testSetHttpClientIsDeprecated()
+    {
+        $this->getRestAdapterBuilder()->setHttpClient('foo');
+    }
+
     public function testSetHttpClient()
     {
+        $this->disableDeprecationWarning();
+
         $client = new Client();
 
         if (version_compare(Client::VERSION, '6', '<')) {
@@ -53,6 +63,8 @@ class RestAdapterBuilderTest extends MockeryTestCase
 
             $this->assertAttributeInstanceOf(GuzzleV6ClientAdapter::class, 'httpClient', $restAdapter);
         }
+
+        $this->enableDeprecationWarning();
     }
 
     public function testSetClientAdapter()

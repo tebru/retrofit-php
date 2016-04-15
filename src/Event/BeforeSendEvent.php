@@ -57,6 +57,11 @@ class BeforeSendEvent extends Event
      */
     public function getMethod()
     {
+        trigger_error(
+            'Retrofit Deprecation: This method is deprecated, use getRequest() instead',
+            E_USER_DEPRECATED
+        );
+
         return $this->request->getMethod();
     }
 
@@ -66,6 +71,11 @@ class BeforeSendEvent extends Event
      */
     public function getRequestUrl()
     {
+        trigger_error(
+            'Retrofit Deprecation: This method is deprecated, use getRequest() instead',
+            E_USER_DEPRECATED
+        );
+
         return (string) $this->request->getUri();
     }
 
@@ -75,6 +85,11 @@ class BeforeSendEvent extends Event
      */
     public function getHeaders()
     {
+        trigger_error(
+            'Retrofit Deprecation: This method is deprecated, use getRequest() instead',
+            E_USER_DEPRECATED
+        );
+
         return $this->request->getHeaders();
     }
 
@@ -84,6 +99,11 @@ class BeforeSendEvent extends Event
      */
     public function getBody()
     {
+        trigger_error(
+            'Retrofit Deprecation: This method is deprecated, use getRequest() instead',
+            E_USER_DEPRECATED
+        );
+
         return (string) $this->request->getBody();
     }
 }

@@ -111,6 +111,12 @@ class RestAdapterBuilder
      */
     public function setHttpClient($httpClient)
     {
+        trigger_error(
+           'Retrofit Deprecation: Setting an http client is deprecated and will be removed
+            in v3.  Use RestAdapterBuilder::setClientAdapter() instead.',
+            E_USER_DEPRECATED
+        );
+
         $this->clientProvider->setClient($httpClient);
 
         return $this;

@@ -48,8 +48,8 @@ class Body extends VariableMapper implements DynamoAnnotation
         $this->jsonSerializable = $params['jsonSerializable'];
 
         trigger_error(
-            'Retrofit Deprecation: The jsonSerializable option is getting removed in the next major version'
-            . ' of retrofit.  Implementing \JsonSerializable will be sufficient.',
+            'Retrofit Deprecation: The jsonSerializable option is getting removed in the next major version
+            of retrofit.  Implementing \JsonSerializable will be sufficient.',
             E_USER_DEPRECATED
         );
     }
@@ -65,14 +65,14 @@ class Body extends VariableMapper implements DynamoAnnotation
     }
 
     /**
-     * @deprecated
+     * @deprecated This method is deprecated.  Retrofit now looks checks for the interface directly.
      * @return boolean
      */
     public function isJsonSerializable()
     {
         trigger_error(
-            'Retrofit Deprecation: The jsonSerializable option is getting removed in the next major version'
-            . ' of retrofit.  Implementing \JsonSerializable will be sufficient.',
+            'Retrofit Deprecation: The jsonSerializable option is getting removed in the next major version
+            of retrofit.  Implementing \JsonSerializable will be sufficient.',
             E_USER_DEPRECATED
         );
 

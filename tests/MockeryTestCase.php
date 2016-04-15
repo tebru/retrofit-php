@@ -7,6 +7,7 @@
 namespace Tebru\Retrofit\Test;
 
 use Mockery;
+use PHPUnit_Framework_Error_Deprecated;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -16,13 +17,28 @@ use PHPUnit_Framework_TestCase;
  */
 class MockeryTestCase extends PHPUnit_Framework_TestCase
 {
+    private $errorLevel;
+
     protected function setUp()
     {
         Mockery::getConfiguration()->allowMockingNonExistentMethods(false);
+        $this->errorLevel = error_reporting();
     }
 
     protected function tearDown()
     {
         Mockery::close();
+    }
+
+    protected function disableDeprecationWarning()
+    {
+        PHPUnit_Framework_Error_Deprecated::$enabled = false;
+        error_reporting(0);
+    }
+
+    protected function enableDeprecationWarning()
+    {
+        PHPUnit_Framework_Error_Deprecated::$enabled = true;
+        error_reporting($this->errorLevel);
     }
 }
