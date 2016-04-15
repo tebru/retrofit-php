@@ -6,6 +6,8 @@
 
 namespace Tebru\Retrofit\Test\Unit\Generation\Printer;
 
+use Mockery;
+use PhpParser\Parser;
 use Tebru\Retrofit\Generation\Printer\ArrayPrinter;
 use Tebru\Retrofit\Test\MockeryTestCase;
 
@@ -31,5 +33,18 @@ class ArrayPrinterTest extends MockeryTestCase
         $result = str_replace("\n", '', $result);
 
         $this->assertSame("array ( 0 => 0, 1 => 1, 2 => 2, 3 => 0.5, 4 => 1.5, 5 => 2.5, 6 => 'a', 7 => 'b', 8 => 'c', 9 => true, 10 => false, 11 => NULL, 12 => \$foo, 13 =>  array (   0 => 0,   1 => 1,   2 => 2,   3 => 0.5,   4 => 1.5,   5 => 2.5,   6 => 'a',   7 => 'b',   8 => 'c',   9 => true,   10 => false,   11 => NULL,   12 => \$foo, ), 'a' => 0, 'b' => 1, 'c' => 2, 'd' => 0.5, 'e' => 1.5, 'f' => 2.5, 'g' => 'a', 'h' => 'b', 'i' => 'c', 'j' => true, 'k' => false, 'l' => NULL, 'm' => \$foo, 'n' =>  array (   'a' => 0,   'b' => 1,   'c' => 2,   'd' => 0.5,   'e' => 1.5,   'f' => 2.5,   'g' => 'a',   'h' => 'b',   'i' => 'c',   'j' => true,   'k' => false,   'l' => NULL,   'm' => \$foo, ),)", $result);
+    }
+
+    /**
+     * @expectedException \Tebru\Retrofit\Exception\RetrofitException
+     * @expectedExceptionMessage There was an error parsing the array
+     */
+    public function testErrorThrowsException()
+    {
+        $parser = Mockery::mock(Parser::class);
+        $parser->shouldReceive('parse')->times(1)->andReturn(null);
+
+        $printer = new ArrayPrinter($parser);
+        $printer->printArray([]);
     }
 }

@@ -10,6 +10,7 @@ use PhpParser\Lexer;
 use PhpParser\Parser;
 use PhpParser\PrettyPrinter\Standard;
 use PhpParser\PrettyPrinterAbstract;
+use Tebru\Retrofit\Exception\RetrofitException;
 
 /**
  * Class ArrayPrinter
@@ -53,6 +54,7 @@ class ArrayPrinter
      *
      * @param array $array
      * @return string
+     * @throws RetrofitException
      */
     public function printArray(array $array)
     {
@@ -60,6 +62,10 @@ class ArrayPrinter
         $string = preg_replace('/\'\$(.+)\'/', '$' . '\\1', $string);
 
         $statements = $this->parser->parse($string);
+
+        if (null === $statements) {
+            throw new RetrofitException('There was an error parsing the array');
+        }
 
         return $this->printer->prettyPrintFile($statements);
     }
