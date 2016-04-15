@@ -60,6 +60,8 @@ class Headers implements DynamoAnnotation
     }
 
     /**
+     * Get the headers
+     *
      * @return array
      */
     public function getHeaders()

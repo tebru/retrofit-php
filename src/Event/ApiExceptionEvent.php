@@ -20,11 +20,15 @@ class ApiExceptionEvent extends Event
     const NAME = 'retrofit.apiException';
 
     /**
+     * Any exception
+     *
      * @var Exception
      */
     private $exception;
 
     /**
+     * The request object
+     *
      * @var RequestInterface
      */
     private $request;
@@ -42,6 +46,8 @@ class ApiExceptionEvent extends Event
     }
 
     /**
+     * Get the exception
+     *
      * @return Exception
      */
     public function getException()
@@ -50,6 +56,8 @@ class ApiExceptionEvent extends Event
     }
 
     /**
+     * Set updated exception back to event
+     *
      * @param Exception $exception
      */
     public function setException(Exception $exception)
@@ -58,6 +66,8 @@ class ApiExceptionEvent extends Event
     }
 
     /**
+     * Get the request
+     *
      * @return RequestInterface
      */
     public function getRequest()

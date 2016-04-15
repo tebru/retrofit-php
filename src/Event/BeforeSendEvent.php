@@ -36,6 +36,8 @@ class BeforeSendEvent extends Event
     }
 
     /**
+     * Get the request
+     *
      * @return RequestInterface
      */
     public function getRequest()
@@ -44,6 +46,8 @@ class BeforeSendEvent extends Event
     }
 
     /**
+     * Set the updated request back to the event
+     *
      * @param RequestInterface $request
      */
     public function setRequest(RequestInterface $request)

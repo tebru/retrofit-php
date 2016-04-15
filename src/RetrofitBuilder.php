@@ -23,26 +23,36 @@ use Tebru\Retrofit\Generation\Listener\DynamoStartListener;
 class RetrofitBuilder
 {
     /**
+     * Directory to store generated clients
+     *
      * @var string
      */
     private $cacheDir;
     
     /**
+     * Symfony event dispatcher
+     *
      * @var EventDispatcherInterface
      */
     private $eventDispatcher;
     
     /**
+     * Find services
+     *
      * @var ServiceResolver
      */
     private $serviceResolver;
     
     /**
+     * Generate classes
+     *
      * @var Generator
      */
     private $generator;
 
     /**
+     * Set the cache directory
+     *
      * @param string $cacheDir
      * @return $this
      */
@@ -54,6 +64,8 @@ class RetrofitBuilder
     }
 
     /**
+     * Set the event dispatcher
+     *
      * @param EventDispatcherInterface $eventDispatcher
      * @return $this
      */
@@ -65,6 +77,8 @@ class RetrofitBuilder
     }
 
     /**
+     * Set the service resolver
+     *
      * @param ServiceResolver $serviceResolver
      * @return $this
      */
@@ -76,6 +90,8 @@ class RetrofitBuilder
     }
 
     /**
+     * Set the generator
+     *
      * @param Generator $generator
      * @return $this
      */

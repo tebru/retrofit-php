@@ -191,7 +191,7 @@ class RestAdapterBuilder
      * @param LoggerInterface $logger
      * @return $this
      */
-    public function setLogger($logger)
+    public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
 

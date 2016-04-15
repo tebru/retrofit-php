@@ -22,18 +22,29 @@ class Response implements ResponseInterface
     const FORMAT_ARRAY = 'array';
 
     /**
+     * PSR-7 Response
+     *
      * @var ResponseInterface
      */
     private $response;
+
     /**
-     * @var
+     * The return type
+     *
+     * @var string
      */
     private $returnType;
+
     /**
+     * JMS Serializer
+     *
      * @var SerializerInterface
      */
     private $serializer;
+
     /**
+     * Serialization context
+     *
      * @var array
      */
     private $context;

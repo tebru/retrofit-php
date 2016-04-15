@@ -20,11 +20,15 @@ class AfterSendEvent extends Event
     const NAME = 'retrofit.afterSend';
 
     /**
+     * The request object
+     *
      * @var RequestInterface
      */
     private $request;
 
     /**
+     * The response object
+     *
      * @var ResponseInterface
      */
     private $response;
@@ -42,6 +46,8 @@ class AfterSendEvent extends Event
     }
 
     /**
+     * Get the request
+     *
      * @return RequestInterface
      */
     public function getRequest()
@@ -50,6 +56,8 @@ class AfterSendEvent extends Event
     }
 
     /**
+     * Get the response
+     *
      * @return ResponseInterface
      */
     public function getResponse()
@@ -58,6 +66,8 @@ class AfterSendEvent extends Event
     }
 
     /**
+     * Set the updated response back to the event
+     *
      * @param ResponseInterface $response
      */
     public function setResponse(ResponseInterface $response = null)

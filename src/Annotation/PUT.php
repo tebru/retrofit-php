@@ -16,6 +16,9 @@ namespace Tebru\Retrofit\Annotation;
  */
 class PUT extends HttpRequest
 {
+    /**
+     * @return string
+     */
     public function getType()
     {
         return 'put';

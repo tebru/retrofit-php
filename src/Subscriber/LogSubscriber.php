@@ -19,6 +19,8 @@ use Tebru\Retrofit\Event\ApiExceptionEvent;
 class LogSubscriber implements EventSubscriberInterface
 {
     /**
+     * PSR Logger
+     *
      * @var LoggerInterface
      */
     private $logger;

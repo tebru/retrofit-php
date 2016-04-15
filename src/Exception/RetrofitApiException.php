@@ -16,6 +16,8 @@ use Exception;
 class RetrofitApiException extends Exception
 {
     /**
+     * The client class that the exception came from
+     *
      * @var string
      */
     private $clientClass;
@@ -34,6 +36,8 @@ class RetrofitApiException extends Exception
     }
 
     /**
+     * Get the generated client class name
+     *
      * @return string
      */
     public function getClientClass()

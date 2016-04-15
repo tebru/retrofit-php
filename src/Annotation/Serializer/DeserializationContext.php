@@ -24,6 +24,8 @@ class DeserializationContext extends JmsSerializerContext implements DynamoAnnot
     const NAME = 'deserialization_context';
 
     /**
+     * Depth to use while deserializing
+     *
      * @var int
      */
     private $depth;

@@ -21,21 +21,29 @@ use Tebru\Retrofit\Retrofit;
 class RestAdapter
 {
     /**
+     * API base url
+     *
      * @var string $baseUrl
      */
     private $baseUrl;
 
     /**
+     * Http client
+     *
      * @var HttpClientAdapter $httpClient
      */
     private $httpClient;
 
     /**
+     * JMS Serializer
+     *
      * @var Serializer $serializer
      */
     private $serializer;
 
     /**
+     * Symfony event dispatcher
+     *
      * @var EventDispatcherInterface
      */
     private $eventDispatcher;

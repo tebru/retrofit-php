@@ -27,7 +27,7 @@ use Tebru\Retrofit\Generation\Provider\AnnotationProvider;
 class DynamoMethodListener
 {
     /**
-     * Handler the event
+     * Handle the event
      *
      * @param MethodEvent $event
      */
