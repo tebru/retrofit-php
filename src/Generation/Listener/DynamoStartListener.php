@@ -97,7 +97,7 @@ class DynamoStartListener
     {
         $reflectionClass = new \ReflectionClass($classModel->getInterface());
 
-        if (!in_array('Tebru\Retrofit\Http\AsyncAware', $reflectionClass->getInterfaceNames())) {
+        if (!in_array('Tebru\Retrofit\Http\AsyncAware', $reflectionClass->getInterfaceNames(), true)) {
             return null;
         }
 

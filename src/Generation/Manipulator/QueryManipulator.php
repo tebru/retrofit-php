@@ -23,10 +23,12 @@ class QueryManipulator
     {
         foreach ($elements as $key => $element) {
             if (is_array($element)) {
+                /** @noinspection AlterInForeachInspection */
                 $elements[$key] = self::boolToString($element);
             }
 
             if (is_bool($element)) {
+                /** @noinspection AlterInForeachInspection */
                 $elements[$key] = self::varToString($element);
             }
         }

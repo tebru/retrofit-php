@@ -33,7 +33,7 @@ class ResponseType implements DynamoAnnotation
      */
     public function __construct(array $params)
     {
-        Tebru\assertThat(isset($params['value']), 'An argument was not passed to a "%s" annotation.', get_class($this));
+        Tebru\assertArrayKeyExists('value', $params, 'An argument was not passed to a "%s" annotation.', get_class($this));
 
         $this->type = $params['value'];
     }

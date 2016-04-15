@@ -40,11 +40,11 @@ abstract class VariableMapper
      */
     public function __construct(array $params)
     {
-        Tebru\assertThat(isset($params['value']), 'An argument was not passed to a "%s" annotation.', get_class($this));
+        Tebru\assertArrayKeyExists('value', $params, 'An argument was not passed to a "%s" annotation.', get_class($this));
 
         $this->value = $params['value'];
 
-        if (isset($params['var'])) {
+        if (array_key_exists('var', $params)) {
             $this->var = $params['var'];
         }
     }

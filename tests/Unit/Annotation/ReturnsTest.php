@@ -17,7 +17,7 @@ use Tebru\Retrofit\Test\MockeryTestCase;
 class ReturnsTest extends MockeryTestCase
 {
     /**
-     * @expectedException \LogicException
+     * @expectedException \OutOfBoundsException
      * @expectedExceptionMessage An argument was not passed to a "Tebru\Retrofit\Annotation\Returns" annotation.
      */
     public function testConstructorThrowsException()

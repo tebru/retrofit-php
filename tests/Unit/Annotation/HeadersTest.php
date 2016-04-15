@@ -17,7 +17,7 @@ use Tebru\Retrofit\Test\MockeryTestCase;
 class HeadersTest extends MockeryTestCase
 {
     /**
-     * @expectedException \LogicException
+     * @expectedException \OutOfBoundsException
      * @expectedExceptionMessage An argument was not passed to a "Tebru\Retrofit\Annotation\Headers" annotation.
      */
     public function testConstructorThrowsException()

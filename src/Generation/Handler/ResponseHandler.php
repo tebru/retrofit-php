@@ -6,6 +6,8 @@
 
 namespace Tebru\Retrofit\Generation\Handler;
 
+use LogicException;
+use Tebru\Retrofit\Exception\RetrofitException;
 use Tebru\Retrofit\Generation\Handler;
 use Tebru\Retrofit\Generation\HandlerContext;
 
@@ -21,6 +23,8 @@ class ResponseHandler implements Handler
      *
      * @param HandlerContext $context
      * @return null
+     * @throws LogicException
+     * @throws RetrofitException
      */
     public function __invoke(HandlerContext $context)
     {

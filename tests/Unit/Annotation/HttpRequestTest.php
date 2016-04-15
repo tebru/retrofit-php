@@ -25,7 +25,7 @@ class HttpRequestTest extends MockeryTestCase
 {
     /**
      * @dataProvider provideHttpRequestAnnotations
-     * @expectedException \LogicException
+     * @expectedException \OutOfBoundsException
      */
     public function testBlankHttpRequestThrowsException($class)
     {

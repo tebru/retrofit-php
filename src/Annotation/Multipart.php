@@ -34,7 +34,7 @@ class Multipart implements DynamoAnnotation
      */
     public function __construct(array $params)
     {
-        $this->boundary = (isset($params['boundary'])) ? $params['boundary'] : null;
+        $this->boundary = array_key_exists('boundary', $params) ? $params['boundary'] : null;
     }
 
     /**

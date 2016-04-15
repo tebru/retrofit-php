@@ -41,12 +41,10 @@ class Headers implements DynamoAnnotation
      */
     public function __construct(array $params)
     {
-        Tebru\assertThat(isset($params['value']), 'An argument was not passed to a "%s" annotation.', get_class($this));
+        Tebru\assertArrayKeyExists('value', $params, 'An argument was not passed to a "%s" annotation.', get_class($this));
 
         // convert to array
-        if (!is_array($params['value'])) {
-            $params['value'] = [$params['value']];
-        }
+        $params['value'] = (array) $params['value'];
 
         // loop through each string and break on ':'
         foreach ($params['value'] as $header) {

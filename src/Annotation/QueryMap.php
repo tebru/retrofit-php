@@ -18,7 +18,7 @@ use Tebru\Dynamo\Annotation\DynamoAnnotation;
  *     @GET("/search")
  *     @QueryMap("queryParams")
  *
- * Calling the defined pethod with `["foo" => "bar", "kit" => "kat"]` 
+ * Calling the defined method with `["foo" => "bar", "kit" => "kat"]`
  * yields `/search?foo=bar&kit=kat`.
  * Passing `['key' => ['foo' => 'bar']]` will result in `/search?key[foo]=bar`.
  *

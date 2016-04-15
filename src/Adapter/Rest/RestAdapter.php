@@ -73,8 +73,8 @@ class RestAdapter
     /**
      * Create a new service
      *
-     * @param string|object $service
-     * @return object $service
+     * @param string|mixed $service
+     * @return mixed $service
      * @throws RetrofitException
      */
     public function create($service)

@@ -35,7 +35,7 @@ class DeserializationContext extends JmsSerializerContext implements DynamoAnnot
      */
     public function __construct(array $params)
     {
-        if (isset($params['depth'])) {
+        if (array_key_exists('depth', $params)) {
             $this->depth = $params['depth'];
             unset($params['depth']);
         }

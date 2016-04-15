@@ -48,7 +48,7 @@ abstract class HttpRequest implements DynamoAnnotation
      */
     public function __construct(array $params)
     {
-        Tebru\assertThat(isset($params['value']), 'Request method "%s" must have path', get_class($this));
+        Tebru\assertArrayKeyExists('value', $params, 'Request method "%s" must have path', get_class($this));
 
         $path = $params['value'];
 

@@ -46,22 +46,22 @@ abstract class JmsSerializerContext
      */
     public function __construct(array $params)
     {
-        if (isset($params['groups'])) {
+        if (array_key_exists('groups', $params)) {
             $this->groups = $params['groups'];
             unset($params['groups']);
         }
 
-        if (isset($params['version'])) {
+        if (array_key_exists('version', $params)) {
             $this->version = $params['version'];
             unset($params['version']);
         }
 
-        if (isset($params['serializeNull'])) {
+        if (array_key_exists('serializeNull', $params)) {
             $this->serializeNull = $params['serializeNull'];
             unset($params['serializeNull']);
         }
 
-        if (isset($params['enableMaxDepthChecks'])) {
+        if (array_key_exists('enableMaxDepthChecks', $params)) {
             $this->enableMaxDepthChecks = $params['enableMaxDepthChecks'];
             unset($params['enableMaxDepthChecks']);
         }

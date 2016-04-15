@@ -24,7 +24,7 @@ class AnnotationToVariableMapTest extends MockeryTestCase
 {
     /**
      * @dataProvider provideAnnotationToVariableMapAnnotations
-     * @expectedException \LogicException
+     * @expectedException \OutOfBoundsException
      */
     public function testConstructorWillThrowException($class)
     {

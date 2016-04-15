@@ -29,7 +29,7 @@ interface HttpClientAdapter
      * Make an async request
      *
      * @param RequestInterface $request
-     * @param \Tebru\Retrofit\Http\Callback $callback
+     * @param Callback $callback
      * @return ResponseInterface
      */
     public function sendAsync(RequestInterface $request, Callback $callback);
