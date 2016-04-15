@@ -78,5 +78,6 @@ class ReturnHandler implements Handler
 
         $context->body()->add('$returnEvent = new \Tebru\Retrofit\Event\ReturnEvent($return);');
         $context->body()->add('$this->eventDispatcher->dispatch("retrofit.return", $returnEvent);');
-        $context->body()->add('return $returnEvent->getReturn();');    }
+        $context->body()->add('return $returnEvent->getReturn();');
+    }
 }

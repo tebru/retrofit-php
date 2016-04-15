@@ -152,7 +152,7 @@ class AnnotationProvider
         }
 
         /** @var Header[] $headerAnnotations */
-        $headerAnnotations = $this->annotations->get(Header::NAME) ;
+        $headerAnnotations = $this->annotations->get(Header::NAME);
 
         $headers = [];
         foreach ($headerAnnotations as $headerAnnotation) {
