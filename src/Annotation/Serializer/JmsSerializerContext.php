@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2015 Nate Brunette.
+ * Copyright (c) Nate Brunette.
  * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
@@ -15,26 +15,36 @@ namespace Tebru\Retrofit\Annotation\Serializer;
 abstract class JmsSerializerContext
 {
     /**
+     * Serialization groups
+     *
      * @var array
      */
     private $groups;
 
     /**
+     * Object version
+     *
      * @var int
      */
     private $version;
 
     /**
+     * If we should serialize null values
+     *
      * @var bool
      */
     private $serializeNull = false;
 
     /**
+     * If we should check depth
+     *
      * @var bool
      */
     private $enableMaxDepthChecks = false;
 
     /**
+     * Extra attributes
+     *
      * @var array
      */
     private $attributes = [];

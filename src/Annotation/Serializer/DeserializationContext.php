@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2015 Nate Brunette.
+ * Copyright (c) Nate Brunette.
  * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
  
@@ -24,6 +24,8 @@ class DeserializationContext extends JmsSerializerContext implements DynamoAnnot
     const NAME = 'deserialization_context';
 
     /**
+     * Depth to use while deserializing
+     *
      * @var int
      */
     private $depth;

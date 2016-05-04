@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2015 Nate Brunette.
+ * Copyright (c) Nate Brunette.
  * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
@@ -16,6 +16,9 @@ namespace Tebru\Retrofit\Annotation;
  */
 class PUT extends HttpRequest
 {
+    /**
+     * @return string
+     */
     public function getType()
     {
         return 'put';

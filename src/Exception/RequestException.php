@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2015 Nate Brunette.
+ * Copyright (c) Nate Brunette.
  * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
@@ -18,16 +18,22 @@ use Psr\Http\Message\ResponseInterface;
 class RequestException extends Exception
 {
     /**
+     * PSR-7 request
+     *
      * @var RequestInterface
      */
     private $request;
 
     /**
+     * PSR-7 response
+     *
      * @var ResponseInterface
      */
     private $response;
 
     /**
+     * Additional request context
+     *
      * @var array
      */
     private $handlerContext;
@@ -58,6 +64,8 @@ class RequestException extends Exception
     }
 
     /**
+     * Get the request
+     *
      * @return RequestInterface
      */
     public function getRequest()
@@ -66,6 +74,8 @@ class RequestException extends Exception
     }
 
     /**
+     * Get the response
+     *
      * @return ResponseInterface
      */
     public function getResponse()
@@ -74,6 +84,8 @@ class RequestException extends Exception
     }
 
     /**
+     * If a response exists
+     *
      * @return bool
      */
     public function hasResponse()
@@ -82,6 +94,8 @@ class RequestException extends Exception
     }
 
     /**
+     * Get the context
+     *
      * @return array
      */
     public function getHandlerContext()

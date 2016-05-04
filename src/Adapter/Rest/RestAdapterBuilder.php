@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2015 Nate Brunette.
+ * Copyright (c) Nate Brunette.
  * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
@@ -15,6 +15,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Tebru;
 use Tebru\Retrofit\Adapter\HttpClientAdapter;
+use Tebru\Retrofit\Event\EventDispatcherAware;
 use Tebru\Retrofit\Exception\RetrofitException;
 use Tebru\Retrofit\HttpClient\ClientProvider;
 use Tebru\Retrofit\Subscriber\LogSubscriber;
@@ -111,6 +112,12 @@ class RestAdapterBuilder
      */
     public function setHttpClient($httpClient)
     {
+        trigger_error(
+           'Retrofit Deprecation: Setting an http client is deprecated and will be removed
+            in v3.  Use RestAdapterBuilder::setClientAdapter() instead.',
+            E_USER_DEPRECATED
+        );
+
         $this->clientProvider->setClient($httpClient);
 
         return $this;
@@ -185,7 +192,7 @@ class RestAdapterBuilder
      * @param LoggerInterface $logger
      * @return $this
      */
-    public function setLogger($logger)
+    public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
 
@@ -224,9 +231,15 @@ class RestAdapterBuilder
             $this->eventDispatcher->addSubscriber(new LogSubscriber($this->logger));
         }
 
+        $client = $this->clientProvider->getClient();
+
+        if ($client instanceof EventDispatcherAware) {
+            $client->setEventDispatcher($this->eventDispatcher);
+        }
+
         $adapter = new RestAdapter(
             $this->baseUrl,
-            $this->clientProvider->getClient(),
+            $client,
             $this->serializer,
             $this->eventDispatcher
         );

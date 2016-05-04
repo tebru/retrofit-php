@@ -1,13 +1,12 @@
 <?php
 /*
- * Copyright (c) 2015 Nate Brunette.
+ * Copyright (c) Nate Brunette.
  * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
 namespace Tebru\Retrofit\Test\Unit\Generation\Provider;
 
 use Mockery;
-use OutOfBoundsException;
 use Tebru\Dynamo\Collection\AnnotationCollection;
 use Tebru\Dynamo\Model\ClassModel;
 use Tebru\Dynamo\Model\MethodModel;
@@ -15,9 +14,9 @@ use Tebru\Dynamo\Model\ParameterModel;
 use Tebru\Retrofit\Annotation\BaseUrl;
 use Tebru\Retrofit\Annotation\Body;
 use Tebru\Retrofit\Annotation\FormUrlEncoded;
+use Tebru\Retrofit\Annotation\GET;
 use Tebru\Retrofit\Annotation\Header;
 use Tebru\Retrofit\Annotation\Headers;
-use Tebru\Retrofit\Annotation\HttpRequest;
 use Tebru\Retrofit\Annotation\JsonBody;
 use Tebru\Retrofit\Annotation\Multipart;
 use Tebru\Retrofit\Annotation\Part;
@@ -43,13 +42,9 @@ class AnnotationProviderTest extends MockeryTestCase
 {
     public function testGetBaseUrl()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $annotation = Mockery::mock(BaseUrl::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(BaseUrl::NAME)->andReturn(true);
-        $collection->shouldReceive('get')->times(1)->with(BaseUrl::NAME)->andReturn($annotation);
-        $annotation->shouldReceive('getVariable')->times(1)->with()->andReturn('$baseUrl');
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new BaseUrl(['value' => 'baseUrl']));
 
         $provider = new AnnotationProvider($collection, $method);
         $baseUrl = $provider->getBaseUrl();
@@ -59,10 +54,8 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testGetBaseUrlNull()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(BaseUrl::NAME)->andReturn(false);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
 
         $provider = new AnnotationProvider($collection, $method);
         $baseUrl = $provider->getBaseUrl();
@@ -72,17 +65,14 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testGetRequestMethod()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $annotation = Mockery::mock(HttpRequest::class);
-
-        $collection->shouldReceive('get')->times(1)->with(HttpRequest::NAME)->andReturn($annotation);
-        $annotation->shouldReceive('getType')->times(1)->with()->andReturn('GET');
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new GET(['value' => '/get']));
 
         $provider = new AnnotationProvider($collection, $method);
         $requestMethod = $provider->getRequestMethod();
 
-        $this->assertSame('GET', $requestMethod);
+        $this->assertSame('get', $requestMethod);
     }
 
     /**
@@ -91,10 +81,8 @@ class AnnotationProviderTest extends MockeryTestCase
      */
     public function testGetRequestMethodThrowsException()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('get')->times(1)->with(HttpRequest::NAME)->andThrow(new OutOfBoundsException());
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
 
         $provider = new AnnotationProvider($collection, $method);
         $provider->getRequestMethod();
@@ -102,12 +90,9 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testGetRequestUri()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $annotation = Mockery::mock(HttpRequest::class);
-
-        $collection->shouldReceive('get')->times(1)->with(HttpRequest::NAME)->andReturn($annotation);
-        $annotation->shouldReceive('getPath')->times(1)->with()->andReturn('/get');
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new GET(['value' => '/get']));
 
         $provider = new AnnotationProvider($collection, $method);
         $requestUri = $provider->getRequestUri();
@@ -121,10 +106,8 @@ class AnnotationProviderTest extends MockeryTestCase
      */
     public function testGetRequestUriThrowsException()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('get')->times(1)->with(HttpRequest::NAME)->andThrow(new OutOfBoundsException());
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
 
         $provider = new AnnotationProvider($collection, $method);
         $provider->getRequestUri();
@@ -132,55 +115,36 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testGetQueries()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $annotation = Mockery::mock(HttpRequest::class);
-
-        $collection->shouldReceive('get')->times(1)->with(HttpRequest::NAME)->andReturn($annotation);
-        $collection->shouldReceive('exists')->times(1)->with(Query::NAME)->andReturn(false);
-        $annotation->shouldReceive('getQueries')->times(1)->with()->andReturn(['limit' => 10, 'page' => 2]);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new GET(['value' => '/get?limit=10&page=2']));
 
         $provider = new AnnotationProvider($collection, $method);
         $queries = $provider->getQueries();
 
-        $this->assertSame(['limit' => 10, 'page' => 2], $queries);
+        $this->assertSame(['limit' => '10', 'page' => '2'], $queries);
     }
 
     public function testGetQueriesWithQueryAnnotation()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $requestAnnotation = Mockery::mock(HttpRequest::class);
-        $queryAnnotation = Mockery::mock(Query::class);
-
-        $collection->shouldReceive('get')->times(1)->with(HttpRequest::NAME)->andReturn($requestAnnotation);
-        $collection->shouldReceive('exists')->times(1)->with(Query::NAME)->andReturn(true);
-        $collection->shouldReceive('get')->times(1)->with(Query::NAME)->andReturn([$queryAnnotation]);
-        $requestAnnotation->shouldReceive('getQueries')->times(1)->with()->andReturn(['limit' => 10]);
-        $queryAnnotation->shouldReceive('getRequestKey')->times(1)->with()->andReturn('page');
-        $queryAnnotation->shouldReceive('getVariable')->times(1)->with()->andReturn('$page');
-
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new GET(['value' => '/get?limit=10']));
+        $collection->addAnnotation(new Query(['value' => 'page']));
 
         $provider = new AnnotationProvider($collection, $method);
         $queries = $provider->getQueries();
 
-        $this->assertSame(['limit' => 10, 'page' => '$page'], $queries);
+        $this->assertSame(['limit' => '10', 'page' => '$page'], $queries);
     }
 
     public function testGetQueriesWithoutInline()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $requestAnnotation = Mockery::mock(HttpRequest::class);
-        $queryAnnotation = Mockery::mock(Query::class);
-
-        $collection->shouldReceive('get')->times(1)->with(HttpRequest::NAME)->andReturn($requestAnnotation);
-        $collection->shouldReceive('exists')->times(1)->with(Query::NAME)->andReturn(true);
-        $collection->shouldReceive('get')->times(1)->with(Query::NAME)->andReturn([$queryAnnotation, $queryAnnotation]);
-        $requestAnnotation->shouldReceive('getQueries')->times(1)->with()->andReturn([]);
-        $queryAnnotation->shouldReceive('getRequestKey')->times(2)->with()->andReturnValues(['limit', 'page']);
-        $queryAnnotation->shouldReceive('getVariable')->times(2)->with()->andReturnValues(['$limit', '$page']);
-
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new GET(['value' => '/get']));
+        $collection->addAnnotation(new Query(['value' => 'limit']));
+        $collection->addAnnotation(new Query(['value' => 'page']));
 
         $provider = new AnnotationProvider($collection, $method);
         $queries = $provider->getQueries();
@@ -190,14 +154,9 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testGetQueriesNull()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $annotation = Mockery::mock(HttpRequest::class);
-
-        $collection->shouldReceive('get')->times(1)->with(HttpRequest::NAME)->andReturn($annotation);
-        $collection->shouldReceive('exists')->times(1)->with(Query::NAME)->andReturn(false);
-        $annotation->shouldReceive('getQueries')->times(1)->with()->andReturn([]);
-
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new GET(['value' => '/get']));
 
         $provider = new AnnotationProvider($collection, $method);
         $queries = $provider->getQueries();
@@ -211,10 +170,8 @@ class AnnotationProviderTest extends MockeryTestCase
      */
     public function testGetQueriesThrowsException()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('get')->times(1)->with(HttpRequest::NAME)->andThrow(new OutOfBoundsException());
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
 
         $provider = new AnnotationProvider($collection, $method);
         $provider->getQueries();
@@ -222,13 +179,9 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testGetQueryMap()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $annotation = Mockery::mock(QueryMap::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(QueryMap::NAME)->andReturn(true);
-        $collection->shouldReceive('get')->times(1)->with(QueryMap::NAME)->andReturn($annotation);
-        $annotation->shouldReceive('getVariable')->times(1)->with()->andReturn('$queries');
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new QueryMap(['value' => 'queries']));
 
         $provider = new AnnotationProvider($collection, $method);
         $queryMap = $provider->getQueryMap();
@@ -238,10 +191,8 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testGetQueryMapNull()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(QueryMap::NAME)->andReturn(false);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
 
         $provider = new AnnotationProvider($collection, $method);
         $queryMap = $provider->getQueryMap();
@@ -251,14 +202,9 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testGetHeaders()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $annotation = Mockery::mock(Header::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(Header::NAME)->andReturn(true);
-        $collection->shouldReceive('get')->times(1)->with(Header::NAME)->andReturn([$annotation]);
-        $annotation->shouldReceive('getRequestKey')->times(1)->with()->andReturn('Content-Type');
-        $annotation->shouldReceive('getVariable')->times(1)->with()->andReturn('$contentType');
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new Header(['value' => 'Content-Type', 'var' => 'contentType']));
 
         $provider = new AnnotationProvider($collection, $method);
         $headers = $provider->getHeaders();
@@ -268,10 +214,8 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testGetHeadersNull()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(Header::NAME)->andReturn(false);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
 
         $provider = new AnnotationProvider($collection, $method);
         $headers = $provider->getHeaders();
@@ -281,13 +225,9 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testGetStaticHeaders()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $annotation = Mockery::mock(Headers::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(Headers::NAME)->andReturn(true);
-        $collection->shouldReceive('get')->times(1)->with(Headers::NAME)->andReturn($annotation);
-        $annotation->shouldReceive('getHeaders')->times(1)->with()->andReturn(['Content-Type' => 'application/json']);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new Headers(['value' => 'Content-Type: application/json']));
 
         $provider = new AnnotationProvider($collection, $method);
         $headers = $provider->getStaticHeaders();
@@ -297,10 +237,8 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testGetStaticHeadersNull()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(Headers::NAME)->andReturn(false);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
 
         $provider = new AnnotationProvider($collection, $method);
         $headers = $provider->getStaticHeaders();
@@ -310,10 +248,9 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testIsJsonEncoded()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(JsonBody::NAME)->andReturn(true);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new JsonBody());
 
         $provider = new AnnotationProvider($collection, $method);
         $jsonEncoded = $provider->isJsonEncoded();
@@ -323,10 +260,8 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testIsJsonEncodedFalse()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(JsonBody::NAME)->andReturn(false);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
 
         $provider = new AnnotationProvider($collection, $method);
         $jsonEncoded = $provider->isJsonEncoded();
@@ -336,10 +271,9 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testIsMultipart()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(Multipart::NAME)->andReturn(true);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new Multipart([]));
 
         $provider = new AnnotationProvider($collection, $method);
         $multipart = $provider->isMultipart();
@@ -349,10 +283,8 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testIsMultipartFalse()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(Multipart::NAME)->andReturn(false);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
 
         $provider = new AnnotationProvider($collection, $method);
         $multipart = $provider->isMultipart();
@@ -362,10 +294,9 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testIsFormUrlEncoded()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(FormUrlEncoded::NAME)->andReturn(true);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new FormUrlEncoded());
 
         $provider = new AnnotationProvider($collection, $method);
         $formUrlEncoded = $provider->isFormUrlEncoded();
@@ -375,12 +306,8 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testIsFormUrlEncodedDefault()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(FormUrlEncoded::NAME)->andReturn(false);
-        $collection->shouldReceive('exists')->times(1)->with(JsonBody::NAME)->andReturn(false);
-        $collection->shouldReceive('exists')->times(1)->with(Multipart::NAME)->andReturn(false);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
 
         $provider = new AnnotationProvider($collection, $method);
         $formUrlEncoded = $provider->isFormUrlEncoded();
@@ -390,12 +317,9 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testIsNotFormUrlEncodedJsonEncoded()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(FormUrlEncoded::NAME)->andReturn(false);
-        $collection->shouldReceive('exists')->times(1)->with(JsonBody::NAME)->andReturn(true);
-        $collection->shouldReceive('exists')->times(1)->with(Multipart::NAME)->andReturn(false);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new JsonBody());
 
         $provider = new AnnotationProvider($collection, $method);
         $formUrlEncoded = $provider->isFormUrlEncoded();
@@ -405,11 +329,9 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testIsNotFormUrlEncodedMultipart()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(FormUrlEncoded::NAME)->andReturn(false);
-        $collection->shouldReceive('exists')->times(1)->with(Multipart::NAME)->andReturn(true);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new Multipart([]));
 
         $provider = new AnnotationProvider($collection, $method);
         $formUrlEncoded = $provider->isFormUrlEncoded();
@@ -419,12 +341,9 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testGetMultipartBoundary()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $annotation = Mockery::mock(Multipart::class);
-
-        $collection->shouldReceive('get')->times(1)->with(Multipart::NAME)->andReturn($annotation);
-        $annotation->shouldReceive('getBoundary')->times(1)->with()->andReturn('fooboundary');
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new Multipart(['boundary' => 'fooboundary']));
 
         $provider = new AnnotationProvider($collection, $method);
         $multipartBoundary = $provider->getMultipartBoundary();
@@ -434,12 +353,9 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testGetMultipartBoundaryNotSet()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $annotation = Mockery::mock(Multipart::class);
-
-        $collection->shouldReceive('get')->times(1)->with(Multipart::NAME)->andReturn($annotation);
-        $annotation->shouldReceive('getBoundary')->times(1)->with()->andReturn(null);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new Multipart([]));
 
         $provider = new AnnotationProvider($collection, $method);
         $multipartBoundary = $provider->getMultipartBoundary();
@@ -449,10 +365,9 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testHasBodyWithBodyAnnotation()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(Body::NAME)->andReturn(true);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new Body(['value' => 'body']));
 
         $provider = new AnnotationProvider($collection, $method);
         $hasBody = $provider->hasBody();
@@ -462,11 +377,9 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testHasBodyWithPartAnnotation()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(Body::NAME)->andReturn(false);
-        $collection->shouldReceive('exists')->times(1)->with(Part::NAME)->andReturn(true);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new Part(['value' => 'part']));
 
         $provider = new AnnotationProvider($collection, $method);
         $hasBody = $provider->hasBody();
@@ -476,11 +389,8 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testHasBodyFalse()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(Body::NAME)->andReturn(false);
-        $collection->shouldReceive('exists')->times(1)->with(Part::NAME)->andReturn(false);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
 
         $provider = new AnnotationProvider($collection, $method);
         $hasBody = $provider->hasBody();
@@ -490,10 +400,9 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testHasBodyAnnotation()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(Body::NAME)->andReturn(true);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new Body(['value' => 'body']));
 
         $provider = new AnnotationProvider($collection, $method);
         $hasBody = $provider->hasBodyAnnotation();
@@ -503,10 +412,8 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testHasBodyAnnotationFalse()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(Body::NAME)->andReturn(false);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
 
         $provider = new AnnotationProvider($collection, $method);
         $hasBody = $provider->hasBodyAnnotation();
@@ -516,13 +423,9 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testGetBody()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $annotation = Mockery::mock(Body::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(Body::NAME)->andReturn(true);
-        $collection->shouldReceive('get')->times(1)->with(Body::NAME)->andReturn($annotation);
-        $annotation->shouldReceive('getVariable')->times(1)->with()->andReturn('$body');
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new Body(['value' => 'body']));
 
         $provider = new AnnotationProvider($collection, $method);
         $body = $provider->getBody();
@@ -532,10 +435,8 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testGetBodyNull()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(Body::NAME)->andReturn(false);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
 
         $provider = new AnnotationProvider($collection, $method);
         $body = $provider->getBody();
@@ -545,14 +446,9 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testGetBodyParts()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $annotation = Mockery::mock(Part::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(Part::NAME)->andReturn(true);
-        $collection->shouldReceive('get')->times(1)->with(Part::NAME)->andReturn([$annotation]);
-        $annotation->shouldReceive('getRequestKey')->times(1)->with()->andReturn('part');
-        $annotation->shouldReceive('getVariable')->times(1)->with()->andReturn('$part');
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new Part(['value' => 'part']));
 
         $provider = new AnnotationProvider($collection, $method);
         $parts = $provider->getBodyParts();
@@ -562,10 +458,8 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testGetBodyPartsNull()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(Part::NAME)->andReturn(false);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
 
         $provider = new AnnotationProvider($collection, $method);
         $parts = $provider->getBodyParts();
@@ -575,16 +469,12 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testIsBodyObject()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $annotation = Mockery::mock(Body::class);
-        $parameter = Mockery::mock(ParameterModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(Body::NAME)->andReturn(true);
-        $collection->shouldReceive('get')->times(1)->with(Body::NAME)->andReturn($annotation);
-        $annotation->shouldReceive('getVariableName')->times(1)->with()->andReturn('$body');
-        $method->shouldReceive('getParameter')->times(1)->with('$body')->andReturn($parameter);
-        $parameter->shouldReceive('isObject')->times(1)->with()->andReturn(true);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $parameter = new ParameterModel($method, 'body', false);
+        $parameter->setTypeHint(MockApiUser::class);
+        $method->addParameter($parameter);
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new Body(['value' => 'body']));
 
         $provider = new AnnotationProvider($collection, $method);
         $isObject = $provider->isBodyObject();
@@ -594,10 +484,8 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testIsBodyObjectFalse()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(Body::NAME)->andReturn(false);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
 
         $provider = new AnnotationProvider($collection, $method);
         $isObject = $provider->isBodyObject();
@@ -607,16 +495,12 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testIsBodyArray()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $annotation = Mockery::mock(Body::class);
-        $parameter = Mockery::mock(ParameterModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(Body::NAME)->andReturn(true);
-        $collection->shouldReceive('get')->times(1)->with(Body::NAME)->andReturn($annotation);
-        $annotation->shouldReceive('getVariableName')->times(1)->with()->andReturn('$body');
-        $method->shouldReceive('getParameter')->times(1)->with('$body')->andReturn($parameter);
-        $parameter->shouldReceive('isArray')->times(1)->with()->andReturn(true);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $parameter = new ParameterModel($method, 'body', false);
+        $parameter->setTypeHint('array');
+        $method->addParameter($parameter);
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new Body(['value' => 'body']));
 
         $provider = new AnnotationProvider($collection, $method);
         $isArray = $provider->isBodyArray();
@@ -626,10 +510,8 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testIsBodyArrayFalse()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(Body::NAME)->andReturn(false);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
 
         $provider = new AnnotationProvider($collection, $method);
         $isArray = $provider->isBodyArray();
@@ -639,16 +521,11 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testIsBodyOptional()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $annotation = Mockery::mock(Body::class);
-        $parameter = Mockery::mock(ParameterModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(Body::NAME)->andReturn(true);
-        $collection->shouldReceive('get')->times(1)->with(Body::NAME)->andReturn($annotation);
-        $annotation->shouldReceive('getVariableName')->times(1)->with()->andReturn('$body');
-        $method->shouldReceive('getParameter')->times(1)->with('$body')->andReturn($parameter);
-        $parameter->shouldReceive('isOptional')->times(1)->with()->andReturn(true);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $parameter = new ParameterModel($method, 'body', true);
+        $method->addParameter($parameter);
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new Body(['value' => 'body']));
 
         $provider = new AnnotationProvider($collection, $method);
         $isOptional = $provider->isBodyOptional();
@@ -658,10 +535,8 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testIsBodyOptionalFalse()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(Body::NAME)->andReturn(false);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
 
         $provider = new AnnotationProvider($collection, $method);
         $isOptional = $provider->isBodyOptional();
@@ -671,17 +546,12 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testIsBodyJsonSerializable()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $annotation = Mockery::mock(Body::class);
-        $parameter = Mockery::mock(ParameterModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(Body::NAME)->andReturn(true);
-        $collection->shouldReceive('get')->times(2)->with(Body::NAME)->andReturn($annotation);
-        $annotation->shouldReceive('getVariableName')->times(2)->with()->andReturn('$body');
-        $method->shouldReceive('getParameter')->times(2)->with('$body')->andReturn($parameter);
-        $parameter->shouldReceive('isObject')->times(1)->with()->andReturn(true);
-        $parameter->shouldReceive('getTypeHint')->times(1)->with()->andReturn(MockApiUserSerializable::class);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $parameter = new ParameterModel($method, 'body', false);
+        $parameter->setTypeHint(MockApiUserSerializable::class);
+        $method->addParameter($parameter);
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new Body(['value' => 'body']));
 
         $provider = new AnnotationProvider($collection, $method);
         $isObject = $provider->isBodyJsonSerializable();
@@ -691,17 +561,12 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testIsBodyJsonSerializableFalse()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $annotation = Mockery::mock(Body::class);
-        $parameter = Mockery::mock(ParameterModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(Body::NAME)->andReturn(true);
-        $collection->shouldReceive('get')->times(2)->with(Body::NAME)->andReturn($annotation);
-        $annotation->shouldReceive('getVariableName')->times(2)->with()->andReturn('$body');
-        $method->shouldReceive('getParameter')->times(2)->with('$body')->andReturn($parameter);
-        $parameter->shouldReceive('isObject')->times(1)->with()->andReturn(true);
-        $parameter->shouldReceive('getTypeHint')->times(1)->with()->andReturn(MockApiUser::class);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $parameter = new ParameterModel($method, 'body', false);
+        $parameter->setTypeHint(MockApiUser::class);
+        $method->addParameter($parameter);
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new Body(['value' => 'body']));
 
         $provider = new AnnotationProvider($collection, $method);
         $isObject = $provider->isBodyJsonSerializable();
@@ -711,10 +576,12 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testIsBodyJsonSerializableNotObject()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(Body::NAME)->andReturn(false);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $parameter = new ParameterModel($method, 'body', false);
+        $parameter->setTypeHint('foo');
+        $method->addParameter($parameter);
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new Body(['value' => 'body']));
 
         $provider = new AnnotationProvider($collection, $method);
         $isObject = $provider->isBodyJsonSerializable();
@@ -724,38 +591,29 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testGetSerializationContext()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $annotation = Mockery::mock(SerializationContext::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(SerializationContext::NAME)->andReturn(true);
-        $collection->shouldReceive('get')->times(1)->with(SerializationContext::NAME)->andReturn($annotation);
-        $annotation->shouldReceive('getGroups')->times(1)->with()->andReturn(['group']);
-        $annotation->shouldReceive('getVersion')->times(1)->with()->andReturn(1);
-        $annotation->shouldReceive('getSerializeNull')->times(1)->with()->andReturn(true);
-        $annotation->shouldReceive('getEnableMaxDepthChecks')->times(1)->with()->andReturn(true);
-        $annotation->shouldReceive('getAttributes')->times(1)->with()->andReturn([]);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
+        $serializationContext = ['groups' => ['group'], 'version' => 1, 'serializeNull' => true, 'enableMaxDepthChecks' => true, 'foo' => 'bar'];
+        $collection->addAnnotation(new SerializationContext($serializationContext));
 
         $expected = [
             'groups' => ['group'],
             'version' => 1,
             'serializeNull' => true,
             'enableMaxDepthChecks' => true,
-            'attributes' => [],
+            'attributes' => ['foo' => 'bar'],
         ];
 
         $provider = new AnnotationProvider($collection, $method);
-        $context = $provider->getSerializationContext();
+        $returnContext = $provider->getSerializationContext();
 
-        $this->assertSame($expected, $context);
+        $this->assertSame($expected, $returnContext);
     }
 
     public function testGetSerializationContextNull()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(SerializationContext::NAME)->andReturn(false);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
 
         $provider = new AnnotationProvider($collection, $method);
         $context = $provider->getSerializationContext();
@@ -765,40 +623,30 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testGetDeserializationContext()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $annotation = Mockery::mock(DeserializationContext::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(DeserializationContext::NAME)->andReturn(true);
-        $collection->shouldReceive('get')->times(1)->with(DeserializationContext::NAME)->andReturn($annotation);
-        $annotation->shouldReceive('getGroups')->times(1)->with()->andReturn(['group']);
-        $annotation->shouldReceive('getVersion')->times(1)->with()->andReturn(1);
-        $annotation->shouldReceive('getSerializeNull')->times(1)->with()->andReturn(true);
-        $annotation->shouldReceive('getEnableMaxDepthChecks')->times(1)->with()->andReturn(true);
-        $annotation->shouldReceive('getAttributes')->times(1)->with()->andReturn([]);
-        $annotation->shouldReceive('getDepth')->times(1)->with()->andReturn(1);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
+        $deserializationContext = ['groups' => ['group'], 'version' => 1, 'serializeNull' => true, 'enableMaxDepthChecks' => true, 'depth' => 1, 'foo' => 'bar'];
+        $collection->addAnnotation(new DeserializationContext($deserializationContext));
 
         $expected = [
             'groups' => ['group'],
             'version' => 1,
             'serializeNull' => true,
             'enableMaxDepthChecks' => true,
-            'attributes' => [],
+            'attributes' => ['foo' => 'bar'],
             'depth' => 1,
         ];
 
         $provider = new AnnotationProvider($collection, $method);
-        $context = $provider->getDeserializationContext();
+        $returnContext = $provider->getDeserializationContext();
 
-        $this->assertSame($expected, $context);
+        $this->assertSame($expected, $returnContext);
     }
 
     public function testGetDeserializationContextNull()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(DeserializationContext::NAME)->andReturn(false);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
 
         $provider = new AnnotationProvider($collection, $method);
         $context = $provider->getDeserializationContext();
@@ -808,13 +656,9 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testGetReturnType()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $annotation = Mockery::mock(Returns::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(Returns::NAME)->andReturn(true);
-        $collection->shouldReceive('get')->times(1)->with(Returns::NAME)->andReturn($annotation);
-        $annotation->shouldReceive('getReturn')->times(1)->with()->andReturn('array');
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new Returns(['value' => 'array']));
 
         $provider = new AnnotationProvider($collection, $method);
         $returnType = $provider->getReturnType();
@@ -824,10 +668,8 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testGetReturnTypeNull()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(Returns::NAME)->andReturn(false);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
 
         $provider = new AnnotationProvider($collection, $method);
         $returnType = $provider->getReturnType();
@@ -837,13 +679,9 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testGetResponseType()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $annotation = Mockery::mock(ResponseType::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(ResponseType::NAME)->andReturn(true);
-        $collection->shouldReceive('get')->times(1)->with(ResponseType::NAME)->andReturn($annotation);
-        $annotation->shouldReceive('getType')->times(1)->with()->andReturn('array');
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
+        $collection->addAnnotation(new ResponseType(['value' => 'array']));
 
         $provider = new AnnotationProvider($collection, $method);
         $returnType = $provider->getResponseType();
@@ -853,10 +691,8 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testGetResponseTypeNull()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-
-        $collection->shouldReceive('exists')->times(1)->with(ResponseType::NAME)->andReturn(false);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
 
         $provider = new AnnotationProvider($collection, $method);
         $returnType = $provider->getResponseType();
@@ -866,16 +702,11 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testGetCallback()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $parameter = Mockery::mock(ParameterModel::class);
-        $class = Mockery::mock(ClassModel::class);
-
-        $method->shouldReceive('getParameters')->times(1)->with()->andReturn([$parameter]);
-        $method->shouldReceive('getClassModel')->times(1)->with()->andReturn($class);
-        $parameter->shouldReceive('getTypeHint')->times(1)->with()->andReturn('\\' . Callback::class);
-        $parameter->shouldReceive('getName')->times(1)->with()->andReturn('callback');
-        $class->shouldReceive('getInterface')->times(1)->with()->andReturn(ApiClient::class);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', ApiClient::class), 'fooMethod');
+        $parameter = new ParameterModel($method, 'callback', false);
+        $parameter->setTypeHint('\\' . Callback::class);
+        $method->addParameter($parameter);
+        $collection = new AnnotationCollection();
 
         $provider = new AnnotationProvider($collection, $method);
         $callback = $provider->getCallback();
@@ -885,12 +716,8 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testGetCallbackNull()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $parameter = Mockery::mock(ParameterModel::class);
-
-        $method->shouldReceive('getParameters')->times(1)->with()->andReturn([$parameter]);
-        $parameter->shouldReceive('getTypeHint')->times(1)->with()->andReturn('foo');
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
 
         $provider = new AnnotationProvider($collection, $method);
         $callback = $provider->getCallback();
@@ -904,15 +731,11 @@ class AnnotationProviderTest extends MockeryTestCase
      */
     public function testGetCallbackThrowsException()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $parameter = Mockery::mock(ParameterModel::class);
-        $class = Mockery::mock(ClassModel::class);
-
-        $method->shouldReceive('getParameters')->times(1)->with()->andReturn([$parameter]);
-        $method->shouldReceive('getClassModel')->times(1)->with()->andReturn($class);
-        $parameter->shouldReceive('getTypeHint')->times(1)->with()->andReturn('\\' . Callback::class);
-        $class->shouldReceive('getInterface')->times(1)->with()->andReturn(MockApiUser::class);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', MockApiUser::class), 'fooMethod');
+        $parameter = new ParameterModel($method, 'callback', false);
+        $parameter->setTypeHint('\\' . Callback::class);
+        $method->addParameter($parameter);
+        $collection = new AnnotationCollection();
 
         $provider = new AnnotationProvider($collection, $method);
         $provider->getCallback();
@@ -920,16 +743,11 @@ class AnnotationProviderTest extends MockeryTestCase
 
     public function testIsCallbackOptional()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $parameter = Mockery::mock(ParameterModel::class);
-        $class = Mockery::mock(ClassModel::class);
-
-        $method->shouldReceive('getParameters')->times(1)->with()->andReturn([$parameter]);
-        $method->shouldReceive('getClassModel')->times(1)->with()->andReturn($class);
-        $parameter->shouldReceive('getTypeHint')->times(1)->with()->andReturn('\\' . Callback::class);
-        $parameter->shouldReceive('isOptional')->times(1)->with()->andReturn(true);
-        $class->shouldReceive('getInterface')->times(1)->with()->andReturn(ApiClient::class);
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', ApiClient::class), 'fooMethod');
+        $parameter = new ParameterModel($method, 'callback', true);
+        $parameter->setTypeHint('\\' . Callback::class);
+        $method->addParameter($parameter);
+        $collection = new AnnotationCollection();
 
         $provider = new AnnotationProvider($collection, $method);
         $callbackOptional = $provider->isCallbackOptional();
@@ -943,12 +761,8 @@ class AnnotationProviderTest extends MockeryTestCase
      */
     public function testIsCallbackOptionalThrowsException()
     {
-        $collection = Mockery::mock(AnnotationCollection::class);
-        $method = Mockery::mock(MethodModel::class);
-        $parameter = Mockery::mock(ParameterModel::class);
-
-        $method->shouldReceive('getParameters')->times(1)->with()->andReturn([$parameter]);
-        $parameter->shouldReceive('getTypeHint')->times(1)->with()->andReturn('foo');
+        $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
+        $collection = new AnnotationCollection();
 
         $provider = new AnnotationProvider($collection, $method);
         $callbackOptional = $provider->isCallbackOptional();

@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2015 Nate Brunette.
+ * Copyright (c) Nate Brunette.
  * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
@@ -18,6 +18,8 @@ class ReturnEvent extends Event
     const NAME = 'retrofit.return';
 
     /**
+     * What will be returned from the generated client
+     *
      * @var mixed
      */
     private $return;
@@ -33,6 +35,8 @@ class ReturnEvent extends Event
     }
 
     /**
+     * Get return
+     *
      * @return mixed
      */
     public function getReturn()
@@ -41,6 +45,8 @@ class ReturnEvent extends Event
     }
 
     /**
+     * Set updated return back to event
+     *
      * @param mixed $return
      */
     public function setReturn($return)

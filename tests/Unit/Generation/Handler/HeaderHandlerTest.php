@@ -84,9 +84,7 @@ class HeaderHandlerTest extends AbstractHandlerTest
 
     public function testHeadersDefaultWithBodyThrowsExceptionIgnored()
     {
-        PHPUnit_Framework_Error_Deprecated::$enabled = false;
-        $errorLevel = error_reporting();
-        error_reporting(0);
+        $this->disableDeprecationWarning();
 
         $annotationProvider = Mockery::mock(AnnotationProvider::class);
         $annotationProvider->shouldReceive('getHeaders')->times(1)->with()->andReturn(null);
@@ -98,8 +96,7 @@ class HeaderHandlerTest extends AbstractHandlerTest
 
         $this->assert($annotationProvider, __FUNCTION__);
 
-        error_reporting($errorLevel);
-        PHPUnit_Framework_Error_Deprecated::$enabled = true;
+        $this->enableDeprecationWarning();
     }
 
     public function testHeadersJsonWithStatic()

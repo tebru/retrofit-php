@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2015 Nate Brunette.
+ * Copyright (c) Nate Brunette.
  * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
@@ -27,7 +27,7 @@ use Tebru\Retrofit\Generation\Provider\AnnotationProvider;
 class DynamoMethodListener
 {
     /**
-     * Handler the event
+     * Handle the event
      *
      * @param MethodEvent $event
      */

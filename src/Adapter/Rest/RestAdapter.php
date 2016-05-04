@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2015 Nate Brunette.
+ * Copyright (c) Nate Brunette.
  * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
@@ -21,21 +21,29 @@ use Tebru\Retrofit\Retrofit;
 class RestAdapter
 {
     /**
+     * API base url
+     *
      * @var string $baseUrl
      */
     private $baseUrl;
 
     /**
+     * Http client
+     *
      * @var HttpClientAdapter $httpClient
      */
     private $httpClient;
 
     /**
+     * JMS Serializer
+     *
      * @var Serializer $serializer
      */
     private $serializer;
 
     /**
+     * Symfony event dispatcher
+     *
      * @var EventDispatcherInterface
      */
     private $eventDispatcher;

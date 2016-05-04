@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2015 Nate Brunette.
+ * Copyright (c) Nate Brunette.
  * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
@@ -27,14 +27,11 @@ class BodyTest extends MockeryTestCase
 
     public function testJsonSerializableConstructor()
     {
-        PHPUnit_Framework_Error_Deprecated::$enabled = false;
-        $errorLevel = error_reporting();
-        error_reporting(0);
+        $this->disableDeprecationWarning();
 
         new Body(['value' => '$body', 'jsonSerializable' => true]);
 
-        error_reporting($errorLevel);
-        PHPUnit_Framework_Error_Deprecated::$enabled = true;
+        $this->enableDeprecationWarning();
     }
 
     /**
@@ -44,5 +41,15 @@ class BodyTest extends MockeryTestCase
     {
         $body = new Body(['value' => '$body']);
         $this->assertTrue($body->isJsonSerializable());
+    }
+
+    public function testJsonSerializable()
+    {
+        $this->disableDeprecationWarning();
+
+        $body = new Body(['value' => '$body', 'jsonSerializable' => true]);
+        $this->assertTrue($body->isJsonSerializable());
+
+        $this->enableDeprecationWarning();
     }
 }

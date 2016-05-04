@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2015 Nate Brunette.
+ * Copyright (c) Nate Brunette.
  * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
@@ -60,6 +60,8 @@ class Headers implements DynamoAnnotation
     }
 
     /**
+     * Get the headers
+     *
      * @return array
      */
     public function getHeaders()

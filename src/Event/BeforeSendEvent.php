@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2015 Nate Brunette.
+ * Copyright (c) Nate Brunette.
  * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
@@ -36,6 +36,8 @@ class BeforeSendEvent extends Event
     }
 
     /**
+     * Get the request
+     *
      * @return RequestInterface
      */
     public function getRequest()
@@ -44,6 +46,8 @@ class BeforeSendEvent extends Event
     }
 
     /**
+     * Set the updated request back to the event
+     *
      * @param RequestInterface $request
      */
     public function setRequest(RequestInterface $request)
@@ -57,6 +61,11 @@ class BeforeSendEvent extends Event
      */
     public function getMethod()
     {
+        trigger_error(
+            'Retrofit Deprecation: This method is deprecated, use getRequest() instead',
+            E_USER_DEPRECATED
+        );
+
         return $this->request->getMethod();
     }
 
@@ -66,6 +75,11 @@ class BeforeSendEvent extends Event
      */
     public function getRequestUrl()
     {
+        trigger_error(
+            'Retrofit Deprecation: This method is deprecated, use getRequest() instead',
+            E_USER_DEPRECATED
+        );
+
         return (string) $this->request->getUri();
     }
 
@@ -75,6 +89,11 @@ class BeforeSendEvent extends Event
      */
     public function getHeaders()
     {
+        trigger_error(
+            'Retrofit Deprecation: This method is deprecated, use getRequest() instead',
+            E_USER_DEPRECATED
+        );
+
         return $this->request->getHeaders();
     }
 
@@ -84,6 +103,11 @@ class BeforeSendEvent extends Event
      */
     public function getBody()
     {
+        trigger_error(
+            'Retrofit Deprecation: This method is deprecated, use getRequest() instead',
+            E_USER_DEPRECATED
+        );
+
         return (string) $this->request->getBody();
     }
 }

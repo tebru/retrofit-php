@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (c) 2015 Nate Brunette.
+ * Copyright (c) Nate Brunette.
  * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
@@ -56,8 +56,11 @@ class ResponseHandler implements Handler
         $context->body()->add('$exception = $apiExceptionEvent->getException();');
         $context->body()->add('throw new \Tebru\Retrofit\Exception\RetrofitApiException(get_class($this), $exception->getMessage(), $exception->getCode(), $exception);');
         $context->body()->add('}');
-        $context->body()->add('$afterSendEvent = new \Tebru\Retrofit\Event\AfterSendEvent($request, $response);');
-        $context->body()->add('$this->eventDispatcher->dispatch("retrofit.afterSend", $afterSendEvent);');
-        $context->body()->add('$response = $afterSendEvent->getResponse();');
+
+        if (null === $callback) {
+            $context->body()->add('$afterSendEvent = new \Tebru\Retrofit\Event\AfterSendEvent($request, $response);');
+            $context->body()->add('$this->eventDispatcher->dispatch("retrofit.afterSend", $afterSendEvent);');
+            $context->body()->add('$response = $afterSendEvent->getResponse();');
+        }
     }
 }
