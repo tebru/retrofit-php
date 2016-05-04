@@ -15,6 +15,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Tebru;
 use Tebru\Retrofit\Adapter\HttpClientAdapter;
+use Tebru\Retrofit\Event\EventDispatcherAware;
 use Tebru\Retrofit\Exception\RetrofitException;
 use Tebru\Retrofit\HttpClient\ClientProvider;
 use Tebru\Retrofit\Subscriber\LogSubscriber;
@@ -230,9 +231,15 @@ class RestAdapterBuilder
             $this->eventDispatcher->addSubscriber(new LogSubscriber($this->logger));
         }
 
+        $client = $this->clientProvider->getClient();
+
+        if ($client instanceof EventDispatcherAware) {
+            $client->setEventDispatcher($this->eventDispatcher);
+        }
+
         $adapter = new RestAdapter(
             $this->baseUrl,
-            $this->clientProvider->getClient(),
+            $client,
             $this->serializer,
             $this->eventDispatcher
         );

@@ -42,4 +42,14 @@ class BodyTest extends MockeryTestCase
         $body = new Body(['value' => '$body']);
         $this->assertTrue($body->isJsonSerializable());
     }
+
+    public function testJsonSerializable()
+    {
+        $this->disableDeprecationWarning();
+
+        $body = new Body(['value' => '$body', 'jsonSerializable' => true]);
+        $this->assertTrue($body->isJsonSerializable());
+
+        $this->enableDeprecationWarning();
+    }
 }
