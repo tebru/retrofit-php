@@ -16,7 +16,7 @@ try {
     $exception = $apiExceptionEvent->getException();
     throw new \Tebru\Retrofit\Exception\RetrofitApiException(get_class($this), $exception->getMessage(), $exception->getCode(), $exception);
 }
-if ($callback !== null) {
+if ($callback === null) {
     $afterSendEvent = new \Tebru\Retrofit\Event\AfterSendEvent($request, $response);
     $this->eventDispatcher->dispatch('retrofit.afterSend', $afterSendEvent);
     $response = $afterSendEvent->getResponse();

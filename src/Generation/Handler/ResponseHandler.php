@@ -58,7 +58,7 @@ class ResponseHandler implements Handler
         $context->body()->add('}');
 
         if (null !== $callback && $context->annotations()->isCallbackOptional()) {
-            $context->body()->add('if (%s !== null) {', $callback);
+            $context->body()->add('if (%s === null) {', $callback);
         }
 
         if (null === $callback || (null !== $callback && $context->annotations()->isCallbackOptional())) {
