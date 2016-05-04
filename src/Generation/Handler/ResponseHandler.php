@@ -57,10 +57,18 @@ class ResponseHandler implements Handler
         $context->body()->add('throw new \Tebru\Retrofit\Exception\RetrofitApiException(get_class($this), $exception->getMessage(), $exception->getCode(), $exception);');
         $context->body()->add('}');
 
-        if (null === $callback) {
+        if (null !== $callback && $context->annotations()->isCallbackOptional()) {
+            $context->body()->add('if (%s !== null) {', $callback);
+        }
+
+        if (null === $callback || (null !== $callback && $context->annotations()->isCallbackOptional())) {
             $context->body()->add('$afterSendEvent = new \Tebru\Retrofit\Event\AfterSendEvent($request, $response);');
             $context->body()->add('$this->eventDispatcher->dispatch("retrofit.afterSend", $afterSendEvent);');
             $context->body()->add('$response = $afterSendEvent->getResponse();');
+        }
+
+        if (null !== $callback && $context->annotations()->isCallbackOptional()) {
+            $context->body()->add('}');
         }
     }
 }

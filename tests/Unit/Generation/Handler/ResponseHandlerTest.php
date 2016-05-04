@@ -31,7 +31,7 @@ class ResponseHandlerTest extends AbstractHandlerTest
     {
         $annotationProvider = Mockery::mock(AnnotationProvider::class);
         $annotationProvider->shouldReceive('getCallback')->times(1)->with()->andReturn('$callback');
-        $annotationProvider->shouldReceive('isCallbackOptional')->times(1)->with()->andReturn(false);
+        $annotationProvider->shouldReceive('isCallbackOptional')->times(4)->with()->andReturn(false);
         $annotationProvider->shouldReceive('getRequestMethod')->times(1)->with()->andReturn('GET');
 
         $this->assert($annotationProvider, __FUNCTION__);
@@ -41,7 +41,7 @@ class ResponseHandlerTest extends AbstractHandlerTest
     {
         $annotationProvider = Mockery::mock(AnnotationProvider::class);
         $annotationProvider->shouldReceive('getCallback')->times(1)->with()->andReturn('$callback');
-        $annotationProvider->shouldReceive('isCallbackOptional')->times(1)->with()->andReturn(true);
+        $annotationProvider->shouldReceive('isCallbackOptional')->times(4)->with()->andReturn(true);
         $annotationProvider->shouldReceive('getRequestMethod')->times(1)->with()->andReturn('GET');
 
         $this->assert($annotationProvider, __FUNCTION__);
