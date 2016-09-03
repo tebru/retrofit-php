@@ -17,8 +17,8 @@ before_script:
 
 script:
   - mkdir -p build/logs
-  - tests/Api/app/console cache:clear --env=prod
-  - tests/Api/app/console server:start --env=prod
+  - vendor/bin/console cache:clear --env=prod
+  - vendor/bin/console server:start --env=prod
   - vendor/bin/phpunit
   - vendor/bin/behat
 

@@ -17,12 +17,8 @@
         "mockery/mockery": "^0.9.4",
         "phpunit/phpunit": "^4.0",
         "guzzlehttp/guzzle": "^5.3|^6.0",
-        "symfony/symfony": "^3.0",
-        "sensio/framework-extra-bundle": "^3.0.2",
-        "incenteev/composer-parameter-handler": "~2.0",
-        "sensio/distribution-bundle": "^5.0",
         "behat/behat": "^3.1",
-        "monolog/monolog": "^1.18"
+        "tebru/retrofit-test-api": "~0.1"
     },
     "license": "MIT",
     "authors": [
@@ -38,17 +34,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tebru\\Retrofit\\Test\\": "tests/",
-            "AppBundle\\": "tests/Api/src/AppBundle"
+            "Tebru\\Retrofit\\Test\\": "tests/"
         }
-    },
-    "scripts": {
-        "post-install-cmd": [
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap"
-        ]
-    },
-    "extra": {
-        "symfony-app-dir": "tests/Api/app"
     },
     "suggest": {
         "guzzlehttp/guzzle": "Required to make requests"
