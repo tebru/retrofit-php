@@ -20,7 +20,7 @@ use Tebru\Retrofit\Annotation\Query;
 use Tebru\Retrofit\Annotation\QueryMap;
 use Tebru\Retrofit\Annotation\ResponseType;
 use Tebru\Retrofit\Annotation\Returns;
-use Tebru\Retrofit\Annotation\Serializer\SerializationContext;
+use Tebru\Retrofit\Annotation\Serializer\SerializerContext;
 use Tebru\Retrofit\Http\AsyncAware;
 use Tebru\Retrofit\Http\Callback;
 use Tebru\Retrofit\Test\Mock\Api\MockApiUser;
@@ -149,7 +149,7 @@ interface ApiClient extends AsyncAware
     /**
      * @POST("/api/basic/user")
      * @Body("user")
-     * @SerializationContext(serializeNull=true, enableMaxDepthChecks=true)
+     * @SerializerContext({"serializeNull":true, "enableMaxDepthChecks":true})
      * @JsonBody()
      */
     public function createUserWithoutAllFields(MockApiUser $user);

@@ -1,7 +1,7 @@
 <?php
 
-$bodySerializationContext = \JMS\Serializer\SerializationContext::create();
-$bodyArray = $this->serializer->toArray($retrofitBody, $bodySerializationContext);
+$bodySerializationContext = array();
+$bodyArray = $this->serializerAdapter->toArray($retrofitBody, $bodySerializationContext);
 $bodyParts = array();
 foreach ($bodyArray as $key => $value) {
     $file = null;

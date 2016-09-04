@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "86fa0a3420a9f9770c3c1b8f28a6ede1",
-    "content-hash": "9ab2b6aeba55ec2ae0c7ff6b5147312d",
+    "hash": "b11418518a2a5495bdf7733543e53008",
+    "content-hash": "a3dbd10bde5167b7cde4fcfbab571ea0",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1559,6 +1559,45 @@
             ],
             "description": "Retrofit for PHP - A PHP REST client.",
             "time": "2016-05-04 18:35:04"
+        },
+        {
+            "name": "tebru/retrofit-serializer-jms",
+            "version": "v0.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tebru/retrofit-serializer-jms.git",
+                "reference": "4b93828859c6e766e3eedc216a0d854e682aa6a2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tebru/retrofit-serializer-jms/zipball/4b93828859c6e766e3eedc216a0d854e682aa6a2",
+                "reference": "4b93828859c6e766e3eedc216a0d854e682aa6a2",
+                "shasum": ""
+            },
+            "require": {
+                "jms/serializer": "^1.0"
+            },
+            "require-dev": {
+                "tebru/retrofit-php": "^2.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Tebru\\RetrofitSerializer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nate Brunette",
+                    "email": "n@tebru.net"
+                }
+            ],
+            "description": "JMS Serializer adapter for retrofit-php",
+            "time": "2016-09-04 00:58:01"
         },
         {
             "name": "twig/twig",

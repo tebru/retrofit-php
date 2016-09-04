@@ -6,13 +6,14 @@
 
 namespace Tebru\Retrofit\Test\Unit\Adapter\Rest;
 
-use JMS\Serializer\Serializer;
 use Mockery;
 use Psr\Log\LoggerInterface;
 use stdClass;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Tebru\Retrofit\Adapter\DeserializerAdapter;
 use Tebru\Retrofit\Adapter\HttpClientAdapter;
 use Tebru\Retrofit\Adapter\Rest\RestAdapter;
+use Tebru\Retrofit\Adapter\SerializerAdapter;
 use Tebru\Retrofit\Test\Mock\Service\MockServiceUrlRequest;
 use Tebru\Retrofit\Test\MockeryTestCase;
 
@@ -57,18 +58,26 @@ class RetrofitAdapterTest extends MockeryTestCase
     public function testWillUseInterface()
     {
         $httpClient = Mockery::mock(HttpClientAdapter::class);
-        $serializer = Mockery::mock(Serializer::class);
+        $serializerAdapter = Mockery::mock(SerializerAdapter::class);
+        $deserializerAdapter = Mockery::mock(DeserializerAdapter::class);
         $eventDispatcher = Mockery::mock(EventDispatcherInterface::class);
         $eventDispatcher->shouldReceive('addSubscriber')->times(1);
         $logger = Mockery::mock(LoggerInterface::class);
         $adapter = RestAdapter::builder()
             ->setBaseUrl('')
             ->setClientAdapter($httpClient)
-            ->setSerializer($serializer)
+            ->setSerializerAdapter($serializerAdapter)
+            ->setDeserializerAdapter($deserializerAdapter)
             ->setEventDispatcher($eventDispatcher)
             ->setLogger($logger)
             ->build();
-        $generatedClass = new \Tebru\Retrofit\Generated\Tebru\Retrofit\Test\Mock\Service\MockServiceUrlRequest('', $httpClient, $serializer, $eventDispatcher, $logger);
+        $generatedClass = new \Tebru\Retrofit\Generated\Tebru\Retrofit\Test\Mock\Service\MockServiceUrlRequest(
+            '',
+            $httpClient,
+            $eventDispatcher,
+            $serializerAdapter,
+            $deserializerAdapter
+        );
         $service = $adapter->create(MockServiceUrlRequest::class);
 
         $this->assertEquals($generatedClass, $service);

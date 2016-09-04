@@ -25,8 +25,8 @@ use Tebru\Retrofit\Annotation\Query;
 use Tebru\Retrofit\Annotation\QueryMap;
 use Tebru\Retrofit\Annotation\ResponseType;
 use Tebru\Retrofit\Annotation\Returns;
-use Tebru\Retrofit\Annotation\Serializer\DeserializationContext;
-use Tebru\Retrofit\Annotation\Serializer\SerializationContext;
+use Tebru\Retrofit\Annotation\Serializer\DeserializerContext;
+use Tebru\Retrofit\Annotation\Serializer\SerializerContext;
 use Tebru\Retrofit\Exception\RetrofitException;
 
 /**
@@ -376,20 +376,14 @@ class AnnotationProvider
      */
     public function getSerializationContext()
     {
-        if (!$this->annotations->exists(SerializationContext::NAME)) {
+        if (!$this->annotations->exists(SerializerContext::NAME)) {
             return null;
         }
 
-        /** @var SerializationContext $contextAnnotation */
-        $contextAnnotation = $this->annotations->get(SerializationContext::NAME);
+        /** @var SerializerContext $contextAnnotation */
+        $contextAnnotation = $this->annotations->get(SerializerContext::NAME);
 
-        return [
-            'groups' => $contextAnnotation->getGroups(),
-            'version' => $contextAnnotation->getVersion(),
-            'serializeNull' => $contextAnnotation->getSerializeNull(),
-            'enableMaxDepthChecks' => $contextAnnotation->getEnableMaxDepthChecks(),
-            'attributes' => $contextAnnotation->getAttributes(),
-        ];
+        return $contextAnnotation->getContext();
     }
 
     /**
@@ -399,21 +393,14 @@ class AnnotationProvider
      */
     public function getDeserializationContext()
     {
-        if (!$this->annotations->exists(DeserializationContext::NAME)) {
+        if (!$this->annotations->exists(DeserializerContext::NAME)) {
             return null;
         }
 
-        /** @var DeserializationContext $contextAnnotation */
-        $contextAnnotation = $this->annotations->get(DeserializationContext::NAME);
+        /** @var DeserializerContext $contextAnnotation */
+        $contextAnnotation = $this->annotations->get(DeserializerContext::NAME);
 
-        return [
-            'groups' => $contextAnnotation->getGroups(),
-            'version' => $contextAnnotation->getVersion(),
-            'serializeNull' => $contextAnnotation->getSerializeNull(),
-            'enableMaxDepthChecks' => $contextAnnotation->getEnableMaxDepthChecks(),
-            'attributes' => $contextAnnotation->getAttributes(),
-            'depth' => $contextAnnotation->getDepth(),
-        ];
+        return $contextAnnotation->getContext();
     }
 
     /**
@@ -494,6 +481,7 @@ class AnnotationProvider
     private function getRequestAnnotation()
     {
         try {
+            /** @var HttpRequest $requestAnnotation */
             $requestAnnotation = $this->annotations->get(HttpRequest::NAME);
         } catch (OutOfBoundsException $exception) {
             throw new LogicException('Request annotation not found (e.g. @GET, @POST)');

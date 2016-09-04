@@ -6,8 +6,6 @@
  
 namespace Tebru\Retrofit\Annotation\Serializer;
 
-use Tebru\Dynamo\Annotation\DynamoAnnotation;
-
 /**
  * SerializationContext
  *
@@ -19,28 +17,18 @@ use Tebru\Dynamo\Annotation\DynamoAnnotation;
  * @Annotation
  * @Target({"CLASS", "METHOD"})
  */
-class SerializationContext extends JmsSerializerContext implements DynamoAnnotation
+class SerializationContext extends SerializerContext
 {
-    const NAME = 'serialization_context';
-
     /**
-     * The name of the annotation or class of annotations
-     *
-     * @return string
+     * {@inheritdoc}
      */
-    public function getName()
+    public function __construct(array $params)
     {
-        return self::NAME;
-    }
+        parent::__construct(['value' => $params]);
 
-    /**
-     * Whether or not multiple annotations of this type can
-     * be added to a method
-     *
-     * @return bool
-     */
-    public function allowMultiple()
-    {
-        return false;
+        trigger_error(
+            'Retrofit Deprecation: @SerializationContext is deprecated and will be removed in v3.  Use @SerializerContext instead.',
+            E_USER_DEPRECATED
+        );
     }
 }

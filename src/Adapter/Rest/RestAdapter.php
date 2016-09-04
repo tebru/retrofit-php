@@ -6,9 +6,10 @@
 
 namespace Tebru\Retrofit\Adapter\Rest;
 
-use JMS\Serializer\Serializer;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Tebru\Retrofit\Adapter\DeserializerAdapter;
 use Tebru\Retrofit\Adapter\HttpClientAdapter;
+use Tebru\Retrofit\Adapter\SerializerAdapter;
 use Tebru\Retrofit\Exception\RetrofitException;
 use Tebru\Retrofit\HttpClient\ClientProvider;
 use Tebru\Retrofit\Retrofit;
@@ -35,13 +36,6 @@ class RestAdapter
     private $httpClient;
 
     /**
-     * JMS Serializer
-     *
-     * @var Serializer $serializer
-     */
-    private $serializer;
-
-    /**
      * Symfony event dispatcher
      *
      * @var EventDispatcherInterface
@@ -49,23 +43,40 @@ class RestAdapter
     private $eventDispatcher;
 
     /**
+     * Serializer adapter
+     *
+     * @var SerializerAdapter $serializerAdapter
+     */
+    private $serializerAdapter;
+
+    /**
+     * Deserializer adapter
+     *
+     * @var DeserializerAdapter $deserializerAdapter
+     */
+    private $deserializerAdapter;
+
+    /**
      * Constructor
      *
      * @param string $baseUrl
      * @param HttpClientAdapter $httpClient
-     * @param Serializer $serializer
      * @param EventDispatcherInterface $eventDispatcher
+     * @param SerializerAdapter $serializerAdapter
+     * @param DeserializerAdapter $deserializerAdapter
      */
     public function __construct(
         $baseUrl,
         HttpClientAdapter $httpClient,
-        Serializer $serializer,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        SerializerAdapter $serializerAdapter = null,
+        DeserializerAdapter $deserializerAdapter = null
     ) {
         $this->baseUrl = $baseUrl;
         $this->httpClient = $httpClient;
-        $this->serializer = $serializer;
         $this->eventDispatcher = $eventDispatcher;
+        $this->serializerAdapter = $serializerAdapter;
+        $this->deserializerAdapter = $deserializerAdapter;
     }
 
     /**
@@ -107,6 +118,6 @@ class RestAdapter
             throw new RetrofitException(sprintf('Could not create client. "%s" should be a class or interface.', $service));
         }
 
-        return new $class($this->baseUrl, $this->httpClient, $this->serializer, $this->eventDispatcher);
+        return new $class($this->baseUrl, $this->httpClient, $this->eventDispatcher, $this->serializerAdapter, $this->deserializerAdapter);
     }
 }

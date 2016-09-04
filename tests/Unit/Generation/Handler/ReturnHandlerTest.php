@@ -8,10 +8,8 @@ namespace Tebru\Retrofit\Test\Unit\Generation\Handler;
 
 use Mockery;
 use Mockery\MockInterface;
-use Tebru\Retrofit\Exception\RetrofitException;
 use Tebru\Retrofit\Generation\Handler\ReturnHandler;
 use Tebru\Retrofit\Generation\Provider\AnnotationProvider;
-use Tebru\Retrofit\Http\Response;
 use Tebru\Retrofit\Test\Mock\MockUser;
 
 /**
@@ -61,6 +59,17 @@ class ReturnHandlerTest extends AbstractHandlerTest
         $annotationProvider->shouldReceive('getReturnType')->times(2)->with()->andReturn('Response');
         $annotationProvider->shouldReceive('getResponseType')->times(2)->with()->andReturn(MockUser::class);
         $annotationProvider->shouldReceive('getDeserializationContext')->times(1)->with()->andReturn(null);
+
+        $this->assert($annotationProvider, __FUNCTION__);
+    }
+
+    public function testReturnSyncContext()
+    {
+        $annotationProvider = Mockery::mock(AnnotationProvider::class);
+        $annotationProvider->shouldReceive('getCallback')->times(1)->with()->andReturn(null);
+        $annotationProvider->shouldReceive('getReturnType')->times(1)->with()->andReturn(null);
+        $annotationProvider->shouldReceive('getResponseType')->times(1)->with()->andReturn(null);
+        $annotationProvider->shouldReceive('getDeserializationContext')->times(2)->with()->andReturn([]);
 
         $this->assert($annotationProvider, __FUNCTION__);
     }

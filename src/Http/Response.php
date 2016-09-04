@@ -6,10 +6,9 @@
 
 namespace Tebru\Retrofit\Http;
 
-use JMS\Serializer\DeserializationContext;
-use JMS\Serializer\SerializerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
+use Tebru\Retrofit\Adapter\DeserializerAdapter;
 
 /**
  * Class Response
@@ -36,11 +35,11 @@ class Response implements ResponseInterface
     private $returnType;
 
     /**
-     * JMS Serializer
+     * Deserializer adapter
      *
-     * @var SerializerInterface
+     * @var DeserializerAdapter
      */
-    private $serializer;
+    private $deserializerAdapter;
 
     /**
      * Serialization context
@@ -54,18 +53,18 @@ class Response implements ResponseInterface
      *
      * @param ResponseInterface $response
      * @param string $returnType
-     * @param SerializerInterface $serializer
+     * @param DeserializerAdapter $deserializerAdapter
      * @param array $context
      */
     public function __construct(
         ResponseInterface $response,
         $returnType,
-        SerializerInterface $serializer,
+        DeserializerAdapter $deserializerAdapter = null,
         array $context = []
     ) {
         $this->response = $response;
         $this->returnType = $returnType;
-        $this->serializer = $serializer;
+        $this->deserializerAdapter = $deserializerAdapter;
         $this->context = $context;
     }
 
@@ -85,50 +84,10 @@ class Response implements ResponseInterface
                 $response = json_decode($responseBody, true);
                 break;
             default:
-                $context = $this->createContext();
-                $response = $this->serializer->deserialize($responseBody, $this->returnType, 'json', $context);
+                $response = $this->deserializerAdapter->deserialize($responseBody, $this->returnType, $this->context);
         }
 
         return $response;
-    }
-
-    /**
-     * Build the deserialization context
-     */
-    private function createContext()
-    {
-        $context = new DeserializationContext();
-
-        if (!empty($this->context['groups'])) {
-            $context->setGroups($this->context['groups']);
-        }
-
-        if (!empty($this->context['version'])) {
-            $context->setVersion((int) $this->context['version']);
-        }
-
-        if (!empty($this->context['serializeNull'])) {
-            $context->setSerializeNull((bool) $this->context['serializeNull']);
-        }
-
-        if (!empty($this->context['enableMaxDepthChecks'])) {
-            $context->enableMaxDepthChecks();
-        }
-
-        if (!empty($this->context['attributes'])) {
-            foreach ($this->context['attributes'] as $key => $value) {
-                $context->setAttribute($key, $value);
-            }
-        }
-
-        if (!empty($this->context['depth'])) {
-            $contextDepth = (int) $this->context['depth'];
-            while ($context->getDepth() < $contextDepth) {
-                $context->increaseDepth();
-            }
-        }
-
-        return $context;
     }
 
     /**

@@ -22,7 +22,7 @@ use Tebru\Retrofit\Annotation\Query;
 use Tebru\Retrofit\Annotation\QueryMap;
 use Tebru\Retrofit\Annotation\ResponseType;
 use Tebru\Retrofit\Annotation\Returns;
-use Tebru\Retrofit\Annotation\Serializer\DeserializationContext;
+use Tebru\Retrofit\Annotation\Serializer\DeserializerContext;
 use Tebru\Retrofit\Generation\Listener\DynamoMethodListener;
 use Tebru\Retrofit\Test\MockeryTestCase;
 
@@ -50,7 +50,7 @@ class DynamoMethodListenerTest extends MockeryTestCase
         $annotations->shouldReceive('exists')->times(1)->with(Part::NAME)->andReturn(false);
         $annotations->shouldReceive('exists')->times(1)->with(Returns::NAME)->andReturn(false);
         $annotations->shouldReceive('exists')->times(1)->with(ResponseType::NAME)->andReturn(false);
-        $annotations->shouldReceive('exists')->times(1)->with(DeserializationContext::NAME)->andReturn(false);
+        $annotations->shouldReceive('exists')->times(1)->with(DeserializerContext::NAME)->andReturn(false);
 
         $requestAnnotation->shouldReceive('getPath')->times(1)->with()->andReturn('/get');
         $requestAnnotation->shouldReceive('getQueries')->times(1)->with()->andReturn([]);
