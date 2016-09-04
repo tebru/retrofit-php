@@ -9,7 +9,6 @@ Use this annotation on a service when you want to directly control the
 request body of a request (instead of sending in as request parameters or 
 form-style request body).
 
-
 `@Header`
 ---------
 Represents an HTTP header name/value pair to be attached to the request.
@@ -19,12 +18,15 @@ Represents an HTTP header name/value pair to be attached to the request.
 ---------
 Adds headers literally supplied in the value.
 
-    @Headers("Cache-Control: max-age=640000")
-    @Headers({
-        "X-Foo: Bar",
-        "X-Ping: Pong"
-    })
-
+```php
+/**
+ * @Headers("Cache-Control: max-age=640000")
+ * @Headers({
+ *     "X-Foo: Bar",
+ *     "X-Ping: Pong"
+ * })
+ */
+```
 
 `@JsonBody`
 -----------
@@ -33,7 +35,6 @@ Indicates that the body of the request should be serialized into JSON.
 `@Multipart`
 -----------
 Indicates that the body of the request should be sent as `multipart/form-data`
-
 
 `@Part`
 -------
@@ -45,9 +46,12 @@ may specify a different variable name using the `var=` parameter on this
 annotation. 
 You can define multiple of these annotations for multiple variable parts.
 
-    @Part("part1")
-    @Part("part2", var="foo")
-
+```php
+/**
+ * @Part("part1")
+ * @Part("part2", var="foo")
+ */
+```
 
 `@Query`
 --------
@@ -57,14 +61,21 @@ Values are converted to strings and then URL encoded.
 
 Simple Example:
 
-    @GET("/list")
-    @Query("page")
+```php
+/**
+ * @GET("/list")
+ * @Query("page")
+ */
+```
 
 If the variable name differs from the desired part name, you may specify a
 different variable name using the `var=` parameter on this annotation. 
 
-    @Query("page", var="inputPage")
-
+```php
+/**
+ * @Query("page", var="inputPage")
+ */
+```
 
 `@QueryMap`
 -----------
@@ -74,14 +85,21 @@ Values are converted to strings and then URL encoded.
 
 Simple Example:
 
-    @GET("/list")
-    @Query("page")
+```php
+/**
+ * @GET("/list")
+ * @Query("page")
+ */
+```
 
 If the variable name differs from the desired part name, you may specify a
 different variable name using the `var=` parameter on this annotation. 
 
-    @Query("page", var="inputPage")
-
+```php
+/**
+ * @Query("page", var="inputPage")
+ */
+```
 
 `@Returns`
 ----------
@@ -93,9 +111,13 @@ a string.
 
 If you need the entire response back, you can ask for a typed response.
 
-    @Returns(Response<raw>)
-    @Returns(Response<array>)
-    @Returns(Response<My\Object>)
+```php
+/**
+ * @Returns(Response<raw>)
+ * @Returns(Response<array>)
+ * @Returns(Response<My\Object>)
+ */
+```
 
 This will return a PSR-7 Response object with an added method `body()`.  Calling
 this method will return the type of body you need, raw, array, or an object.
@@ -103,7 +125,6 @@ this method will return the type of body you need, raw, array, or an object.
 `@BaseUrl`
 ----------
 Allows you to override the base url for a specific method or class.
-
 
 Request Type Annotations
 ------------------------
@@ -115,27 +136,46 @@ come out of the box.
 Each of these can be used to specify a path relative to the base URL defined
 in the rest adapter.
 
-    @POST('/books')
+```php
+/**
+ * @POST('/books')
+ */
+```
 
 `@Serializer\SerializationContext`
 ----------------------------------
 
 Defines the SerializationContext to use for the request.
 
-	@Serializer\SerializationContext(groups={"Default", "extra"}, serializeNull=true, enableMaxDepthChecks=true, version=1)
+```php
+/**
+ * @Serializer\SerializationContext(groups={"Default", "extra"}, serializeNull=true, enableMaxDepthChecks=true, version=1)
+ */
+```
 
 Any extra values will be added as attributes to the context.
 
-	@Serializer\SerializationContext(attr="value", foo="bar")
+```php
+/**
+ * @Serializer\SerializationContext(attr="value", foo="bar")
+ */
+```
 
 `@Serializer\DeserializationContext`
 ------------------------------------
 
 Defines the DeserializationContext to use for the response.
 
-	@Serializer\DeserializationContext(depth=4, groups={"Default", "extra"}, serializeNull=true, enableMaxDepthChecks=true, version=1)
-	
+```php
+/**
+ * @Serializer\DeserializationContext(depth=4, groups={"Default", "extra"}, serializeNull=true, enableMaxDepthChecks=true, version=1)
+ */
+```
+
 Any extra values will be added as attributes to the context.
 
-	@Serializer\DeserializationContext(attr="value", foo="bar")
-
+```php
+/**
+ * @Serializer\DeserializationContext(attr="value", foo="bar")
+ */
+```
