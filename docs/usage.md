@@ -301,23 +301,29 @@ to Retrofit.
 
 ### BeforeSendEvent
 
-Retrofit will dispatch a `retrofit.beforeSend` event before a request is made.  It includes:
+Retrofit will dispatch a `retrofit.beforeSend` event before a request is made.  It includes the request and allows modifying the request before sending.
 
-- The request method
-- The request url
-- Any request headers
-- A request body
+    @see \Tebru\Retrofit\Event\BeforeSendEvent
 
 ### AfterSendEvent
 
-Similarly, a `retrofit.afterSend` event will be dispatched after a request has been completed. It
-only includes the response body.
+Similarly, a `retrofit.afterSend` event will be dispatched after a request has been completed. It includes the request and response, and allows modifying the response before deserializing.
+
+    @see \Tebru\Retrofit\Event\AfterSendEvent
+
+### ReturnEvent
+
+Just prior to returning, a `retrofit.return` event will be dispatched. It includes the data to return, the request, and the response. It is possible to modify the returned data using this event.
+
+    @see \Tebru\Retrofit\Event\ReturnEvent
 
 ### ApiExceptionEvent
 
 If the http client throws an exception, it will be caught and a `retrofit.apiException` event will be
 dispatched.  Additionally, a new `RetrofitApiException` will be thrown.
 
+    @see \Tebru\Retrofit\Event\ApiExceptionEvent
+    
 Exceptions
 ----------
 
