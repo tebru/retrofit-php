@@ -79,7 +79,7 @@ different variable name using the `var=` parameter on this annotation.
 
 `@QueryMap`
 -----------
-Query parameter appended to the URL.
+Associative array of query parameters to append to the URL.
 
 Values are converted to strings and then URL encoded.
 
@@ -88,18 +88,10 @@ Simple Example:
 ```php
 /**
  * @GET("/list")
- * @Query("page")
+ * @QueryMap("parameters")
  */
 ```
 
-If the variable name differs from the desired part name, you may specify a
-different variable name using the `var=` parameter on this annotation. 
-
-```php
-/**
- * @Query("page", var="inputPage")
- */
-```
 
 `@Returns`
 ----------

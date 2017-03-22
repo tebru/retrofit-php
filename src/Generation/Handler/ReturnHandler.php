@@ -33,12 +33,12 @@ class ReturnHandler implements Handler
         if ($callback !== null) {
             if ($context->annotations()->isCallbackOptional()) {
                 $context->body()->add('if (%s !== null) {', $callback);
-                $context->body()->add('$returnEvent = new \Tebru\Retrofit\Event\ReturnEvent(null);');
+                $context->body()->add('$returnEvent = new \Tebru\Retrofit\Event\ReturnEvent(null, $request, $response);');
                 $context->body()->add('$this->eventDispatcher->dispatch("retrofit.return", $returnEvent);');
                 $context->body()->add('return $returnEvent->getReturn();');
                 $context->body()->add('}');
             } else {
-                $context->body()->add('$returnEvent = new \Tebru\Retrofit\Event\ReturnEvent(null);');
+                $context->body()->add('$returnEvent = new \Tebru\Retrofit\Event\ReturnEvent(null, $request, $response);');
                 $context->body()->add('$this->eventDispatcher->dispatch("retrofit.return", $returnEvent);');
                 $context->body()->add('return $returnEvent->getReturn();');
 
@@ -76,7 +76,7 @@ class ReturnHandler implements Handler
             $context->body()->add('$return = $retrofitResponse->body();');
         }
 
-        $context->body()->add('$returnEvent = new \Tebru\Retrofit\Event\ReturnEvent($return);');
+        $context->body()->add('$returnEvent = new \Tebru\Retrofit\Event\ReturnEvent($return, $request, $response);');
         $context->body()->add('$this->eventDispatcher->dispatch("retrofit.return", $returnEvent);');
         $context->body()->add('return $returnEvent->getReturn();');
     }

@@ -6,6 +6,8 @@
 
 namespace Tebru\Retrofit\Event;
 
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
@@ -25,13 +27,31 @@ class ReturnEvent extends Event
     private $return;
 
     /**
+     * The request sent to the client
+     *
+     * @var RequestInterface
+     */
+    private $request;
+
+    /**
+     * The response from the client
+     *
+     * @var ResponseInterface
+     */
+    private $response;
+
+    /**
      * Constructor
      *
      * @param mixed $return
+     * @param RequestInterface|null $request
+     * @param ResponseInterface|null $response
      */
-    public function __construct($return)
+    public function __construct($return, RequestInterface $request = null, ResponseInterface $response = null)
     {
         $this->return = $return;
+        $this->request = $request;
+        $this->response = $response;
     }
 
     /**
@@ -52,5 +72,25 @@ class ReturnEvent extends Event
     public function setReturn($return)
     {
         $this->return = $return;
+    }
+
+    /**
+     * Get the request
+     *
+     * @return RequestInterface|null
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
+    /**
+     * Get the response
+     *
+     * @return ResponseInterface|null
+     */
+    public function getResponse()
+    {
+        return $this->response;
     }
 }
