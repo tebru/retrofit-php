@@ -101,6 +101,17 @@ class ReturnHandlerTest extends AbstractHandlerTest
         $this->assert($annotationProvider, __FUNCTION__);
     }
 
+    public function testReturnWithContext()
+    {
+        $annotationProvider = Mockery::mock(AnnotationProvider::class);
+        $annotationProvider->shouldReceive('getCallback')->times(1)->with()->andReturn(null);
+        $annotationProvider->shouldReceive('getReturnType')->times(1)->with()->andReturn(null);
+        $annotationProvider->shouldReceive('getResponseType')->times(1)->with()->andReturn(null);
+        $annotationProvider->shouldReceive('getDeserializationContext')->times(2)->with()->andReturn([]);
+
+        $this->assert($annotationProvider, __FUNCTION__);
+    }
+
     private function assert(MockInterface $annotationProvider, $method)
     {
         $context = $this->getHandlerContext($annotationProvider);
