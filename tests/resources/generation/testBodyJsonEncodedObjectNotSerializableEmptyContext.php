@@ -1,4 +1,4 @@
 <?php
 
-$bodySerializationContext = array();
-$body = $this->serializerAdapter->serialize($retrofitBody, $bodySerializationContext);
+$bodySerializationContext = \JMS\Serializer\SerializationContext::create();
+$body = $this->serializer->serialize($retrofitBody, 'json', $bodySerializationContext);

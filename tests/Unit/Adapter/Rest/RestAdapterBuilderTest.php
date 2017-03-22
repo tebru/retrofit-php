@@ -9,7 +9,6 @@ namespace Tebru\Retrofit\Test\Unit\Adapter\Rest;
 use GuzzleHttp\Client;
 use JMS\Serializer\SerializerBuilder;
 use Mockery;
-use PHPUnit_Framework_Error_Deprecated;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Tebru\Retrofit\Adapter\Rest\RestAdapter;
@@ -18,7 +17,6 @@ use Tebru\Retrofit\HttpClient\Adapter\Guzzle\GuzzleV5ClientAdapter;
 use Tebru\Retrofit\HttpClient\Adapter\Guzzle\GuzzleV6ClientAdapter;
 use Tebru\Retrofit\Subscriber\LogSubscriber;
 use Tebru\Retrofit\Test\MockeryTestCase;
-use Tebru\RetrofitSerializer\Adapter\JmsSerializerAdapter;
 
 /**
  * Class RestAdapterBuilderTest
@@ -43,7 +41,7 @@ class RestAdapterBuilderTest extends MockeryTestCase
     }
 
     /**
-     * @expectedException PHPUnit_Framework_Error_Deprecated
+     * @expectedException \PHPUnit_Framework_Error_Deprecated
      */
     public function testSetHttpClientIsDeprecated()
     {
@@ -89,40 +87,10 @@ class RestAdapterBuilderTest extends MockeryTestCase
 
     public function testSetSerializer()
     {
-        $this->disableDeprecationWarning();
-
         $serializer = SerializerBuilder::create()->build();
         $restAdapter = $this->getRestAdapterBuilder()->setSerializer($serializer)->build();
 
-        $this->assertAttributeEquals(new JmsSerializerAdapter($serializer), 'serializerAdapter', $restAdapter);
-        $this->assertAttributeEquals(new JmsSerializerAdapter($serializer), 'deserializerAdapter', $restAdapter);
-
-        $this->enableDeprecationWarning();
-    }
-
-    /**
-     * @expectedException PHPUnit_Framework_Error_Deprecated
-     */
-    public function testSetSerializerDeprecated()
-    {
-        $serializer = SerializerBuilder::create()->build();
-        $this->getRestAdapterBuilder()->setSerializer($serializer)->build();
-    }
-
-    public function testSetSerializerAdapter()
-    {
-        $serializerAdapter = new JmsSerializerAdapter(SerializerBuilder::create()->build());
-        $restAdapter = $this->getRestAdapterBuilder()->setSerializerAdapter($serializerAdapter)->build();
-
-        $this->assertAttributeSame($serializerAdapter, 'serializerAdapter', $restAdapter);
-    }
-
-    public function testSetDeserializerAdapter()
-    {
-        $deserializerAdapter = new JmsSerializerAdapter(SerializerBuilder::create()->build());
-        $restAdapter = $this->getRestAdapterBuilder()->setDeserializerAdapter($deserializerAdapter)->build();
-
-        $this->assertAttributeEquals($deserializerAdapter, 'deserializerAdapter', $restAdapter);
+        $this->assertAttributeSame($serializer, 'serializer', $restAdapter);
     }
 
     public function testSetEventDispatcher()

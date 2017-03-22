@@ -65,7 +65,7 @@ class ReturnHandler implements Handler
         }
 
         $context->body()->add(
-            '$retrofitResponse = new \Tebru\Retrofit\Http\Response($response, "%s", $this->deserializerAdapter, %s);',
+            '$retrofitResponse = new \Tebru\Retrofit\Http\Response($response, "%s", $this->serializer, %s);',
             $returnType,
             $context->printer()->printArray($deserializationContext)
         );

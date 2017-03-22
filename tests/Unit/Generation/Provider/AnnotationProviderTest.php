@@ -6,6 +6,7 @@
 
 namespace Tebru\Retrofit\Test\Unit\Generation\Provider;
 
+use Mockery;
 use Tebru\Dynamo\Collection\AnnotationCollection;
 use Tebru\Dynamo\Model\ClassModel;
 use Tebru\Dynamo\Model\MethodModel;
@@ -23,8 +24,8 @@ use Tebru\Retrofit\Annotation\Query;
 use Tebru\Retrofit\Annotation\QueryMap;
 use Tebru\Retrofit\Annotation\ResponseType;
 use Tebru\Retrofit\Annotation\Returns;
-use Tebru\Retrofit\Annotation\Serializer\DeserializerContext;
-use Tebru\Retrofit\Annotation\Serializer\SerializerContext;
+use Tebru\Retrofit\Annotation\Serializer\DeserializationContext;
+use Tebru\Retrofit\Annotation\Serializer\SerializationContext;
 use Tebru\Retrofit\Generation\Provider\AnnotationProvider;
 use Tebru\Retrofit\Http\Callback;
 use Tebru\Retrofit\Test\Mock\Api\MockApiUser;
@@ -592,15 +593,15 @@ class AnnotationProviderTest extends MockeryTestCase
     {
         $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
         $collection = new AnnotationCollection();
-        $serializationContext = ['value' => ['groups' => ['group'], 'version' => 1, 'serializeNull' => true, 'enableMaxDepthChecks' => true, 'foo' => 'bar']];
-        $collection->addAnnotation(new SerializerContext($serializationContext));
+        $serializationContext = ['groups' => ['group'], 'version' => 1, 'serializeNull' => true, 'enableMaxDepthChecks' => true, 'foo' => 'bar'];
+        $collection->addAnnotation(new SerializationContext($serializationContext));
 
         $expected = [
             'groups' => ['group'],
             'version' => 1,
             'serializeNull' => true,
             'enableMaxDepthChecks' => true,
-            'foo' => 'bar',
+            'attributes' => ['foo' => 'bar'],
         ];
 
         $provider = new AnnotationProvider($collection, $method);
@@ -624,16 +625,16 @@ class AnnotationProviderTest extends MockeryTestCase
     {
         $method = new MethodModel(new ClassModel('Foo', 'FooClass', 'FooInterface'), 'fooMethod');
         $collection = new AnnotationCollection();
-        $deserializationContext = ['value' => ['groups' => ['group'], 'version' => 1, 'serializeNull' => true, 'enableMaxDepthChecks' => true, 'depth' => 1, 'foo' => 'bar']];
-        $collection->addAnnotation(new DeserializerContext($deserializationContext));
+        $deserializationContext = ['groups' => ['group'], 'version' => 1, 'serializeNull' => true, 'enableMaxDepthChecks' => true, 'depth' => 1, 'foo' => 'bar'];
+        $collection->addAnnotation(new DeserializationContext($deserializationContext));
 
         $expected = [
             'groups' => ['group'],
             'version' => 1,
             'serializeNull' => true,
             'enableMaxDepthChecks' => true,
+            'attributes' => ['foo' => 'bar'],
             'depth' => 1,
-            'foo' => 'bar',
         ];
 
         $provider = new AnnotationProvider($collection, $method);

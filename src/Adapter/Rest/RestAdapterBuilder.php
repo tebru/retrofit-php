@@ -14,14 +14,11 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Tebru;
-use Tebru\Retrofit\Adapter\DeserializerAdapter;
 use Tebru\Retrofit\Adapter\HttpClientAdapter;
-use Tebru\Retrofit\Adapter\SerializerAdapter;
 use Tebru\Retrofit\Event\EventDispatcherAware;
 use Tebru\Retrofit\Exception\RetrofitException;
 use Tebru\Retrofit\HttpClient\ClientProvider;
 use Tebru\Retrofit\Subscriber\LogSubscriber;
-use Tebru\RetrofitSerializer\Adapter\JmsSerializerAdapter;
 
 /**
  * Class RestAdapterBuilder
@@ -52,20 +49,6 @@ class RestAdapterBuilder
      * @var Serializer $serializer
      */
     private $serializer;
-
-    /**
-     * Serializer adapter
-     *
-     * @var SerializerAdapter
-     */
-    private $serializerAdapter;
-
-    /**
-     * Deserializer adapter
-     *
-     * @var DeserializerAdapter
-     */
-    private $deserializerAdapter;
 
     /**
      * Symfony event dispatcher
@@ -162,40 +145,7 @@ class RestAdapterBuilder
      */
     public function setSerializer(Serializer $serializer)
     {
-        trigger_error(
-            'Retrofit Deprecation: Method RestAdapterBuilder::setSerializer is deprecated and will be removed in v3. 
-            Use setSerializerAdapter and setDeserializerAdapter instead.',
-            E_USER_DEPRECATED
-        );
-
-        $this->serializerAdapter = new JmsSerializerAdapter($serializer);
-        $this->deserializerAdapter = $this->serializerAdapter;
-
-        return $this;
-    }
-
-    /**
-     * Set the serializer adapter
-     *
-     * @param SerializerAdapter $serializerAdapter
-     * @return $this
-     */
-    public function setSerializerAdapter(SerializerAdapter $serializerAdapter)
-    {
-        $this->serializerAdapter = $serializerAdapter;
-
-        return $this;
-    }
-
-    /**
-     * Set the deserializer adapter
-     *
-     * @param DeserializerAdapter $deserializerAdapter
-     * @return $this
-     */
-    public function setDeserializerAdapter(DeserializerAdapter $deserializerAdapter)
-    {
-        $this->deserializerAdapter = $deserializerAdapter;
+        $this->serializer = $serializer;
 
         return $this;
     }
@@ -261,9 +211,8 @@ class RestAdapterBuilder
             throw new RetrofitException('Could not build RestAdapter with null $baseUrl');
         }
 
-        if (null === $this->serializer && null === $this->serializerAdapter) {
-            $this->serializerAdapter = new JmsSerializerAdapter(SerializerBuilder::create()->build());
-            $this->deserializerAdapter = $this->serializerAdapter;
+        if (null === $this->serializer) {
+            $this->serializer = SerializerBuilder::create()->build();
         }
 
         if (null === $this->eventDispatcher) {
@@ -291,9 +240,8 @@ class RestAdapterBuilder
         $adapter = new RestAdapter(
             $this->baseUrl,
             $client,
-            $this->eventDispatcher,
-            $this->serializerAdapter,
-            $this->deserializerAdapter
+            $this->serializer,
+            $this->eventDispatcher
         );
 
         return $adapter;

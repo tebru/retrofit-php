@@ -41,15 +41,13 @@ class DynamoStartListener
     {
         $baseUrl = new PropertyModel($classModel, 'baseUrl');
         $client = new PropertyModel($classModel, 'client');
+        $serializer = new PropertyModel($classModel, 'serializer');
         $eventDispatcher = new PropertyModel($classModel, 'eventDispatcher');
-        $serializerAdapter = new PropertyModel($classModel, 'serializerAdapter');
-        $deserializerAdapter = new PropertyModel($classModel, 'deserializerAdapter');
 
         $classModel->addProperty($baseUrl);
         $classModel->addProperty($client);
+        $classModel->addProperty($serializer);
         $classModel->addProperty($eventDispatcher);
-        $classModel->addProperty($serializerAdapter);
-        $classModel->addProperty($deserializerAdapter);
     }
 
     /**
@@ -66,27 +64,22 @@ class DynamoStartListener
         $client = new ParameterModel($methodModel, 'client', false);
         $client->setTypeHint('\Tebru\Retrofit\Adapter\HttpClientAdapter');
 
+        $serializer = new ParameterModel($methodModel, 'serializer', false);
+        $serializer->setTypeHint('\JMS\Serializer\Serializer');
+
         $eventDispatcher = new ParameterModel($methodModel, 'eventDispatcher', false);
         $eventDispatcher->setTypeHint('\Symfony\Component\EventDispatcher\EventDispatcherInterface');
 
-        $serializerAdapter = new ParameterModel($methodModel, 'serializerAdapter', true);
-        $serializerAdapter->setTypeHint('\Tebru\Retrofit\Adapter\SerializerAdapter');
-
-        $deserializerAdapter = new ParameterModel($methodModel, 'deserializerAdapter', true);
-        $deserializerAdapter->setTypeHint('\Tebru\Retrofit\Adapter\DeserializerAdapter');
-
         $methodModel->addParameter($baseUrl);
         $methodModel->addParameter($client);
+        $methodModel->addParameter($serializer);
         $methodModel->addParameter($eventDispatcher);
-        $methodModel->addParameter($serializerAdapter);
-        $methodModel->addParameter($deserializerAdapter);
 
         $methodBody = [
             '$this->baseUrl = $baseUrl;',
             '$this->client = $client;',
+            '$this->serializer = $serializer;',
             '$this->eventDispatcher = $eventDispatcher;',
-            '$this->serializerAdapter = $serializerAdapter;',
-            '$this->deserializerAdapter = $deserializerAdapter;',
         ];
 
         $methodModel->setBody(implode($methodBody));

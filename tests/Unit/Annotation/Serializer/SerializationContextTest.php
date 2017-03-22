@@ -6,7 +6,6 @@
 
 namespace Tebru\Retrofit\Test\Unit\Annotation\Serializer;
 
-use PHPUnit_Framework_Error_Deprecated;
 use Tebru\Retrofit\Annotation\Serializer\SerializationContext;
 use Tebru\Retrofit\Test\MockeryTestCase;
 
@@ -17,18 +16,8 @@ use Tebru\Retrofit\Test\MockeryTestCase;
  */
 class SerializationContextTest extends MockeryTestCase
 {
-    /**
-     * @expectedException PHPUnit_Framework_Error_Deprecated
-     */
-    public function testDeprecated()
-    {
-        new SerializationContext([]);
-    }
-
     public function testSimple()
     {
-        $this->disableDeprecationWarning();
-
         $annotation = new SerializationContext([
             'groups' => ['test'],
             'serializeNull' => true,
@@ -37,12 +26,10 @@ class SerializationContextTest extends MockeryTestCase
             'foo' => 'bar',
         ]);
 
-        $this->assertEquals(['test'], $annotation->getContext()['groups']);
-        $this->assertEquals(true, $annotation->getContext()['serializeNull']);
-        $this->assertEquals(1, $annotation->getContext()['version']);
-        $this->assertEquals(true, $annotation->getContext()['enableMaxDepthChecks']);
-        $this->assertEquals('bar', $annotation->getContext()['foo']);
-
-        $this->enableDeprecationWarning();
+        $this->assertEquals(['test'], $annotation->getGroups());
+        $this->assertEquals(true, $annotation->getSerializeNull());
+        $this->assertEquals(true, $annotation->getEnableMaxDepthChecks());
+        $this->assertEquals(1, $annotation->getVersion());
+        $this->assertEquals(['foo' => 'bar'], $annotation->getAttributes());
     }
 }

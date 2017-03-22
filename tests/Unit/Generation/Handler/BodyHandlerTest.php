@@ -298,7 +298,7 @@ class BodyHandlerTest extends AbstractHandlerTest
         $annotationProvider->shouldReceive('isBodyObject')->times(1)->with()->andReturn(true);
         $annotationProvider->shouldReceive('getBodyParts')->times(1)->with()->andReturn(null);
         $annotationProvider->shouldReceive('isBodyJsonSerializable')->times(1)->with()->andReturn(false);
-        $annotationProvider->shouldReceive('getSerializationContext')->times(1)->with()->andReturn(null);
+        $annotationProvider->shouldReceive('getSerializationContext')->times(1)->with()->andReturn([]);
         $annotationProvider->shouldReceive('getMultipartBoundary')->times(1)->with()->andReturn('fooboundary');
 
 

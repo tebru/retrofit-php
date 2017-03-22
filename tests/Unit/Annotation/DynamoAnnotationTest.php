@@ -6,6 +6,7 @@
 
 namespace Tebru\Retrofit\Test\Unit\Annotation;
 
+use PhpParser\Node\Expr\AssignOp\Mul;
 use Tebru\Dynamo\Annotation\DynamoAnnotation;
 use Tebru\Retrofit\Annotation\BaseUrl;
 use Tebru\Retrofit\Annotation\Body;
@@ -49,30 +50,6 @@ class DynamoAnnotationTest extends MockeryTestCase
         $this->assertSame($allowMultiple, $annotation->allowMultiple());
     }
 
-    public function testDeprecatedSerializerContext()
-    {
-        $this->disableDeprecationWarning();
-
-        $annotation = new SerializationContext([]);
-
-        $this->assertSame(SerializationContext::NAME, $annotation->getName());
-        $this->assertFalse($annotation->allowMultiple());
-
-        $this->enableDeprecationWarning();
-    }
-
-    public function testDeprecatedDeserializerContext()
-    {
-        $this->disableDeprecationWarning();
-
-        $annotation = new DeserializationContext([]);
-
-        $this->assertSame(DeserializationContext::NAME, $annotation->getName());
-        $this->assertFalse($annotation->allowMultiple());
-
-        $this->enableDeprecationWarning();
-    }
-
     public function annotationDataProvider()
     {
         return [
@@ -95,6 +72,8 @@ class DynamoAnnotationTest extends MockeryTestCase
             [QueryMap::class, QueryMap::NAME, false],
             [Returns::class, Returns::NAME, false],
             [ResponseType::class, ResponseType::NAME, false],
+            [SerializationContext::class, SerializationContext::NAME, false],
+            [DeserializationContext::class, DeserializationContext::NAME, false],
         ];
     }
 }

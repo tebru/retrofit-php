@@ -12,7 +12,7 @@ use JsonSerializable;
 /**
  * Class MockUser
  *
- * @author Nate Brunette <n@tebru.net>
+ * @author Nate Brunette <nbrunett@nerdery.com>
  */
 class MockUser implements JsonSerializable
 {
@@ -40,7 +40,7 @@ class MockUser implements JsonSerializable
      * @return mixed data which can be serialized by <b>json_encode</b>,
      * which is a value of any type other than a resource.
      */
-    public function jsonSerialize()
+    function jsonSerialize()
     {
         return [
             'id' => $this->id,

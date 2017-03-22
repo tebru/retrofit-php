@@ -6,6 +6,8 @@
  
 namespace Tebru\Retrofit\Annotation\Serializer;
 
+use Tebru\Dynamo\Annotation\DynamoAnnotation;
+
 /**
  * DeserializationContext
  *
@@ -17,8 +19,17 @@ namespace Tebru\Retrofit\Annotation\Serializer;
  * @Annotation
  * @Target({"CLASS", "METHOD"})
  */
-class DeserializationContext extends DeserializerContext
+class DeserializationContext extends JmsSerializerContext implements DynamoAnnotation
 {
+    const NAME = 'deserialization_context';
+
+    /**
+     * Depth to use while deserializing
+     *
+     * @var int
+     */
+    private $depth;
+
     /**
      * Constructor
      *
@@ -26,11 +37,42 @@ class DeserializationContext extends DeserializerContext
      */
     public function __construct(array $params)
     {
-        parent::__construct(['value' => $params]);
+        if (array_key_exists('depth', $params)) {
+            $this->depth = $params['depth'];
+            unset($params['depth']);
+        }
 
-        trigger_error(
-            'Retrofit Deprecation: @DeserializationContext is deprecated and will be removed in v3.  Use @DeserializerContext instead.',
-            E_USER_DEPRECATED
-        );
+        parent::__construct($params);
+    }
+
+    /**
+     * Get Depth
+     *
+     * @return int
+     */
+    public function getDepth()
+    {
+        return $this->depth;
+    }
+
+    /**
+     * The name of the annotation or class of annotations
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return self::NAME;
+    }
+
+    /**
+     * Whether or not multiple annotations of this type can
+     * be added to a method
+     *
+     * @return bool
+     */
+    public function allowMultiple()
+    {
+        return false;
     }
 }

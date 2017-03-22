@@ -9,6 +9,7 @@ namespace Tebru\Retrofit\Generation\Handler;
 use LogicException;
 use Tebru\Retrofit\Generation\Handler;
 use Tebru\Retrofit\Generation\HandlerContext;
+use Tebru\Retrofit\Generation\Manipulator\QueryManipulator;
 
 /**
  * Class BodyHandler
@@ -21,7 +22,7 @@ class BodyHandler implements Handler
      * Create body
      *
      * @param HandlerContext $context
-     * @return void
+     * @return null
      * @throws LogicException
      */
     public function __invoke(HandlerContext $context)
@@ -48,7 +49,7 @@ class BodyHandler implements Handler
      * Create the body
      *
      * @param HandlerContext $context
-     * @return void
+     * @return null
      * @throws LogicException
      */
     private function doCreateBody(HandlerContext $context)
@@ -98,7 +99,7 @@ class BodyHandler implements Handler
      * Create json body logic
      *
      * @param HandlerContext $context
-     * @return void
+     * @return null
      * @throws LogicException
      */
     private function createBodyJson(HandlerContext $context)
@@ -127,14 +128,14 @@ class BodyHandler implements Handler
         }
 
         $this->createContext($context, '$bodySerializationContext');
-        $context->body()->add('$body = $this->serializerAdapter->serialize(%s, $bodySerializationContext);', $body);
+        $context->body()->add('$body = $this->serializer->serialize(%s, "json", $bodySerializationContext);', $body);
     }
 
     /**
      * Create body as array first
      *
      * @param HandlerContext $context
-     * @return void
+     * @return null
      * @throws LogicException
      */
     private function createBodyArray(HandlerContext $context)
@@ -164,7 +165,7 @@ class BodyHandler implements Handler
 
         // otherwise, convert to array
         $this->createContext($context, '$bodySerializationContext');
-        $context->body()->add('$bodyArray = $this->serializerAdapter->toArray(%s, $bodySerializationContext);', $body);
+        $context->body()->add('$bodyArray = $this->serializer->toArray(%s, $bodySerializationContext);', $body);
     }
 
     /**
@@ -172,16 +173,39 @@ class BodyHandler implements Handler
      *
      * @param HandlerContext $context
      * @param string $contextVar
-     * @return void
+     * @return null
      */
     private function createContext(HandlerContext $context, $contextVar)
     {
         $serializationContext = $context->annotations()->getSerializationContext();
 
-        if (null === $serializationContext) {
-            $serializationContext = [];
+        $context->body()->add('%s = \JMS\Serializer\SerializationContext::create();', $contextVar);
+
+        if (0 === count($serializationContext)) {
+            return null;
         }
 
-        $context->body()->add('%s = %s;', $contextVar, $context->printer()->printArray($serializationContext));
+        if (!empty($serializationContext['groups'])) {
+            $context->body()->add('%s->setGroups(%s);', $contextVar, $context->printer()->printArray($serializationContext['groups']));
+        }
+
+        if (!empty($serializationContext['version'])) {
+            $context->body()->add('%s->setVersion(%d);', $contextVar, (int) $serializationContext['version']);
+        }
+
+        if (!empty($serializationContext['serializeNull'])) {
+            $serializeNull = QueryManipulator::boolToString([(bool) $serializationContext['serializeNull']])[0];
+            $context->body()->add('%s->setSerializeNull(%s);', $contextVar, $serializeNull);
+        }
+
+        if (!empty($serializationContext['enableMaxDepthChecks'])) {
+            $context->body()->add('%s->enableMaxDepthChecks();', $contextVar);
+        }
+
+        if (!empty($serializationContext['attributes'])) {
+            foreach ($serializationContext['attributes'] as $key => $value) {
+                $context->body()->add('%s->setAttribute("%s", "%s");', $contextVar, $key, $value);
+            }
+        }
     }
 }
