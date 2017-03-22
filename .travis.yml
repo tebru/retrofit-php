@@ -13,6 +13,7 @@ matrix:
           env: dependencies=lowest
 
 before_script:
+  - rm composer.lock
   - composer install --no-interaction -o
   - if [ "$dependencies" = "lowest" ]; then composer update -o --prefer-lowest; fi;
 
