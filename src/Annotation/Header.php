@@ -4,40 +4,45 @@
  * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
+declare(strict_types=1);
+
 namespace Tebru\Retrofit\Annotation;
 
-use Tebru\Dynamo\Annotation\DynamoAnnotation;
+use Tebru\Retrofit\StringConverter;
 
 /**
- * Represents an HTTP header name/value pair to be attached to the request.
+ * Adds a header to request
+ *
+ * The default value represents the header name. Passing an array will add a new value for each
+ * header name.
  *
  * @author Nate Brunette <n@tebru.net>
  *
  * @Annotation
  * @Target({"CLASS", "METHOD"})
  */
-class Header extends VariableMapper implements DynamoAnnotation
+class Header extends ParameterAnnotation
 {
-    const NAME = 'header';
-
-    /**
-     * The name of the annotation or class of annotations
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return self::NAME;
-    }
-
     /**
      * Whether or not multiple annotations of this type can
      * be added to a method
      *
      * @return bool
      */
-    public function allowMultiple()
+    public function allowMultiple(): bool
     {
         return true;
+    }
+
+    /**
+     * Return the converter interface class
+     *
+     * Can be one of RequestBodyConverter, ResponseBodyConverter, or StringConverter
+     *
+     * @return string
+     */
+    public function converterType(): ?string
+    {
+        return StringConverter::class;
     }
 }

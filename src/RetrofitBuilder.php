@@ -4,16 +4,29 @@
  * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
+declare(strict_types=1);
+
 namespace Tebru\Retrofit;
 
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Tebru\Dynamo\Event\MethodEvent;
-use Tebru\Dynamo\Event\StartEvent;
-use Tebru\Dynamo\Generator;
+use Doctrine\Common\Annotations\AnnotationReader;
+use LogicException;
+use PhpParser\BuilderFactory;
+use PhpParser\PrettyPrinter\Standard;
+use Symfony\Component\Cache\Simple\ArrayCache;
+use Symfony\Component\Cache\Simple\ChainCache;
+use Symfony\Component\Cache\Simple\FilesystemCache;
+use Tebru\AnnotationReader\AnnotationReaderAdapter;
+use Tebru\Retrofit\Annotation as Annot;
 use Tebru\Retrofit\Finder\ServiceResolver;
-use Tebru\Retrofit\Generation\Listener\DynamoMethodListener;
-use Tebru\Retrofit\Generation\Listener\DynamoStartListener;
+use Tebru\Retrofit\Internal\AnnotationHandler as AnnotHandler;
+use Tebru\Retrofit\Internal\AnnotationProcessor;
+use Tebru\Retrofit\Internal\CallAdapter\CallAdapterProvider;
+use Tebru\Retrofit\Internal\Converter\ConverterProvider;
+use Tebru\Retrofit\Internal\CallAdapter\DefaultCallAdapterFactory;
+use Tebru\Retrofit\Internal\DefaultProxyFactory;
+use Tebru\Retrofit\Internal\Filesystem;
+use Tebru\Retrofit\Internal\ServiceMethod\ServiceMethodFactory;
+use Tebru\Retrofit\Internal\Converter\DefaultConverterFactory;
 
 /**
  * Class RetrofitBuilder
@@ -23,32 +36,60 @@ use Tebru\Retrofit\Generation\Listener\DynamoStartListener;
 class RetrofitBuilder
 {
     /**
-     * Directory to store generated clients
+     * Directory to store generated proxy clients
      *
      * @var string
      */
     private $cacheDir;
-    
+
     /**
-     * Symfony event dispatcher
+     * A Retrofit http client used to make requests
      *
-     * @var EventDispatcherInterface
+     * @var HttpClient
      */
-    private $eventDispatcher;
-    
+    private $httpClient;
+
     /**
-     * Find services
+     * The service's base url
      *
-     * @var ServiceResolver
+     * @var string
      */
-    private $serviceResolver;
-    
+    private $baseUrl;
+
     /**
-     * Generate classes
+     * An array of factories used to create [@see CallAdapter]s
      *
-     * @var Generator
+     * @var CallAdapterFactory[]
      */
-    private $generator;
+    private $callAdapterFactories = [];
+
+    /**
+     * An array of factories used to convert types
+     *
+     * @var ConverterFactory[]
+     */
+    private $converterFactories = [];
+
+    /**
+     * An array of factories used to create [@see Proxy] objects
+     *
+     * @var ProxyFactory[]
+     */
+    private $proxyFactories = [];
+
+    /**
+     * An array of handlers used to modify the request based on an annotation
+     *
+     * @var AnnotationHandler[]
+     */
+    private $annotationHandlers = [];
+
+    /**
+     * If we should cache the proxies
+     *
+     * @var bool
+     */
+    private $shouldCache = false;
 
     /**
      * Set the cache directory
@@ -56,7 +97,7 @@ class RetrofitBuilder
      * @param string $cacheDir
      * @return $this
      */
-    public function setCacheDir($cacheDir)
+    public function setCacheDir(string $cacheDir): RetrofitBuilder
     {
         $this->cacheDir = $cacheDir;
 
@@ -64,40 +105,93 @@ class RetrofitBuilder
     }
 
     /**
-     * Set the event dispatcher
+     * Set the Retrofit http client
      *
-     * @param EventDispatcherInterface $eventDispatcher
+     * @param HttpClient $client
      * @return $this
      */
-    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
+    public function setHttpClient(HttpClient $client): RetrofitBuilder
     {
-        $this->eventDispatcher = $eventDispatcher;
+        $this->httpClient = $client;
 
         return $this;
     }
 
     /**
-     * Set the service resolver
+     * Set the base url
      *
-     * @param ServiceResolver $serviceResolver
-     * @return $this
+     * @param string $baseUrl
+     * @return RetrofitBuilder
      */
-    public function setServiceResolver(ServiceResolver $serviceResolver)
+    public function setBaseUrl(string $baseUrl): RetrofitBuilder
     {
-        $this->serviceResolver = $serviceResolver;
+        $this->baseUrl = $baseUrl;
 
         return $this;
     }
 
     /**
-     * Set the generator
+     * Add a [@see CallAdapterFactory]
      *
-     * @param Generator $generator
-     * @return $this
+     * @param CallAdapterFactory $callAdapterFactory
+     * @return RetrofitBuilder
      */
-    public function setGenerator(Generator $generator)
+    public function addCallAdapterFactory(CallAdapterFactory $callAdapterFactory): RetrofitBuilder
     {
-        $this->generator = $generator;
+        $this->callAdapterFactories[] = $callAdapterFactory;
+
+        return $this;
+    }
+
+    /**
+     * Add a [@see ConverterFactory]
+     *
+     * @param ConverterFactory $converterFactory
+     * @return RetrofitBuilder
+     */
+    public function addConverterFactory(ConverterFactory $converterFactory): RetrofitBuilder
+    {
+        $this->converterFactories[] = $converterFactory;
+
+        return $this;
+    }
+
+    /**
+     * Add a [@see ProxyFactory]
+     *
+     * @param ProxyFactory $proxyFactory
+     * @return RetrofitBuilder
+     */
+    public function addProxyFactory(ProxyFactory $proxyFactory): RetrofitBuilder
+    {
+        $this->proxyFactories[] = $proxyFactory;
+
+        return $this;
+    }
+
+    /**
+     * Add an [@see AnnotationHandler]
+     *
+     * @param string $annotationName
+     * @param AnnotationHandler $annotationHandler
+     * @return RetrofitBuilder
+     */
+    public function addAnnotationHandler(string $annotationName, AnnotationHandler $annotationHandler): RetrofitBuilder
+    {
+        $this->annotationHandlers[$annotationName] = $annotationHandler;
+
+        return $this;
+    }
+
+    /**
+     * Enable caching proxies
+     *
+     * @param bool $enable
+     * @return RetrofitBuilder
+     */
+    public function enableCache(bool $enable = true): RetrofitBuilder
+    {
+        $this->shouldCache = $enable;
 
         return $this;
     }
@@ -106,32 +200,96 @@ class RetrofitBuilder
      * Build a retrofit instance
      *
      * @return Retrofit
+     * @throws \Doctrine\Common\Annotations\AnnotationException
+     * @throws \LogicException
      */
-    public function build()
+    public function build(): Retrofit
     {
-        if (null === $this->eventDispatcher) {
-            $this->eventDispatcher = new EventDispatcher();
+        $defaultProxyFactory = $this->createDefaultProxyFactory();
+        foreach ($this->proxyFactories as $proxyFactory) {
+            if ($proxyFactory instanceof DefaultProxyFactoryAware) {
+                $proxyFactory->setDefaultProxyFactory($defaultProxyFactory);
+            }
+        }
+        $this->proxyFactories[] = $defaultProxyFactory;
+
+        return new Retrofit(new ServiceResolver(), $this->proxyFactories);
+    }
+
+    /**
+     * Creates the default proxy factory and all necessary dependencies
+     *
+     * @return ProxyFactory
+     * @throws \Doctrine\Common\Annotations\AnnotationException
+     * @throws \LogicException
+     */
+    private function createDefaultProxyFactory(): ProxyFactory
+    {
+        if ($this->baseUrl === null) {
+            throw new LogicException('Retrofit: Base URL must be provided');
         }
 
-        $this->eventDispatcher->addListener(StartEvent::NAME, new DynamoStartListener());
-        $this->eventDispatcher->addListener(MethodEvent::NAME, new DynamoMethodListener());
-
-        if (null === $this->cacheDir) {
-            $this->cacheDir = sys_get_temp_dir() . '/retrofit';
+        if ($this->httpClient === null) {
+            throw new LogicException('Retrofit: Must set http client to make requests');
         }
 
-        if (null === $this->serviceResolver) {
-            $this->serviceResolver = new ServiceResolver();
+        if ($this->shouldCache && $this->cacheDir === null) {
+            throw new LogicException('Retrofit: If caching is enabled, must specify cache directory');
         }
 
-        if (null === $this->generator) {
-            $this->generator = Generator::builder()
-                ->setNamespacePrefix(Retrofit::NAMESPACE_PREFIX)
-                ->setCacheDir($this->cacheDir . '/retrofit')
-                ->setEventDispatcher($this->eventDispatcher)
-                ->build();
-        }
+        $this->cacheDir .= '/retrofit';
 
-        return new Retrofit($this->serviceResolver, $this->generator);
+        // add defaults to any user registered
+        $this->callAdapterFactories[] = new DefaultCallAdapterFactory();
+        $this->converterFactories[] = new DefaultConverterFactory();
+
+        $cache = $this->shouldCache
+            ? new ChainCache([new ArrayCache(), new FilesystemCache()])
+            : new ArrayCache();
+
+        $httpRequestHandler = new AnnotHandler\HttpRequestAnnotHandler();
+        $annotationHandlers = array_merge(
+            [
+                Annot\Body::class => new AnnotHandler\BodyAnnotHandler(),
+                Annot\DELETE::class => $httpRequestHandler,
+                Annot\Field::class => new AnnotHandler\FieldAnnotHandler(),
+                Annot\FieldMap::class => new AnnotHandler\FieldMapAnnotHandler(),
+                Annot\GET::class => $httpRequestHandler,
+                Annot\HEAD::class => $httpRequestHandler,
+                Annot\Header::class => new AnnotHandler\HeaderAnnotHandler(),
+                Annot\HeaderMap::class => new AnnotHandler\HeaderMapAnnotHandler(),
+                Annot\Headers::class => new AnnotHandler\HeadersAnnotHandler(),
+                Annot\OPTIONS::class => $httpRequestHandler,
+                Annot\Part::class => new AnnotHandler\PartAnnotHandler(),
+                Annot\PartMap::class => new AnnotHandler\PartMapAnnotHandler(),
+                Annot\PATCH::class => $httpRequestHandler,
+                Annot\Path::class => new AnnotHandler\PathAnnotHandler(),
+                Annot\POST::class => $httpRequestHandler,
+                Annot\PUT::class => $httpRequestHandler,
+                Annot\Query::class => new AnnotHandler\QueryAnnotHandler(),
+                Annot\QueryMap::class => new AnnotHandler\QueryMapAnnotHandler(),
+                Annot\QueryName::class => new AnnotHandler\QueryNameAnnotHandler(),
+                Annot\REQUEST::class => $httpRequestHandler,
+                Annot\Url::class => new AnnotHandler\UrlAnnotHandler(),
+            ],
+            $this->annotationHandlers
+        );
+        $serviceMethodFactory = new ServiceMethodFactory(
+            new AnnotationProcessor($annotationHandlers),
+            new CallAdapterProvider($this->callAdapterFactories),
+            new ConverterProvider($this->converterFactories),
+            new AnnotationReaderAdapter(new AnnotationReader(), $cache),
+            $this->baseUrl
+        );
+
+        return new DefaultProxyFactory(
+            new BuilderFactory(),
+            new Standard(),
+            $serviceMethodFactory,
+            $this->httpClient,
+            new Filesystem(),
+            $this->shouldCache,
+            $this->cacheDir
+        );
     }
 }

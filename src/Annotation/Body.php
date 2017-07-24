@@ -4,89 +4,34 @@
  * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
+declare(strict_types=1);
+
 namespace Tebru\Retrofit\Annotation;
 
-use Tebru\Dynamo\Annotation\DynamoAnnotation;
+use Tebru\Retrofit\RequestBodyConverter;
 
 /**
  * Define the body of the HTTP request.
- * 
- * Use this annotation on a service when you want to directly control the 
- * request body of a request (instead of sending in as request parameters or 
- * form-style request body).
+ *
+ * This annotation may only be used on requests that are sending json. The parameter
+ * this annotation maps to must be able to be converted to json.
  *
  * @author Nate Brunette <n@tebru.net>
  *
  * @Annotation
  * @Target({"CLASS", "METHOD"})
  */
-class Body extends VariableMapper implements DynamoAnnotation
+class Body extends ParameterAnnotation
 {
-    const NAME = 'body';
-
     /**
-     * If the body implements \JsonSerializable
+     * Return the converter interface class
      *
-     * @var boolean
-     */
-    private $jsonSerializable = false;
-
-    /**
-     * Constructor
-     *
-     * @param array $params
-     * @throws \Exception
-     */
-    public function __construct(array $params)
-    {
-        parent::__construct($params);
-
-        if (!array_key_exists('jsonSerializable', $params)) {
-            return;
-        }
-
-        $this->jsonSerializable = $params['jsonSerializable'];
-
-        trigger_error(
-            'Retrofit Deprecation: The jsonSerializable option is getting removed in the next major version
-            of retrofit.  Implementing \JsonSerializable will be sufficient.',
-            E_USER_DEPRECATED
-        );
-    }
-
-    /**
-     * The name of the annotation or class of annotations
+     * Can be one of RequestBodyConverter, ResponseBodyConverter, or StringConverter
      *
      * @return string
      */
-    public function getName()
+    public function converterType(): ?string
     {
-        return self::NAME;
-    }
-
-    /**
-     * @deprecated This method is deprecated.  Retrofit now looks checks for the interface directly.
-     * @return boolean
-     */
-    public function isJsonSerializable()
-    {
-        trigger_error(
-            'Retrofit Deprecation: The jsonSerializable option is getting removed in the next major version
-            of retrofit.  Implementing \JsonSerializable will be sufficient.',
-            E_USER_DEPRECATED
-        );
-
-        return $this->jsonSerializable;
-    }
-
-    /**
-     * Whether or not multiple annotations of this type can
-     * be added to a method
-     *
-     * @return bool
-     */
-    public function allowMultiple()
-    {
-        return false;
+        return RequestBodyConverter::class;
     }
 }

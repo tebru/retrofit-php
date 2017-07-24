@@ -4,7 +4,11 @@
  * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
+declare(strict_types=1);
+
 namespace Tebru\Retrofit\Annotation;
+
+use Tebru\AnnotationReader\AbstractAnnotation;
 
 /**
  * Defines an HTTP GET request type to a REST path relative to base URL.
@@ -14,13 +18,25 @@ namespace Tebru\Retrofit\Annotation;
  * @Annotation
  * @Target({"CLASS", "METHOD"})
  */
-class GET extends HttpRequest
+class GET extends AbstractAnnotation implements HttpRequest
 {
     /**
+     * Returns the type of the annotation (get, post, put, etc)
+     *
      * @return string
      */
-    public function getType()
+    public function getType(): string
     {
         return 'get';
+    }
+
+    /**
+     * Returns true if the request type contains a body
+     *
+     * @return bool
+     */
+    public function hasBody(): bool
+    {
+        return false;
     }
 }

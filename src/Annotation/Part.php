@@ -4,39 +4,53 @@
  * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
+declare(strict_types=1);
+
 namespace Tebru\Retrofit\Annotation;
 
-use Tebru\Dynamo\Annotation\DynamoAnnotation;
+use Tebru\Retrofit\Http\MultipartBody;
+use Tebru\Retrofit\RequestBodyConverter;
 
 /**
- * Denotes a single part of a multi-part request.
- * 
- * This annotation defines a method parameter that will be added as a part of 
- * the request. If the variable name differs from the desired part name, you 
- * may specify a different variable name using the `var=` parameter on this
- * annotation. 
- * You can define multiple of these annotations for multiple variable parts.
+ * Denotes a single part of a multipart request.
  *
- *     @Part("part1")
- *     @Part("part2", var="foo")
+ * The default value represents the part name. Passing a [@see MultipartBody] will use the values from
+ * that object, otherwise the value will be converted to a stream and added to the request.
+ *
+ * Use the 'encoding' key to override the default 'binary' encoding.
  *
  * @author Nate Brunette <n@tebru.net>
  *
  * @Annotation
  * @Target({"CLASS", "METHOD"})
  */
-class Part extends VariableMapper implements DynamoAnnotation
+class Part extends ParameterAnnotation
 {
-    const NAME = 'part';
+    /**
+     * How the multipart request is encoded
+     *
+     * @var string
+     */
+    private $encoding;
 
     /**
-     * The name of the annotation or class of annotations
+     * Initialize annotation data
+     */
+    protected function init(): void
+    {
+        parent::init();
+
+        $this->encoding = $this->data['encoding'] ?? 'binary';
+    }
+
+    /**
+     * Get the encoding type
      *
      * @return string
      */
-    public function getName()
+    public function getEncoding(): string
     {
-        return self::NAME;
+        return $this->encoding;
     }
 
     /**
@@ -45,8 +59,20 @@ class Part extends VariableMapper implements DynamoAnnotation
      *
      * @return bool
      */
-    public function allowMultiple()
+    public function allowMultiple(): bool
     {
         return true;
+    }
+
+    /**
+     * Return the converter interface class
+     *
+     * Can be one of RequestBodyConverter, ResponseBodyConverter, or StringConverter
+     *
+     * @return string
+     */
+    public function converterType(): ?string
+    {
+        return RequestBodyConverter::class;
     }
 }

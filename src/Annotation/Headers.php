@@ -4,14 +4,16 @@
  * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
+declare(strict_types=1);
+
 namespace Tebru\Retrofit\Annotation;
 
-use OutOfRangeException;
+use RuntimeException;
 use Tebru;
-use Tebru\Dynamo\Annotation\DynamoAnnotation;
+use Tebru\AnnotationReader\AbstractAnnotation;
 
 /**
- * Adds headers literally supplied in the value.
+ * Adds headers statically supplied in the value.
  * 
  *     @Headers("Cache-Control: max-age=640000")
  *     @Headers({
@@ -24,69 +26,27 @@ use Tebru\Dynamo\Annotation\DynamoAnnotation;
  * @Annotation
  * @Target({"CLASS", "METHOD"})
  */
-class Headers implements DynamoAnnotation
+class Headers extends AbstractAnnotation
 {
-    const NAME = 'headers';
-
     /**
-     * @var array $headers
-     */
-    private $headers = [];
-
-    /**
-     * Constructor
+     * Initialize annotation data
      *
-     * @param array $params
-     * @throws OutOfRangeException
+     * @throws \RuntimeException
      */
-    public function __construct(array $params)
+    protected function init(): void
     {
-        Tebru\assertArrayKeyExists('value', $params, 'An argument was not passed to a "%s" annotation.', get_class($this));
-
-        // convert to array
-        $params['value'] = (array) $params['value'];
-
         // loop through each string and break on ':'
-        foreach ($params['value'] as $header) {
-            $pos = strpos($header, ':');
+        foreach ((array)$this->getValue() as $header) {
+            $position = strpos($header, ':');
 
-            Tebru\assertThat(false !== $pos, 'Header in an incorrect format.  Expected "Name: value"');
+            if ($position === false) {
+                throw new RuntimeException('Retrofit: Header in an incorrect format.  Expected "Name: value"');
+            }
 
-            $name = trim(substr($header, 0, $pos));
-            $value = trim(substr($header, $pos + 1));
+            $name = trim(substr($header, 0, $position));
+            $value = trim(substr($header, $position + 1));
 
-            $this->headers[$name] = $value;
+            $this->value[$name] = (string)$value;
         }
-    }
-
-    /**
-     * Get the headers
-     *
-     * @return array
-     */
-    public function getHeaders()
-    {
-        return $this->headers;
-    }
-
-    /**
-     * The name of the annotation or class of annotations
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return self::NAME;
-    }
-
-    /**
-     * Whether or not multiple annotations of this type can
-     * be added to a method
-     *
-     * @return bool
-     */
-    public function allowMultiple()
-    {
-        return false;
     }
 }

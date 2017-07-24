@@ -4,6 +4,8 @@
  * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
+declare(strict_types=1);
+
 namespace Tebru\Retrofit\Finder;
 
 use RecursiveDirectoryIterator;
@@ -27,9 +29,9 @@ class ServiceResolver
      * Find all services given a source directory
      *
      * @param string $srcDir
-     * @return array
+     * @return string[]
      */
-    public function findServices($srcDir)
+    public function findServices(string $srcDir): array
     {
         $directory = new RecursiveDirectoryIterator($srcDir);
         $iterator = new RecursiveIteratorIterator($directory);
@@ -56,7 +58,7 @@ class ServiceResolver
             $className = '';
 
             if ($namespaceMatchesFound) {
-                $className .= '\\' . $namespaceMatches[1];
+                $className .= $namespaceMatches[1];
             }
 
             $className .= '\\' . $interfaceMatches[1];

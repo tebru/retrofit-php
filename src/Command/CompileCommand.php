@@ -4,6 +4,8 @@
  * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
+declare(strict_types=1);
+
 namespace Tebru\Retrofit\Command;
 
 use Symfony\Component\Console\Command\Command;
@@ -49,7 +51,7 @@ class CompileCommand extends Command
         $retrofit = Retrofit::builder()
             ->setCacheDir($cacheDir)
             ->build();
-        $count = $retrofit->cacheAll($srcDir);
+        $count = $retrofit->createAll($srcDir);
 
         $output->writeln(sprintf('<info>Compiled %s %s successfully</info>', $count, ($count === 1) ? 'class' : 'classes'));
     }

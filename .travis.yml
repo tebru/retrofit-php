@@ -2,14 +2,11 @@ sudo: false
 
 language: php
 php:
-  - 5.5
-  - 5.6
-  - 7.0
   - 7.1
 
 matrix:
     include:
-        - php: 5.5
+        - php: 7.1
           env: dependencies=lowest
 
 before_script:
@@ -19,10 +16,7 @@ before_script:
 
 script:
   - mkdir -p build/logs
-  - vendor/bin/console cache:clear --env=prod
-  - vendor/bin/console server:start --env=prod
   - vendor/bin/phpunit
-  - vendor/bin/behat
 
 after_script:
   - php bin/coveralls.phar -v
