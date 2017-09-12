@@ -1,358 +1,271 @@
 Usage
 =====
 
-Annotations determine how the REST client will function.  Some annotations are allowed to be placed on both
-the class level and method level.  Additionally, annotations will be parsed on parent interfaces.
+To start, it would be a good idea to get an understanding of what
+Retrofit is doing under the hood.
 
-Inheritance is ordered this way:
-
-1. Method
-2. Method's class
-3. Interfaces' parent method of the same name
-4. Interfaces' class
-
-If an annotation is found on a lower priority level, it will be skipped if it already exists, even if there can be
-annotations of that type.  We only inherit annotations that do not currently exist.
-
-Building a RestAdapter
-----------------------
-
-The easiest way to create a RestAdapter is to use the builder.  It can be
-as simple as
+Let's assume we're using the following service definition
 
 ```php
-RestAdapter::builder()
-    ->setBaseUrl('http://api.example.com')
-    ->build();
+interface GitHubService
+{
+    /**
+     * @GET("/users/{user}/list")
+     * @Path("user")
+     * @Query("limit")
+     */
+    public function listRepos(string $user, int $limit): Call;
+}
 ```
-        
-You can use a custom http client by passing in the appropriate adapter
+
+First, you need an instance of `Retrofit`. Here is the easiest way to
+create one.
 
 ```php
-RestAdapter::builder()
+$retrofit = Retrofit::builder()
     ->setBaseUrl('http://api.example.com')
-    ->setClientAdapter($httpClientAdapter)
+    ->setHttpClient(new Guzzle6HttpClient(new Client()))
     ->build();
 ```
 
-If you need a custom JMS serializer, you can pass that in
+Creating a `GitHubService` implementation is easy
 
 ```php
-RestAdapter::builder()
-    ->setBaseUrl('http://api.example.com')
-    ->setSerializer($serializer)
-    ->build();
+$githubService = $retrofit->create(GitHubService::class);
 ```
 
-You can add an event subscriber
+This is going to generate a `Proxy` object that implements the
+`GitHubService` interface. You can use the proxy like you normally would
+use an instance of `GitHubService`.
 
 ```php
-RestAdapter::builder()
-    ->setBaseUrl('http://api.example.com')
-    ->addSubscriber($eventSubscriber)
-    ->build();
+$call = $githubService->listRepos('octocat', 10);
 ```
 
-A log subscriber will always be added, which will log after a request is
-made and if an api exception occurs.  It will only log if a logger is passed
-in.
+This will parse the `GitHubService` interface, and store the following
+information about the `listRepos` method:
+
+1. It should make a `GET` request to `/users/{user}/list`
+2. `{user}` is provided by the `$user` parameter, which is a string
+3. `limit` is a query parameter and provided by `$limit`, which is an integer
+3. We're returning a `Call` object
+4. We provided two arguments and they're `octocat` and `10`
+
+This information is available in the `Call` object, so when you're ready
+to make the request, it has enough information to construct the request.
+
+Doing so can be done synchronously or asynchronously. Here's an example
+of a synchronous request
 
 ```php
-RestAdapter::builder()
-    ->setBaseUrl('http://api.example.com')
-    ->setLogger($logger)
-    ->build();
+$response = $call->execute();
 ```
 
-If you don't like the way the default logging is formatted, you can use your own
+And asynchronously
 
 ```php
-RestAdapter::builder()
-    ->setBaseUrl('http://api.example.com')
-    ->addSubscriber($logSubscriber)
-    ->setLogger($logger)
-    ->ignoreLogSubscriber()
-    ->build();
+$call->enqueue(
+    function(Response $response) {
+        // handle any response (200, 404, 500)
+    },
+    function(Throwable $throwable) {
+        // handle an exception (network unreachable)
+    }
+);
+$call->wait();
 ```
 
-Request Method
---------------
+Both of the callbacks are optional. If you just wanted to make the
+request and didn't care about the response, you could do this instead
 
-Each method must have a request method defined.  `GET`, `POST`, `PUT`, `DELETE`,
-`HEAD`, `PATCH`, and `OPTIONS` come out of the box.
+```php
+$call->enqueue();
+$call->wait();
+```
 
-The value, if provided, represents the path that will be appended to the base url.
+Calling `->wait()` is necessary to trigger sending the requests. Using
+the guzzle client, the requests are sent in batches of 5 using a Pool.
+This allows callbacks to trigger as soon as one response is received.
 
-Override Base Url
------------------
+`Response` here is a Retrofit Response (`Tebru\Retrofit\Response`). It
+provides an easy way to check if the request was successful (if the
+status code is between 200 and 300) and methods for getting the success
+or error response bodies.
 
-Occasionally an API will specify the exact url to make a request.  This can be handled
-using the `@BaseUrl` annotation.
+```php
+if ($response->isSuccessful()) {
+    // success body
+    $response->body(); // StreamInterface
+} else {
+    // error body
+    $response->errorBody(); // StreamInterface
+}
+```
+
+By default, Retrofit only works with a PSR-7 `StreamInterface` for
+setting request bodies and handling response bodies. This is somewhat
+limiting, but can be enhanced by using converters. The converter I'm
+going to demonstrate uses [Gson](https://github.com/tebru/gson-php)
+because it can handle the conversion from any type to json and back.
+
+Adding it to the builder is simple
+
+```php
+RetrofitBuilder::builder()
+    // ...
+    ->addConverterFactory(new GsonConverterFactory(Gson::builder()->build()))
+    // ...
+```
+
+And allows using a lot more annotations of the client. Here's an example
+using the `ResponseBody` and `ErrorBody` annotations to inform Retrofit
+how to convert success and error responses
+
+```php
+interface GitHubService
+{
+    /**
+     * @GET("/users/{user}/list")
+     * @Path("user")
+     * @Query("limit")
+     * @ResponseBody("App\GithubService\ListRepo")
+     * @ErrorBody("App\GitHubService\ApiError")
+     */
+    public function listRepos(string $user, int $limit): Call;
+}
+```
+
+The annotation value is the class name that the response should be
+deserialized into. This allows for cleaner handling of responses
+
+```php
+if (!$response->isSuccessful()) {
+    // throw an exception with the deserialized body to be handled elsewhere
+    throw new ApiException($response->errorBody());
+}
+
+$listRepos = $response->body();
+foreach ($listRepos as $repo) {
+    // iterate over the repo list
+}
+```
+
+Converters can also be used when sending json. For example, assume this
+service definition
 
 ```php
 /**
- * @GET()
- * @BaseUrl("url")
- */
-public function listRepos($url);
-```
-
-If the `@BaseUrl` annotation is specified, the request will be made to that exact url.
-
-URL Manipulation
-----------------
-
-As seen before, parameters can be defined by inserting curly braces into the url
-path.
-
-```php
-/**
- * @GET("/users/{user}/list")
- */
-public function listRepos($user);
-```
-
-The are mapped automatically to parameters on the method.
-
-Query Parameters
-----------------
-
-Query parameters can be added to the url
-
-```php
-@GET("/users/{user}/list?sort=desc")
-```
-
-Or as an annotation which maps to a method parameter and lets you change the 
-value at runtime using `@Query`.
-
-```php
-/**
- * @GET("/users/{user}/list")
- * @Query("sort")
- */
-public function listRepos($user, $sort);
-```
-
-Any annotation that maps to PHP variables can be overriden by passing a `var` key.
-
-```php
-/**
- * @GET("/users/{user}/list")
- * @Query("sort", var="foo")
- */
-public function listRepos($user, $foo);
-```
-
-You can also pass in an array of parameters with `@QueryMap`, which also maps to
-a method parameter.
-
-```php
-/**
- * @GET("/users/{user}/list")
- * @QueryMap("queryParams")
- */
-public function listRepos($user, array $queryParams);
-```
-
-Passing `['foo' => 'bar']` to $queryParams will result in a query formatted like
-`?foo=bar` while passing `['key' => ['foo' => 'bar']]` will result in `?key[foo]=bar`.
-
-Request Body
-------------
-
-Request body also maps to a method parameter.  Acceptable values are `string`, 
-`array`, or an object that can be serialized.
-
-```php
-/**
- * @GET("/users/{user}/list")
- * @Body("body")
- */
-public function listRepos($user, $body);
-```
-
-If an array is passed in, the http client will determine the correct method for
-sending the body (`application/x-www-form-urlencoded` or `multipart/form-data`)
-
-You can also build the body dynamically with `@Part` annotations. 
-Each annotation maps to a method parameter and will create a body array.
-
-```php
-/**
- * @GET("/users/{user}/list")
- * @Part("part1")
- * @Part("part2", var="foo")
- */
-public function listRepos($user, $part1, $foo);
-```
-
-Both `@Body` and `@Part` annotations cannot be set.
-
-The body can be sent as json by adding the `@JsonBody` annotation.
-
-```php
-/**
- * @GET("/users/{user}/list")
- * @Body("body")
- * @JsonBody
- */
-public function listRepos($user, $body);
-```
-
-The body can be sent as multipart by using the `@Multipart` annotation.
-
-```php
-/**
- * @GET("/users/{user}/list")
- * @Body("body")
- * @Multipart
- */
-public function listRepos($user, $body);
-```
-
-Headers
--------
-
-Headers can be set on the class or method using `@Headers`.  If they're set on the class, they'll be applied to each method.
-
-```php
-/**
- * @Headers("Accept: application/vnd.github.v3.full+json")
- * @Headers({
- *   "Cache-Control: private, max-age=0, no-cache",
- *   "User-Agent: Retrofit-Sample-App"
- * })
+ * @ErrorBody("App\GitHubService\ApiError")
  */
 interface GitHubService
 {
+    /**
+     * @POST("/user/repos")
+     * @Body("repo")
+     * @ResponseBody("App\GitHubService\Repo")
+     */
+    public function createRepo(Repo $repo): Call;
+}
 ```
 
-They can also be set individually on methods with `@Header` and map to a method parameter.
+Because we have already registered a converter that can handle any
+object, Retrofit will make a POST request to `/user/repos`, convert the
+`Repo` object to json, add a `Content-Type` header of `application/json`,
+and deserialize the response into a `App\GitHubService\Repo` object.
+
+We've discussed `RequestBodyConverter`s and `ResponseBodyConverters`s.
+The third type is a `StringConverter`. Adding query parameters to the
+request was introduced earlier and uses a string converter to convert
+various types to strings.
+
+As seen before, we were able to easily convert an integer to a string.
+The same works for a string, float, and boolean types. Booleans get
+converted to `"true"` or `"false"`.
+
+However, using an array as a query parameter has a unique effect as it
+will apply each item in the array to the same query key. Let's look at
+an example.
 
 ```php
-/**
- * @GET("/users/{user}/list")
- * @Header("Accept", var="accept")
- */
-public function listRepos($user, $accept);
+interface GitHubService
+{
+    /**
+     * @GET("/user/list")
+     * @Query("affiliation[]", var="affiliations")
+     */
+    public function listRepos(array $affiliations): Call;
+}
+
+$githubService->listRepos(['owner', 'collaborator']);
 ```
 
-Returning
----------
+*The actual GitHub API passes affiliations as a comma separated string,
+but for the purposes of this example, we'll pretend it's in array
+syntax.*
 
-Use `@Returns` to specify a return type.  The default is `array`.  Other
-acceptable values are `raw` or any type specified in the JMS Serializer
-documentation.  A `raw` return will return the API response as a string.
+Here we're using the `var` key to tell Retrofit to not look for a
+parameter called `$affiliation[]`—as that's illegal—but `$affiliations`
+instead. This will create the query string
+
+```
+affiliation[]=owner&affiliation[]=collaborator
+```
+
+The `[]` at the end is not magic, Retrofit would behave the same way if
+it was missing. It just tells servers that this data is an array.
+
+Multiple `@Query` annotations may be used on the same method
 
 ```php
-/**
- * @GET("/users/{user}/list")
- * @Returns("ArrayCollection<My\Foo\ReposList>")
- */
-public function listRepos($user);
+interface GitHubService
+{
+    /**
+     * @GET("/user/list")
+     * @Query("affiliation[]", var="affiliations")
+     * @Query("sort")
+     */
+    public function listRepos(array $affiliations, string $sort): Call;
+}
 ```
 
-Additionally, `Response` can be a value in `@Returns`.  This annotation
-requires `@ResponseType` as well.  The value in `@ResponseType` must be
-a value that can be passed into `@Returns`
+This can tend to get lengthy, which is where `@QueryMap` becomes useful.
+A QueryMap is just an iterable hash of string keys and values. The
+values can be anything that can be passed to a regular `@Query`. Here's
+an example using an array
 
 ```php
-/**
- * @GET("/users/{user}/list")
- * @Returns("Response")
- * @ResponseType("array")
- */
-public function listRepos($user);
+interface GitHubService
+{
+    /**
+     * @GET("/user/list")
+     * @QueryMap("queries")
+     */
+    public function listRepos(array $queries): Call;
+}
+
+$githubService->listRepos([
+    'affiliations[]' => ['owner', 'collaborator'],
+    'sort' => 'created',
+]);
 ```
 
-This will return a PSR-7 compliant response that will contain an additional
-method `body()`.  Calling this method will return the body in the format
-specified with the `@ResponseType` annotation.
-
-Events
-------
-
-Add event listeners directly to the Guzzle client or serializer, or add an event
-dispatcher to the builder.
-
-### Examples of handling request events with Guzzle 5
+But an object that implements `Iterable` could also be used
 
 ```php
-$httpClient->getEmitter()->on('before', function use ($myHeader) (BeforeEvent $event) {
-    $request = $event->getRequest();
-    
-    $request->getQuery()->add('sort', 'desc');
-    $request->addHeader('My-Header', $myHeader);
-});
+interface GitHubService
+{
+    /**
+     * @GET("/user/list")
+     * @QueryMap("queries")
+     */
+    public function listRepos(ListReposQueries $queries): Call;
+}
 
-$httpCient->getEmitter()->on('complete', function (CompleteEvent $event) {
-    $responseBody = (string)$event->getResponse()->getBody();
-    $responseBody = json_decode($responseBody);
-    
-    if ('success' !== $responseBody['status'], true) {
-        throw new Exception('boo!');
-    }
-});
+$githubService->listRepos(new ListReposQueries());
 ```
 
-Because Guzzle 6 does not include the same event system, a rudimentary version has been added
-to Retrofit.
+This behavior is consistent with `@Field`/`@FieldMap` and
+`@Header`/`@HeaderMap`.
 
-### BeforeSendEvent
-
-Retrofit will dispatch a `retrofit.beforeSend` event before a request is made.  It includes the request and allows modifying the request before sending.
-
-    @see \Tebru\Retrofit\Event\BeforeSendEvent
-
-### AfterSendEvent
-
-Similarly, a `retrofit.afterSend` event will be dispatched after a request has been completed. It includes the request and response, and allows modifying the response before deserializing.
-
-    @see \Tebru\Retrofit\Event\AfterSendEvent
-
-### ReturnEvent
-
-Just prior to returning, a `retrofit.return` event will be dispatched. It includes the data to return, the request, and the response. It is possible to modify the returned data using this event.
-
-    @see \Tebru\Retrofit\Event\ReturnEvent
-
-### ApiExceptionEvent
-
-If the http client throws an exception, it will be caught and a `retrofit.apiException` event will be
-dispatched.  Additionally, a new `RetrofitApiException` will be thrown.
-
-    @see \Tebru\Retrofit\Event\ApiExceptionEvent
-    
-Exceptions
-----------
-
-If the http client throws an exception, a `RetrofitApiException` will be thrown.  This exception includes
-original message and code of the caught exception, the original exception, and the class of the client
-that the exception came from.
-
-Interoperability
-----------------
-
-The two main technologies backing Retrofit are Guzzle and JMS Serializer.
-
-Use the `setHttpClient` or `setSerializer` methods on the builder to use a custom configured version of either.
-
-Retrofit supports version 5 or 6 of Guzzle.
-
-There are two methods `setSerializationContext` and `setDeserializationContext` on the builder that allow you add
-JMS serializer contexts that will be used in during serialization/deserialization.
-
-```php
-$builder->setSerializationContext(SerializationContext::create());
-$builder->setDeserializationContext(DeserializationContext::create());
-```
-
-Command
--------
-
-Use the included command to generate the cache files.
-
-```bash
-vendor/bin/retrofit compile <path/to/src/dir> <path/to/cache/dir>
-```
+Please see the [Annotation Reference](annotations.md) for a more in-depth
+look at the different annotations and how they function.

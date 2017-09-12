@@ -4,51 +4,32 @@
  * Distributed under the MIT License (http://opensource.org/licenses/MIT)
  */
 
+declare(strict_types=1);
+
 namespace Tebru\Retrofit\Annotation;
 
-use Tebru\Dynamo\Annotation\DynamoAnnotation;
-
 /**
- * Query parameter appended to the URL.
+ * Adds a query to the url path
  *
- * Values are converted to strings and then URL encoded.
- * 
- * Simple Example:
- * 
- *     @GET("/list")
- *     @Query("page")
+ * The default value represents the query name. Passing an array will add a mapping between the
+ * query name and each value in the array. The array must be 0-indexed.
  *
- * If the variable name differs from the desired part name, you may specify a
- * different variable name using the `var=` parameter on this annotation. 
- *
- *     @Query("page", var="inputPage")
+ * Set 'encoded' to true to specify that the data is already encoded.
  *
  * @author Nate Brunette <n@tebru.net>
  *
  * @Annotation
  * @Target({"CLASS", "METHOD"})
  */
-class Query extends VariableMapper implements DynamoAnnotation
+class Query extends Encodable
 {
-    const NAME = 'query';
-
-    /**
-     * The name of the annotation or class of annotations
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return self::NAME;
-    }
-
     /**
      * Whether or not multiple annotations of this type can
      * be added to a method
      *
      * @return bool
      */
-    public function allowMultiple()
+    public function allowMultiple(): bool
     {
         return true;
     }

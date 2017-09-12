@@ -1,26 +1,187 @@
 Annotation Reference
 ====================
 
-`@Body`
--------
-Defines the body of the HTTP request.
- 
-Use this annotation on a service when you want to directly control the 
-request body of a request (instead of sending in as request parameters or 
-form-style request body).
+A simple example will be provided to show usage for each annotation,
+but may not be a completely functioning snippet. All usages may not
+have an example.
 
-`@Header`
----------
-Represents an HTTP header name/value pair to be attached to the request.
+- [Body](#body)
+- [DELETE](#delete)
+- [ErrorBody](#errorbody)
+- [Field](#field)
+- [FieldMap](#fieldmap)
+- [GET](#get)
+- [HEAD](#head)
+- [Header](#header)
+- [HeaderMap](#headermap)
+- [Headers](#headers)
+- [OPTIONS](#options)
+- [Part](#part)
+- [PartMap](#partmap)
+- [PATCH](#patch)
+- [Path](#path)
+- [POST](#post)
+- [PUT](#put)
+- [Query](#query)
+- [QueryMap](#querymap)
+- [QueryName](#queryname)
+- [REQUEST](#request)
+- [ResponseBody](#responsebody)
+- [Url](#url)
 
+Body
+----
 
-`@Headers`
----------
-Adds headers literally supplied in the value.
+Defines a json body for the HTTP request.
+
+This annotation sets the content type of the request to
+`application/json`. By default, the parameter must be a PSR-7
+`StreamInterface`, but adding a converter will allow additional
+types to be provided and converted to json.
 
 ```php
 /**
- * @Headers("Cache-Control: max-age=640000")
+ * @Body("myBody")
+ */
+public function example(Mybody $myBody): Call;
+```
+
+DELETE
+------
+
+Performs a DELETE request to the provided path.
+
+```php
+/**
+ * @DELETE("/foo?q=test")
+ */
+public function example(): Call;
+```
+
+ErrorBody
+---------
+
+Defines the type the response body should be converted to on errors.
+
+Errors are defined as any http status code outside of 200-300. By
+default, only `StreamInterface` is supported, but a converter
+will extend the supported types.
+
+```php
+/**
+ * @ErrorBody("App\MyClass")
+ */
+public function example(): Call;
+```
+
+Field
+-----
+
+Adds values to a form encoded body.
+
+This annotation sets the request content type to
+`application/x-www-form-urlencoded`. The value of this annotation
+is both the name of the field and the name of the method parameter.
+This can be overridden using the `var` key in the annotation. The
+provided argument will be converted to a string before getting applied
+to the request. Passing in an array will apply each value to the field
+name. The `encoded` key will specify if the data is already encoded,
+and therefore shouldn't be re-encoded. This value defaults to false.
+
+```php
+/**
+ * @Field("field1")
+ * @Field("field2", encoded=true)
+ * @Field("field3[]", var="field3")
+ */
+public function example(int $field1, bool $field2, array $field3): Call;
+```
+
+FieldMap
+--------
+
+This works much like [@Field](#field), except it must be provided an
+iterable map. Each key/value pair will be treated as a `@Field` with
+the key acting as the field name. The value may be anything that
+`@Field` supports.
+
+```php
+/**
+ * @FieldMap("fieldMap")
+ */
+public function example(Traversable $fieldMap): Call;
+```
+
+GET
+---
+
+Performs a GET request to the provided path.
+
+```php
+/**
+ * @GET("/foo?q=test")
+ */
+public function example(): Call;
+```
+
+HEAD
+----
+
+Performs a HEAD request to the provided path.
+
+```php
+/**
+ * @HEAD("/foo?q=test")
+ */
+public function example(): Call;
+```
+
+Header
+------
+
+Add a single header to a request.
+
+The value of this annotation represents both the name of the header
+and the parameter name. Header names are lower-cased before getting
+added to the request. Headers follow PSR-7 request format, so multiple
+values with the same name may be added to the request. Passing an
+array as the header value also allows multiple values to be added
+under the same header name. Headers will converted to a string before
+being applied to the request.
+
+```php
+/**
+ * @Header("X-Foo", var="header1")
+ * @Header("X-Foo", var="header2")
+ * @Header("X-Foo", var="header3")
+ */
+public function example(string $header1, bool $header2, array $header3): Call;
+```
+
+The above example will add multiple different values to the `x-foo`
+header.
+
+HeaderMap
+---------
+
+Allows a way to add multiple headers to a request at once. The annotation
+acts much like [FieldMap](#fieldmap), and accepts the same values as
+[Header](#header).
+
+```php
+/**
+ * @HeaderMap("headerMap")
+ */
+public function example(Traversable $headerMap): Call;
+```
+
+Headers
+-------
+
+Adds headers statically supplied in the annotation value.
+
+```php
+/**
  * @Headers({
  *     "X-Foo: Bar",
  *     "X-Ping: Pong"
@@ -28,146 +189,199 @@ Adds headers literally supplied in the value.
  */
 ```
 
-`@JsonBody`
------------
-Indicates that the body of the request should be serialized into JSON.
-
-`@Multipart`
------------
-Indicates that the body of the request should be sent as `multipart/form-data`
-
-`@Part`
+OPTIONS
 -------
-Denotes a single part of a multi-part request.
 
-This annotation defines a method parameter that will be added as a part of 
-the request. If the variable name differs from the desired part name, you 
-may specify a different variable name using the `var=` parameter on this
-annotation. 
-You can define multiple of these annotations for multiple variable parts.
+Performs an OPTIONS request to the provided path.
+
+```php
+/**
+ * @OPTIONS("/foo?q=test")
+ */
+public function example(): Call;
+```
+
+Part
+----
+
+Adds values to a multipart body.
+
+This annotation set the request content type to `multipart/form-data`.
+This annotation can accept any value [@Body](#body) can or a special
+`MultipartBody` class, which you can use to set additional properties
+like headers or the filename. The annotation value specifies the part
+name. If you're using `MultipartBody` the part name will be pulled from
+the object and the annotation value will be ignored.
 
 ```php
 /**
  * @Part("part1")
- * @Part("part2", var="foo")
+ * @Part("part2")
  */
+public function example(MyBody $part1, MultipartBody $part2): Call;
 ```
 
-`@Query`
+PartMap
+-------
+
+This annotation works like previous map annotations. Keys represent
+part names, and values may be anything that a [@Part](#part) can
+accept. The same rules apply.
+
+```php
+/**
+ * @PartMap("partMap")
+ */
+public function example(Traversable $partMap): Call;
+```
+
+PATCH
+-----
+
+Performs a PATCH request to the provided path.
+
+```php
+/**
+ * @PATCH("/foo?q=test")
+ */
+public function example(): Call;
+```
+
+Path
+----
+
+This annotation allows you to create a dynamic url, and map path
+parts to method parameters. By default, the annotation value will
+be the same as the url placeholder and parameter name, but this is
+overridable by using the `var` annotation key. Path values will get
+converted to strings before getting added to the url.
+
+```php
+/**
+ * @GET("/foo/{user}/{foo-bar}"
+ * @Path("user")
+ * @Path("foo-bar", var="fooBar")
+ */
+public function example(int $user, string $fooBar): Call;
+```
+
+POST
+----
+
+Performs a POST request to the provided path.
+
+```php
+/**
+ * @POST("/foo?q=test")
+ */
+public function example(): Call;
+```
+
+PUT
+---
+
+Performs a PUT request to the provided path.
+
+```php
+/**
+ * @PUT("/foo?q=test")
+ */
+public function example(): Call;
+```
+
+Query
+-----
+
+Add a query to the url.
+
+The annotation value represents the query name. The value will be
+converted to a string before being added to the url. Use the `var`
+key if the parameter name doesn't match the query name and the `encoded`
+key to specify if the query data is already encoded. This defaults to
+false. Passing an array will apply each value to to the specified name.
+
+```php
+/**
+ * @Query("query1")
+ * @Query("query2", encoded=true)
+ * @Query("query3[]", var="field3")
+ */
+public function example(int $query1, bool $query2, array $query3): Call;
+```
+
+QueryMap
 --------
-Query parameter appended to the URL.
 
-Values are converted to strings and then URL encoded.
+Adds multiple queries to a url.
 
-Simple Example:
+This annotation works the same as other map annotations and adds
+key/value pairs of queries to a url where keys represent the query name
+and the value may be anything that [@Query](#query) allows.
 
 ```php
 /**
- * @GET("/list")
- * @Query("page")
+ * @QueryMap("queryMap")
  */
+public function example(Traversable $queryMap): Call;
 ```
 
-If the variable name differs from the desired part name, you may specify a
-different variable name using the `var=` parameter on this annotation. 
+QueryName
+---------
+
+Adds only the query name part of a query, excluding the `=` and anything
+after it. The annotation value represents the name (which can be changed
+with the `var` key), and you can specify that the data is already encoded
+with the `encoded` key. Data is converted to a string before getting
+added to the url.
 
 ```php
 /**
- * @Query("page", var="inputPage")
+ * @QueryName("queryName1")
+ * @QueryName("queryName2", encoded=true)
  */
+public function example(float $queryName1, string $queryName2): Call;
 ```
 
-`@QueryMap`
------------
-Associative array of query parameters to append to the URL.
+REQUEST
+-------
 
-Values are converted to strings and then URL encoded.
+Performs a custom request method to the provided path.
 
-Simple Example:
+Additionally, the method type and whether the request contains a body
+must be specified.
 
 ```php
 /**
- * @GET("/list")
- * @QueryMap("parameters")
+ * @REQUEST("/foo?q=test", type="FOO", body=false)
  */
+public function example(): Call;
 ```
 
+ResponseBody
+------------
 
-`@Returns`
-----------
-Defines what type of object a request returns, so that it may be deserialized.
- 
-The default is `array`. Other acceptable values are `raw` or any type specified 
-in the Serializer documentation. A raw return will return the API response as
-a string.
+Defines the type the response body should be converted to on success.
 
-If you need the entire response back, you can ask for a typed response.
+Successful responses are defined as any http status code with 200-300.
+By default, only `StreamInterface` is supported, but a converter
+will extend the supported types.
 
 ```php
 /**
- * @Returns(Response<raw>)
- * @Returns(Response<array>)
- * @Returns(Response<My\Object>)
+ * @ResponseBody("App\MyClass")
  */
+public function example(): Call;
 ```
 
-This will return a PSR-7 Response object with an added method `body()`.  Calling
-this method will return the type of body you need, raw, array, or an object.
+Url
+---
 
-`@BaseUrl`
-----------
-Allows you to override the base url for a specific method or class.
-
-Request Type Annotations
-------------------------
-
-Each method must have a request method defined. Annotations for 
-`@GET`, `@POST`, `@PUT`, `@DELETE`, `@HEAD`, `@PATCH`, and `@OPTIONS`
-come out of the box.
-
-Each of these can be used to specify a path relative to the base URL defined
-in the rest adapter.
+This annotation allows changing the base url of a request. This will
+allow overriding whatever url is specified on the `RetrofitBuilder`.
 
 ```php
 /**
- * @POST('/books')
+ * @Url("baseUrl")
  */
-```
-
-`@Serializer\SerializationContext`
-----------------------------------
-
-Defines the SerializationContext to use for the request.
-
-```php
-/**
- * @Serializer\SerializationContext(groups={"Default", "extra"}, serializeNull=true, enableMaxDepthChecks=true, version=1)
- */
-```
-
-Any extra values will be added as attributes to the context.
-
-```php
-/**
- * @Serializer\SerializationContext(attr="value", foo="bar")
- */
-```
-
-`@Serializer\DeserializationContext`
-------------------------------------
-
-Defines the DeserializationContext to use for the response.
-
-```php
-/**
- * @Serializer\DeserializationContext(depth=4, groups={"Default", "extra"}, serializeNull=true, enableMaxDepthChecks=true, version=1)
- */
-```
-
-Any extra values will be added as attributes to the context.
-
-```php
-/**
- * @Serializer\DeserializationContext(attr="value", foo="bar")
- */
+public function example(string $baseUrl): Call;
 ```
