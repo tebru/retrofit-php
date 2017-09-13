@@ -8,7 +8,9 @@ declare(strict_types=1);
 
 namespace Tebru\Retrofit\Internal\AnnotationHandler;
 
+use InvalidArgumentException;
 use Tebru\AnnotationReader\AbstractAnnotation;
+use Tebru\Retrofit\Annotation\Encodable;
 use Tebru\Retrofit\Annotation\QueryName;
 use Tebru\Retrofit\AnnotationHandler;
 use Tebru\Retrofit\Converter;
@@ -31,6 +33,7 @@ final class QueryNameAnnotHandler implements AnnotationHandler
      * @param Converter|StringConverter $converter Converter used to convert types before sending to service method
      * @param int|null $index The position of the parameter or null if annotation does not reference parameter
      * @return void
+     * @throws \InvalidArgumentException
      */
     public function handle(
         AbstractAnnotation $annotation,
@@ -38,6 +41,17 @@ final class QueryNameAnnotHandler implements AnnotationHandler
         ?Converter $converter,
         ?int $index
     ): void {
+        if (!$annotation instanceof Encodable) {
+            throw new InvalidArgumentException('Retrofit: Annotation must be encodable');
+        }
+
+        if (!$converter instanceof StringConverter) {
+            throw new InvalidArgumentException(sprintf(
+                'Retrofit: Converter must be a StringConverter, %s found',
+                gettype($converter)
+            ));
+        }
+
         $serviceMethodBuilder->addParameterHandler(
             $index,
             new QueryNameParamHandler($converter, $annotation->isEncoded())

@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Tebru\Retrofit\Internal\AnnotationHandler;
 
+use InvalidArgumentException;
 use Tebru\AnnotationReader\AbstractAnnotation;
 use Tebru\Retrofit\AnnotationHandler;
 use Tebru\Retrofit\Converter;
@@ -28,6 +29,7 @@ final class HeadersAnnotHandler implements AnnotationHandler
      * @param Converter|null $converter Converter used to convert types before sending to service method
      * @param int|null $index The position of the parameter or null if annotation does not reference parameter
      * @return void
+     * @throws \InvalidArgumentException
      */
     public function handle(
         AbstractAnnotation $annotation,
@@ -35,6 +37,13 @@ final class HeadersAnnotHandler implements AnnotationHandler
         ?Converter $converter,
         ?int $index
     ): void {
+        if ($converter !== null) {
+            throw new InvalidArgumentException(sprintf(
+                'Retrofit: Converter must be null, %s found',
+                gettype($converter)
+            ));
+        }
+
         /** @var string[] $headerList */
         $headerList = $annotation->getValue();
         foreach ($headerList as $name => $header) {

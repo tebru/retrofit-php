@@ -133,11 +133,11 @@ final class DefaultProxyFactory implements ProxyFactory
         $builder = $this->builderFactory
             ->class($reflectionClass->getShortName())
             ->extend('\\'.AbstractProxy::class)
-            ->implement('\\'.$reflectionClass->getName());
+            ->implement('\\'.$reflectionClass->name);
 
         foreach ($reflectionClass->getMethods() as $reflectionMethod) {
             $methodBuilder = $this->builderFactory
-                ->method($reflectionMethod->getName())
+                ->method($reflectionMethod->name)
                 ->makePublic();
 
             if ($reflectionMethod->isStatic()) {
@@ -145,7 +145,7 @@ final class DefaultProxyFactory implements ProxyFactory
             }
 
             foreach ($reflectionMethod->getParameters() as $reflectionParameter) {
-                $paramBuilder = $this->builderFactory->param($reflectionParameter->getName());
+                $paramBuilder = $this->builderFactory->param($reflectionParameter->name);
 
                 if ($reflectionParameter->isDefaultValueAvailable()) {
                     $paramBuilder->setDefault($reflectionParameter->getDefaultValue());
@@ -154,9 +154,9 @@ final class DefaultProxyFactory implements ProxyFactory
                 if ($reflectionParameter->getType() === null) {
                     throw new LogicException(sprintf(
                         'Retrofit: Parameter types are required. None found for parameter %s in %s::%s()',
-                        $reflectionParameter->getName(),
-                        $reflectionClass->getName(),
-                        $reflectionMethod->getName()
+                        $reflectionParameter->name,
+                        $reflectionClass->name,
+                        $reflectionMethod->name
                     ));
                 }
 
@@ -182,8 +182,8 @@ final class DefaultProxyFactory implements ProxyFactory
             if (!$reflectionMethod->hasReturnType()) {
                 throw new LogicException(sprintf(
                     'Retrofit: Method return types are required. None found for %s::%s()',
-                    $reflectionClass->getName(),
-                    $reflectionMethod->getName()
+                    $reflectionClass->name,
+                    $reflectionMethod->name
                 ));
             }
 
@@ -196,7 +196,7 @@ final class DefaultProxyFactory implements ProxyFactory
                         new Variable('this'),
                         '__handleRetrofitRequest',
                         [
-                            new String_($reflectionClass->getName()),
+                            new String_($reflectionClass->name),
                             new ConstFetch(new Name('__FUNCTION__')),
                             new FuncCall(new Name('func_get_args'))
                         ]

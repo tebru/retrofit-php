@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Tebru\Retrofit\Internal\AnnotationHandler;
 
+use InvalidArgumentException;
 use Tebru\AnnotationReader\AbstractAnnotation;
 use Tebru\Retrofit\Annotation\HttpRequest;
 use Tebru\Retrofit\AnnotationHandler;
@@ -30,6 +31,7 @@ final class HttpRequestAnnotHandler implements AnnotationHandler
      * @param int|null $index The position of the parameter or null if annotation does not reference parameter
      * @return void
      * @throws \LogicException
+     * @throws \InvalidArgumentException
      */
     public function handle(
         AbstractAnnotation $annotation,
@@ -37,6 +39,17 @@ final class HttpRequestAnnotHandler implements AnnotationHandler
         ?Converter $converter,
         ?int $index
     ): void {
+        if (!$annotation instanceof HttpRequest) {
+            throw new InvalidArgumentException('Retrofit: Annotation must be an HttpRequest');
+        }
+
+        if ($converter !== null) {
+            throw new InvalidArgumentException(sprintf(
+                'Retrofit: Converter must be null, %s found',
+                gettype($converter)
+            ));
+        }
+
         $uri = $annotation->getValue();
 
         $serviceMethodBuilder->setMethod($annotation->getType());

@@ -92,7 +92,7 @@ final class AnnotationProcessor
     {
         $reflectionParameters = $reflectionMethod->getParameters();
         foreach ($reflectionParameters as $index => $reflectionParameter) {
-            if ($reflectionParameter->getName() === $name) {
+            if ($reflectionParameter->name === $name) {
                 return $index;
             }
         }
@@ -101,8 +101,8 @@ final class AnnotationProcessor
             'Retrofit: Could not find parameter named %s in %s::%s. Please double check that annotations are properly ' .
             'referencing method parameters.',
             $name,
-            $reflectionMethod->getDeclaringClass()->getName(),
-            $reflectionMethod->getName()
+            $reflectionMethod->getDeclaringClass()->name,
+            $reflectionMethod->name
         ));
     }
 
@@ -122,8 +122,8 @@ final class AnnotationProcessor
         if ($reflectionType === null) {
             throw new LogicException(sprintf(
                 'Retrofit: Parameter type was not found for method %s::%s',
-                $reflectionMethod->getDeclaringClass()->getName(),
-                $reflectionMethod->getName()
+                $reflectionMethod->getDeclaringClass()->name,
+                $reflectionMethod->name
             ));
         }
 

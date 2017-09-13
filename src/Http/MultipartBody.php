@@ -56,17 +56,17 @@ final class MultipartBody
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
 
     /**
-     * @return StreamInterface|null
+     * @return StreamInterface
      */
-    public function getContents(): ?StreamInterface
+    public function getContents(): StreamInterface
     {
         return $this->contents;
     }

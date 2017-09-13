@@ -110,8 +110,8 @@ final class ServiceMethodFactory
         if ($returnType === null) {
             throw new LogicException(sprintf(
                 'Retrofit: All service methods must contain a return type. None found for %s::%s()',
-                $reflectionMethod->getDeclaringClass()->getName(),
-                $reflectionMethod->getName()
+                $reflectionMethod->getDeclaringClass()->name,
+                $reflectionMethod->name
             ));
         }
 
@@ -138,8 +138,8 @@ final class ServiceMethodFactory
                     throw new LogicException(
                         $exception->getMessage() .
                         sprintf(' for %s::%s()',
-                            $reflectionMethod->getDeclaringClass()->getName(),
-                            $reflectionMethod->getName()
+                            $reflectionMethod->getDeclaringClass()->name,
+                            $reflectionMethod->name
                         )
                     );
                 }

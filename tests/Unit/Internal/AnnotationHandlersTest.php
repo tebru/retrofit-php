@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Tebru\Retrofit\Test\Unit\Internal;
 
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Tebru\Retrofit\Annotation\Body;
 use Tebru\Retrofit\Annotation\Field;
@@ -96,6 +97,23 @@ class AnnotationHandlersTest extends TestCase
         self::assertAttributeEquals([1 => new BodyParamHandler($this->requestBodyConverter)], 'parameterHandlers', $this->serviceMethodBuilder);
     }
 
+    public function testHandleBodyAnnotationWrongConverter()
+    {
+        try {
+            (new BodyAnnotHandler())->handle(
+                new Body(['value' => 'foo']),
+                $this->serviceMethodBuilder,
+                null,
+                1
+            );
+        } catch (InvalidArgumentException $exception) {
+            self::assertSame('Retrofit: Converter must be a RequestBodyConverter, NULL found', $exception->getMessage());
+            return;
+        }
+
+        self::fail('Exception not thrown');
+    }
+
     public function testHandleFieldAnnotation()
     {
         (new FieldAnnotHandler())->handle(
@@ -109,6 +127,40 @@ class AnnotationHandlersTest extends TestCase
         self::assertAttributeSame('application/x-www-form-urlencoded', 'contentType', $this->serviceMethodBuilder);
         self::assertAttributeCount(1, 'parameterHandlers', $this->serviceMethodBuilder);
         self::assertAttributeEquals([1 => new FieldParamHandler($this->stringConverter, 'foo', true)], 'parameterHandlers', $this->serviceMethodBuilder);
+    }
+
+    public function testHandleFieldAnnotationWrongAnnotation()
+    {
+        try {
+            (new FieldAnnotHandler())->handle(
+                new Body(['value' => 'foo']),
+                $this->serviceMethodBuilder,
+                $this->stringConverter,
+                1
+            );
+        } catch (InvalidArgumentException $exception) {
+            self::assertSame('Retrofit: Annotation must be encodable', $exception->getMessage());
+            return;
+        }
+
+        self::fail('Exception not thrown');
+    }
+
+    public function testHandleFieldAnnotationWrongConverter()
+    {
+        try {
+            (new FieldAnnotHandler())->handle(
+                new Field(['value' => 'foo', 'encoded' => true]),
+                $this->serviceMethodBuilder,
+                null,
+                1
+            );
+        } catch (InvalidArgumentException $exception) {
+            self::assertSame('Retrofit: Converter must be a StringConverter, NULL found', $exception->getMessage());
+            return;
+        }
+
+        self::fail('Exception not thrown');
     }
 
     public function testHandleFieldMapAnnotation()
@@ -126,6 +178,40 @@ class AnnotationHandlersTest extends TestCase
         self::assertAttributeEquals([1 => new FieldMapParamHandler($this->stringConverter, true)], 'parameterHandlers', $this->serviceMethodBuilder);
     }
 
+    public function testHandleFieldMapAnnotationWrongAnnotation()
+    {
+        try {
+            (new FieldMapAnnotHandler())->handle(
+                new Body(['value' => 'foo']),
+                $this->serviceMethodBuilder,
+                $this->stringConverter,
+                1
+            );
+        } catch (InvalidArgumentException $exception) {
+            self::assertSame('Retrofit: Annotation must be encodable', $exception->getMessage());
+            return;
+        }
+
+        self::fail('Exception not thrown');
+    }
+
+    public function testHandleFieldMapAnnotationWrongConverter()
+    {
+        try {
+            (new FieldMapAnnotHandler())->handle(
+                new FieldMap(['value' => 'foo', 'encoded' => true]),
+                $this->serviceMethodBuilder,
+                null,
+                1
+            );
+        } catch (InvalidArgumentException $exception) {
+            self::assertSame('Retrofit: Converter must be a StringConverter, NULL found', $exception->getMessage());
+            return;
+        }
+
+        self::fail('Exception not thrown');
+    }
+
     public function testHandleHeaderAnnotation()
     {
         (new HeaderAnnotHandler())->handle(
@@ -137,6 +223,23 @@ class AnnotationHandlersTest extends TestCase
 
         self::assertAttributeCount(1, 'parameterHandlers', $this->serviceMethodBuilder);
         self::assertAttributeEquals([1 => new HeaderParamHandler($this->stringConverter, 'foo')], 'parameterHandlers', $this->serviceMethodBuilder);
+    }
+
+    public function testHandleHeaderAnnotationWrongConverter()
+    {
+        try {
+            (new HeaderAnnotHandler())->handle(
+                new Header(['value' => 'foo']),
+                $this->serviceMethodBuilder,
+                null,
+                1
+            );
+        } catch (InvalidArgumentException $exception) {
+            self::assertSame('Retrofit: Converter must be a StringConverter, NULL found', $exception->getMessage());
+            return;
+        }
+
+        self::fail('Exception not thrown');
     }
 
     public function testHandleHeaderMapAnnotation()
@@ -152,16 +255,50 @@ class AnnotationHandlersTest extends TestCase
         self::assertAttributeEquals([1 => new HeaderMapParamHandler($this->stringConverter)], 'parameterHandlers', $this->serviceMethodBuilder);
     }
 
+    public function testHandleHeaderMapAnnotationWrongConverter()
+    {
+        try {
+            (new HeaderMapAnnotHandler())->handle(
+                new HeaderMap(['value' => 'foo']),
+                $this->serviceMethodBuilder,
+                null,
+                1
+            );
+        } catch (InvalidArgumentException $exception) {
+            self::assertSame('Retrofit: Converter must be a StringConverter, NULL found', $exception->getMessage());
+            return;
+        }
+
+        self::fail('Exception not thrown');
+    }
+
     public function testHandleHeadersAnnotation()
     {
         (new HeadersAnnotHandler())->handle(
             new Headers(['value' => ['Foo: bar', 'Baz: true']]),
             $this->serviceMethodBuilder,
-            $this->stringConverter,
+            null,
             1
         );
 
         self::assertAttributeSame(['foo' => ['bar'], 'baz' => ['true']], 'headers', $this->serviceMethodBuilder);
+    }
+
+    public function testHandleHeadersAnnotationWrongConverter()
+    {
+        try {
+            (new HeadersAnnotHandler())->handle(
+                new Headers(['value' => ['Foo: bar', 'Baz: true']]),
+                $this->serviceMethodBuilder,
+                $this->stringConverter,
+                1
+            );
+        } catch (InvalidArgumentException $exception) {
+            self::assertSame('Retrofit: Converter must be null, object found', $exception->getMessage());
+            return;
+        }
+
+        self::fail('Exception not thrown');
     }
 
     public function testHandleGETAnnotation()
@@ -169,7 +306,7 @@ class AnnotationHandlersTest extends TestCase
         (new HttpRequestAnnotHandler())->handle(
             new GET(['value' => '/my/path?q=test']),
             $this->serviceMethodBuilder,
-            $this->stringConverter,
+            null,
             1
         );
 
@@ -178,17 +315,51 @@ class AnnotationHandlersTest extends TestCase
         self::assertAttributeSame(false, 'hasBody', $this->serviceMethodBuilder);
     }
 
+    public function testHandleGETAnnotationWrongConverter()
+    {
+        try {
+            (new HttpRequestAnnotHandler())->handle(
+                new GET(['value' => '/my/path?q=test']),
+                $this->serviceMethodBuilder,
+                $this->stringConverter,
+                1
+            );
+        } catch (InvalidArgumentException $exception) {
+            self::assertSame('Retrofit: Converter must be null, object found', $exception->getMessage());
+            return;
+        }
+
+        self::fail('Exception not thrown');
+    }
+
     public function testHandlePOSTAnnotation()
     {
         (new HttpRequestAnnotHandler())->handle(
             new POST(['value' => '/my/path?q=test']),
             $this->serviceMethodBuilder,
-            $this->stringConverter,
+            null,
             1
         );
 
         self::assertAttributeSame('POST', 'method', $this->serviceMethodBuilder);
         self::assertAttributeSame('/my/path?q=test', 'path', $this->serviceMethodBuilder);
+    }
+
+    public function testHandlePOSTAnnotationWrongAnnotation()
+    {
+        try {
+            (new HttpRequestAnnotHandler())->handle(
+                new Body(['value' => 'foo']),
+                $this->serviceMethodBuilder,
+                $this->stringConverter,
+                1
+            );
+        } catch (InvalidArgumentException $exception) {
+            self::assertSame('Retrofit: Annotation must be an HttpRequest', $exception->getMessage());
+            return;
+        }
+
+        self::fail('Exception not thrown');
     }
 
     public function testHandlePartAnnotation()
@@ -206,6 +377,40 @@ class AnnotationHandlersTest extends TestCase
         self::assertAttributeEquals([1 => new PartParamHandler($this->requestBodyConverter, 'foo', 'binary')], 'parameterHandlers', $this->serviceMethodBuilder);
     }
 
+    public function testHandlePartAnnotationWrongAnnotation()
+    {
+        try {
+            (new PartAnnotHandler())->handle(
+                new Body(['value' => 'foo']),
+                $this->serviceMethodBuilder,
+                $this->stringConverter,
+                1
+            );
+        } catch (InvalidArgumentException $exception) {
+            self::assertSame('Retrofit: Annotation must be a Part', $exception->getMessage());
+            return;
+        }
+
+        self::fail('Exception not thrown');
+    }
+
+    public function testHandlePartAnnotationWrongConverter()
+    {
+        try {
+            (new PartAnnotHandler())->handle(
+                new Part(['value' => 'foo']),
+                $this->serviceMethodBuilder,
+                null,
+                1
+            );
+        } catch (InvalidArgumentException $exception) {
+            self::assertSame('Retrofit: Converter must be a RequestBodyConverter, NULL found', $exception->getMessage());
+            return;
+        }
+
+        self::fail('Exception not thrown');
+    }
+
     public function testHandlePartMapAnnotation()
     {
         (new PartMapAnnotHandler())->handle(
@@ -221,6 +426,40 @@ class AnnotationHandlersTest extends TestCase
         self::assertAttributeEquals([1 => new PartMapParamHandler($this->requestBodyConverter, 'binary')], 'parameterHandlers', $this->serviceMethodBuilder);
     }
 
+    public function testHandlePartMapAnnotationWrongAnnotation()
+    {
+        try {
+            (new PartMapAnnotHandler())->handle(
+                new Body(['value' => 'foo']),
+                $this->serviceMethodBuilder,
+                $this->stringConverter,
+                1
+            );
+        } catch (InvalidArgumentException $exception) {
+            self::assertSame('Retrofit: Annotation must be a PartMap', $exception->getMessage());
+            return;
+        }
+
+        self::fail('Exception not thrown');
+    }
+
+    public function testHandlePartMapAnnotationWrongConverter()
+    {
+        try {
+            (new PartMapAnnotHandler())->handle(
+                new PartMap(['value' => 'foo']),
+                $this->serviceMethodBuilder,
+                null,
+                1
+            );
+        } catch (InvalidArgumentException $exception) {
+            self::assertSame('Retrofit: Converter must be a RequestBodyConverter, NULL found', $exception->getMessage());
+            return;
+        }
+
+        self::fail('Exception not thrown');
+    }
+
     public function testHandlePathAnnotation()
     {
         (new PathAnnotHandler())->handle(
@@ -232,6 +471,23 @@ class AnnotationHandlersTest extends TestCase
 
         self::assertAttributeCount(1, 'parameterHandlers', $this->serviceMethodBuilder);
         self::assertAttributeEquals([1 => new PathParamHandler($this->stringConverter, 'foo')], 'parameterHandlers', $this->serviceMethodBuilder);
+    }
+
+    public function testHandlePathAnnotationWrongConverter()
+    {
+        try {
+            (new PathAnnotHandler())->handle(
+                new Path(['value' => 'foo']),
+                $this->serviceMethodBuilder,
+                null,
+                1
+            );
+        } catch (InvalidArgumentException $exception) {
+            self::assertSame('Retrofit: Converter must be a StringConverter, NULL found', $exception->getMessage());
+            return;
+        }
+
+        self::fail('Exception not thrown');
     }
 
     public function testHandleQueryAnnotation()
@@ -247,6 +503,40 @@ class AnnotationHandlersTest extends TestCase
         self::assertAttributeEquals([1 => new QueryParamHandler($this->stringConverter, 'foo', false)], 'parameterHandlers', $this->serviceMethodBuilder);
     }
 
+    public function testHandleQueryAnnotationWrongAnnotation()
+    {
+        try {
+            (new QueryAnnotHandler())->handle(
+                new Body(['value' => 'foo']),
+                $this->serviceMethodBuilder,
+                $this->stringConverter,
+                1
+            );
+        } catch (InvalidArgumentException $exception) {
+            self::assertSame('Retrofit: Annotation must be encodable', $exception->getMessage());
+            return;
+        }
+
+        self::fail('Exception not thrown');
+    }
+
+    public function testHandleQueryAnnotationWrongConverter()
+    {
+        try {
+            (new QueryAnnotHandler())->handle(
+                new Query(['value' => 'foo']),
+                $this->serviceMethodBuilder,
+                null,
+                1
+            );
+        } catch (InvalidArgumentException $exception) {
+            self::assertSame('Retrofit: Converter must be a StringConverter, NULL found', $exception->getMessage());
+            return;
+        }
+
+        self::fail('Exception not thrown');
+    }
+
     public function testHandleQueryMapAnnotation()
     {
         (new QueryMapAnnotHandler())->handle(
@@ -258,6 +548,40 @@ class AnnotationHandlersTest extends TestCase
 
         self::assertAttributeCount(1, 'parameterHandlers', $this->serviceMethodBuilder);
         self::assertAttributeEquals([1 => new QueryMapParamHandler($this->stringConverter, true)], 'parameterHandlers', $this->serviceMethodBuilder);
+    }
+
+    public function testHandleQueryMapAnnotationWrongAnnotation()
+    {
+        try {
+            (new QueryMapAnnotHandler())->handle(
+                new Body(['value' => 'foo']),
+                $this->serviceMethodBuilder,
+                $this->stringConverter,
+                1
+            );
+        } catch (InvalidArgumentException $exception) {
+            self::assertSame('Retrofit: Annotation must be encodable', $exception->getMessage());
+            return;
+        }
+
+        self::fail('Exception not thrown');
+    }
+
+    public function testHandleQueryMapAnnotationWrongConverter()
+    {
+        try {
+            (new QueryMapAnnotHandler())->handle(
+                new QueryMap(['value' => 'foo', 'encoded' => true]),
+                $this->serviceMethodBuilder,
+                null,
+                1
+            );
+        } catch (InvalidArgumentException $exception) {
+            self::assertSame('Retrofit: Converter must be a StringConverter, NULL found', $exception->getMessage());
+            return;
+        }
+
+        self::fail('Exception not thrown');
     }
 
     public function testHandleQueryNameAnnotation()
@@ -273,6 +597,40 @@ class AnnotationHandlersTest extends TestCase
         self::assertAttributeEquals([1 => new QueryNameParamHandler($this->stringConverter, false)], 'parameterHandlers', $this->serviceMethodBuilder);
     }
 
+    public function testHandleQueryNameAnnotationWrongAnnotation()
+    {
+        try {
+            (new QueryNameAnnotHandler())->handle(
+                new Body(['value' => 'foo']),
+                $this->serviceMethodBuilder,
+                $this->stringConverter,
+                1
+            );
+        } catch (InvalidArgumentException $exception) {
+            self::assertSame('Retrofit: Annotation must be encodable', $exception->getMessage());
+            return;
+        }
+
+        self::fail('Exception not thrown');
+    }
+
+    public function testHandleQueryNameAnnotationWrongConverter()
+    {
+        try {
+            (new QueryNameAnnotHandler())->handle(
+                new QueryName(['value' => 'foo']),
+                $this->serviceMethodBuilder,
+                null,
+                1
+            );
+        } catch (InvalidArgumentException $exception) {
+            self::assertSame('Retrofit: Converter must be a StringConverter, NULL found', $exception->getMessage());
+            return;
+        }
+
+        self::fail('Exception not thrown');
+    }
+
     public function testHandleUrlAnnotation()
     {
         (new UrlAnnotHandler())->handle(
@@ -284,5 +642,22 @@ class AnnotationHandlersTest extends TestCase
 
         self::assertAttributeCount(1, 'parameterHandlers', $this->serviceMethodBuilder);
         self::assertAttributeEquals([1 => new UrlParamHandler($this->stringConverter)], 'parameterHandlers', $this->serviceMethodBuilder);
+    }
+
+    public function testHandleUrlAnnotationWrongConverter()
+    {
+        try {
+            (new UrlAnnotHandler())->handle(
+                new Url(['value' => 'foo']),
+                $this->serviceMethodBuilder,
+                null,
+                1
+            );
+        } catch (InvalidArgumentException $exception) {
+            self::assertSame('Retrofit: Converter must be a StringConverter, NULL found', $exception->getMessage());
+            return;
+        }
+
+        self::fail('Exception not thrown');
     }
 }

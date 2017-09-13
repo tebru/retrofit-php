@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Tebru\Retrofit\Internal\AnnotationHandler;
 
+use InvalidArgumentException;
 use Tebru\AnnotationReader\AbstractAnnotation;
 use Tebru\Retrofit\Annotation\PartMap;
 use Tebru\Retrofit\AnnotationHandler;
@@ -31,6 +32,7 @@ final class PartMapAnnotHandler implements AnnotationHandler
      * @param Converter|RequestBodyConverter $converter Converter used to convert types before sending to service method
      * @param int|null $index The position of the parameter or null if annotation does not reference parameter
      * @return void
+     * @throws \InvalidArgumentException
      */
     public function handle(
         AbstractAnnotation $annotation,
@@ -38,6 +40,17 @@ final class PartMapAnnotHandler implements AnnotationHandler
         ?Converter $converter,
         ?int $index
     ): void {
+        if (!$annotation instanceof PartMap) {
+            throw new InvalidArgumentException('Retrofit: Annotation must be a PartMap');
+        }
+
+        if (!$converter instanceof RequestBodyConverter) {
+            throw new InvalidArgumentException(sprintf(
+                'Retrofit: Converter must be a RequestBodyConverter, %s found',
+                gettype($converter)
+            ));
+        }
+
         $serviceMethodBuilder->setIsMultipart();
         $serviceMethodBuilder->addParameterHandler(
             $index,

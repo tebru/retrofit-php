@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Tebru\Retrofit\Internal\AnnotationHandler;
 
+use InvalidArgumentException;
 use Tebru\AnnotationReader\AbstractAnnotation;
 use Tebru\Retrofit\AnnotationHandler;
 use Tebru\Retrofit\Converter;
@@ -30,6 +31,7 @@ final class BodyAnnotHandler implements AnnotationHandler
      * @param Converter|RequestBodyConverter $converter Converter used to convert types before sending to service method
      * @param int|null $index The position of the parameter or null if annotation does not reference parameter
      * @return void
+     * @throws \InvalidArgumentException
      */
     public function handle(
         AbstractAnnotation $annotation,
@@ -37,6 +39,13 @@ final class BodyAnnotHandler implements AnnotationHandler
         ?Converter $converter,
         ?int $index
     ): void {
+        if (!$converter instanceof RequestBodyConverter) {
+            throw new InvalidArgumentException(sprintf(
+                'Retrofit: Converter must be a RequestBodyConverter, %s found',
+                gettype($converter)
+            ));
+        }
+
         $serviceMethodBuilder->setIsJson();
         $serviceMethodBuilder->addParameterHandler($index, new BodyParamHandler($converter));
     }
