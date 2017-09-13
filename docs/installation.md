@@ -40,7 +40,7 @@ specify the psr-4 autoload location in your composer.json instead.
 ```json
 "autoload": {
     "psr-4": {
-        "Tebru\\Retrofit\\Generated\\": "<path/to/cache/dir>/retrofit"
+        "Tebru\\Retrofit\\Proxy\\": "<path/to/cache/dir>/retrofit"
     }
 }
 ```
