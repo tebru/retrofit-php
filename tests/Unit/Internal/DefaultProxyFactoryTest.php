@@ -51,11 +51,11 @@ class DefaultProxyFactoryTest extends TestCase
         self::assertInstanceOf(PFTCTestCreate::class, $client);
         self::assertSame($this->getExpectedClass(), $this->filesystem->contents);
         self::assertSame(
-            '/tmp/cache/retrofit/Tebru/Retrofit/Proxy/Tebru/Retrofit/Test/Mock/Unit/Internal/ProxyFactoryTest',
+            '/tmp/cache/retrofit/Tebru/Retrofit/Test/Mock/Unit/Internal/ProxyFactoryTest',
             $this->filesystem->directory
         );
         self::assertSame(
-            '/tmp/cache/retrofit/Tebru/Retrofit/Proxy/Tebru/Retrofit/Test/Mock/Unit/Internal/ProxyFactoryTest/PFTCTestCreate.php',
+            '/tmp/cache/retrofit/Tebru/Retrofit/Test/Mock/Unit/Internal/ProxyFactoryTest/PFTCTestCreate.php',
             $this->filesystem->filename
         );
     }
@@ -139,7 +139,7 @@ class DefaultProxyFactoryTest extends TestCase
         } catch (RuntimeException $exception) {
             self::assertSame(
                 'Retrofit: There was an issue creating the cache directory: ' .
-                '/tmp/cache/retrofit/Tebru/Retrofit/Proxy/Tebru/Retrofit/Test/Mock/Unit/Internal/ProxyFactoryTest',
+                '/tmp/cache/retrofit/Tebru/Retrofit/Test/Mock/Unit/Internal/ProxyFactoryTest',
                 $exception->getMessage()
             );
             return;
@@ -156,7 +156,7 @@ class DefaultProxyFactoryTest extends TestCase
         } catch (RuntimeException $exception) {
             self::assertSame(
                 'Retrofit: There was an issue writing proxy class to: ' .
-                '/tmp/cache/retrofit/Tebru/Retrofit/Proxy/Tebru/Retrofit/Test/Mock/Unit/Internal/ProxyFactoryTest/PFTCTestCreateClientFail.php',
+                '/tmp/cache/retrofit/Tebru/Retrofit/Test/Mock/Unit/Internal/ProxyFactoryTest/PFTCTestCreateClientFail.php',
                 $exception->getMessage()
             );
             return;

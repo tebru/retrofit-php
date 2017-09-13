@@ -295,7 +295,7 @@ class RetrofitTest extends TestCase
     public function testCache()
     {
         $cacheDir = __DIR__.'/../cache';
-        $file = $cacheDir.'/retrofit/Tebru/Retrofit/Proxy/Tebru/Retrofit/Test/Mock/Unit/RetrofitTest/CacheableApiClient.php';
+        $file = $cacheDir.'/retrofit/Tebru/Retrofit/Test/Mock/Unit/RetrofitTest/CacheableApiClient.php';
 
         if (file_exists($file)) {
             $success = unlink($file);

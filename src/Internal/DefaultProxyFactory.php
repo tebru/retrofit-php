@@ -220,8 +220,6 @@ final class DefaultProxyFactory implements ProxyFactory
             return new $className($this->serviceMethodFactory, $this->httpClient);
         }
 
-        /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
-        $reflectionClass = new ReflectionClass($className);
         $directory = $this->cacheDir.DIRECTORY_SEPARATOR.$reflectionClass->getNamespaceName();
         $directory = str_replace('\\', DIRECTORY_SEPARATOR, $directory);
         $filename = $directory.DIRECTORY_SEPARATOR.$reflectionClass->getShortName().'.php';
