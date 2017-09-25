@@ -122,9 +122,9 @@ final class RequestBuilder
      */
     public function addQuery(string $name, string $value, bool $encoded): void
     {
-        if ($encoded === true) {
-            $name = rawurldecode($name);
-            $value = rawurldecode($value);
+        $name = rawurlencode($name);
+        if ($encoded === false) {
+            $value = rawurlencode($value);
         }
 
         $this->queries[] = $name.'='.$value;
@@ -138,8 +138,8 @@ final class RequestBuilder
      */
     public function addQueryName(string $value, bool $encoded): void
     {
-        if ($encoded === true) {
-            $value = rawurldecode($value);
+        if ($encoded === false) {
+            $value = rawurlencode($value);
         }
 
         $this->queries[] = $value;
@@ -176,8 +176,8 @@ final class RequestBuilder
      */
     public function addField(string $name, string $value, bool $encoded): void
     {
+        $name = rawurlencode($name);
         if ($encoded === false) {
-            $name = rawurlencode($name);
             $value = rawurlencode($value);
         }
 

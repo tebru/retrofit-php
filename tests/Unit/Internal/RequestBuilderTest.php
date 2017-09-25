@@ -48,7 +48,7 @@ class RequestBuilderTest extends TestCase
         $request = $requestBuilder->build();
 
         self::assertSame('GET', $request->getMethod());
-        self::assertSame('https://example2.com/test?q2=test2&contains(foo)&q=test', (string)$request->getUri());
+        self::assertSame('https://example2.com/test?q2=test2&contains%28foo%29&q=test', (string)$request->getUri());
         self::assertSame(['Host' => ['example2.com']], $request->getHeaders());
         self::assertSame('', (string)$request->getBody());
     }
@@ -63,7 +63,7 @@ class RequestBuilderTest extends TestCase
         $request = $requestBuilder->build();
 
         self::assertSame('GET', $request->getMethod());
-        self::assertSame('https://example2.com/test?q2=test2&contains(foo)', (string)$request->getUri());
+        self::assertSame('https://example2.com/test?q2=test2&contains%28foo%29', (string)$request->getUri());
         self::assertSame(['Host' => ['example2.com']], $request->getHeaders());
         self::assertSame('', (string)$request->getBody());
     }
@@ -97,7 +97,7 @@ class RequestBuilderTest extends TestCase
     {
         $requestBuilder = new RequestBuilder('POST', 'http://example.com', '/', []);
         $requestBuilder->addField('foo', 'bar', true);
-        $requestBuilder->addField('foo%28%29', 'bar%28%29', true);
+        $requestBuilder->addField('foo()', 'bar%28%29', true);
         $request = $requestBuilder->build();
 
         self::assertSame('POST', $request->getMethod());

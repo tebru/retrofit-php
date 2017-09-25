@@ -350,8 +350,8 @@ class ParameterHandlersTest extends TestCase
         ];
         $expected = [
             'foo=bar',
-            'afoo[]=baz',
-            'afoo[]=qux',
+            'afoo%5B%5D=baz',
+            'afoo%5B%5D=qux',
         ];
         (new QueryMapParamHandler(new DefaultStringConverter(), false))->apply($this->requestBuilder, $map);
 
@@ -367,8 +367,8 @@ class ParameterHandlersTest extends TestCase
         ]);
         $expected = [
             'foo=bar',
-            'afoo[]=baz',
-            'afoo[]=qux',
+            'afoo%5B%5D=baz',
+            'afoo%5B%5D=qux',
         ];
         (new QueryMapParamHandler(new DefaultStringConverter(), false))->apply($this->requestBuilder, $map);
 
