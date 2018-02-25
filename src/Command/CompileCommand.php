@@ -31,7 +31,7 @@ class CompileCommand extends Command
      *
      * @throws InvalidArgumentException
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('compile');
         $this->setDescription('Compiles and caches all services found in the project');
