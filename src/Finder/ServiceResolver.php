@@ -20,10 +20,10 @@ use RegexIterator;
  */
 class ServiceResolver
 {
-    const ANNOTATION_REGEX = '/Tebru\\\\Retrofit\\\\Annotation/';
-    const FILE_REGEX = '/^.+\.php$/i';
-    const INTERFACE_REGEX = '/^interface\s+([\w\\\\]+)[\s{\n]?/m';
-    const NAMESPACE_REGEX = '/^namespace\s+([\w\\\\]+)/m';
+    private const ANNOTATION_REGEX = '/Tebru\\\\Retrofit\\\\Annotation/';
+    private const FILE_REGEX = '/^.+\.php$/i';
+    private const INTERFACE_REGEX = '/^interface\s+([\w\\\\]+)[\s{\n]?/m';
+    private const NAMESPACE_REGEX = '/^namespace\s+([\w\\\\]+)/m';
     
     /**
      * Find all services given a source directory
