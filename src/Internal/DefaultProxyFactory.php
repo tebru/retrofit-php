@@ -160,7 +160,7 @@ final class DefaultProxyFactory implements ProxyFactory
                     ));
                 }
 
-                $reflectionTypeName = $reflectionParameter->getType()->getName();
+                $reflectionTypeName = (string)$reflectionParameter->getType();
                 if ((new TypeToken($reflectionTypeName))->isObject()) {
                     $reflectionTypeName = '\\'.$reflectionTypeName;
                 }
@@ -188,7 +188,7 @@ final class DefaultProxyFactory implements ProxyFactory
             }
 
             /** @noinspection NullPointerExceptionInspection */
-            $methodBuilder->setReturnType('\\'.$reflectionMethod->getReturnType()->getName());
+            $methodBuilder->setReturnType('\\'.(string)$reflectionMethod->getReturnType());
 
             $methodBuilder->addStmt(
                 new Return_(

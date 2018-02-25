@@ -128,7 +128,7 @@ final class AnnotationProcessor
         }
 
         /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
-        return new TypeToken($reflectionType->getName());
+        return new TypeToken((string)$reflectionType);
     }
 
     /**
