@@ -112,6 +112,7 @@ final class DefaultProxyFactory implements ProxyFactory
      * @throws \LogicException
      * @throws \Tebru\PhpType\Exception\MalformedTypeException
      * @throws \InvalidArgumentException
+     * @throws \ReflectionException
      */
     public function create(string $service): ?Proxy
     {
