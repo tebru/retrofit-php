@@ -124,13 +124,13 @@ final class DefaultServiceMethod implements ServiceMethod
      */
     public function toRequest(array $args): RequestInterface
     {
-        if (count($this->parameterHandlers) !== count($args)) {
+        if (\count($this->parameterHandlers) !== \count($args)) {
             throw new LogicException(sprintf(
                 'Retrofit: Incompatible number of arguments. Expected %d and got %s. This either ' .
                 'means that the service method was not called with the correct number of parameters, ' .
                 'or there is not an annotation for every parameter.',
-                count($this->parameterHandlers),
-                count($args)
+                \count($this->parameterHandlers),
+                \count($args)
             ));
         }
 

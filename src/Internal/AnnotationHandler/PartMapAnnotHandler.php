@@ -47,7 +47,7 @@ final class PartMapAnnotHandler implements AnnotationHandler
         if (!$converter instanceof RequestBodyConverter) {
             throw new InvalidArgumentException(sprintf(
                 'Retrofit: Converter must be a RequestBodyConverter, %s found',
-                gettype($converter)
+                \gettype($converter)
             ));
         }
 

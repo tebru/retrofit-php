@@ -122,7 +122,7 @@ final class ServiceMethodFactory
         $serviceMethodBuilder->setCallAdapter($this->callAdapterProvider->get($returnTypeToken));
 
         foreach ($annotations as $annotationArray) {
-            if (!is_array($annotationArray)) {
+            if (!\is_array($annotationArray)) {
                 $annotationArray = [$annotationArray];
             }
 

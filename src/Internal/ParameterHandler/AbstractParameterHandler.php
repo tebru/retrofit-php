@@ -37,7 +37,7 @@ abstract class AbstractParameterHandler implements ParameterHandler
     protected function getListValues($list): Generator
     {
         foreach ((array)$list as $key => $element) {
-            if (!is_int($key)) {
+            if (!\is_int($key)) {
                 throw new RuntimeException('Retrofit: Array value must use numeric keys');
             }
 

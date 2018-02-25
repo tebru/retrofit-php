@@ -113,7 +113,7 @@ class Retrofit
             $this->create($service);
         }
 
-        return count($this->services);
+        return \count($this->services);
     }
 
     /**

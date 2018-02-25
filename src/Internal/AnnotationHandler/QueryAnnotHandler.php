@@ -48,7 +48,7 @@ final class QueryAnnotHandler implements AnnotationHandler
         if (!$converter instanceof StringConverter) {
             throw new InvalidArgumentException(sprintf(
                 'Retrofit: Converter must be a StringConverter, %s found',
-                gettype($converter)
+                \gettype($converter)
             ));
         }
 

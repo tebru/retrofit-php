@@ -40,7 +40,7 @@ final class HeadersAnnotHandler implements AnnotationHandler
         if ($converter !== null) {
             throw new InvalidArgumentException(sprintf(
                 'Retrofit: Converter must be null, %s found',
-                gettype($converter)
+                \gettype($converter)
             ));
         }
 

@@ -26,7 +26,7 @@ final class DefaultStringConverter implements StringConverter
     public function convert($value): string
     {
         // if it's an array or object, just serialize it
-        if (is_array($value) || is_object($value)) {
+        if (\is_array($value) || \is_object($value)) {
             return serialize($value);
         }
 
