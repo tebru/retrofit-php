@@ -95,7 +95,7 @@ class RetrofitBuilder
      * Set the cache directory
      *
      * @param string $cacheDir
-     * @return $this
+     * @return RetrofitBuilder
      */
     public function setCacheDir(string $cacheDir): RetrofitBuilder
     {
@@ -108,7 +108,7 @@ class RetrofitBuilder
      * Set the Retrofit http client
      *
      * @param HttpClient $client
-     * @return $this
+     * @return RetrofitBuilder
      */
     public function setHttpClient(HttpClient $client): RetrofitBuilder
     {
