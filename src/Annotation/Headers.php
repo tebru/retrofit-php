@@ -46,7 +46,7 @@ class Headers extends AbstractAnnotation
             $name = trim(substr($header, 0, $position));
             $value = trim(substr($header, $position + 1));
 
-            $this->value[$name] = (string)$value;
+            $this->value[$name] = $value;
         }
     }
 }

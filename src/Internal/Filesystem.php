@@ -39,6 +39,6 @@ class Filesystem
     {
         $written = file_put_contents($filename, $contents);
 
-        return !((int)$written === 0);
+        return !($written === 0);
     }
 }
