@@ -248,6 +248,8 @@ class RetrofitBuilder
             : new ArrayCache();
 
         $httpRequestHandler = new AnnotHandler\HttpRequestAnnotHandler();
+
+        /** @noinspection ClassConstantUsageCorrectnessInspection */
         $annotationHandlers = array_merge(
             [
                 Annot\Body::class => new AnnotHandler\BodyAnnotHandler(),

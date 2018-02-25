@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Tebru\Retrofit\Command;
 
+use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\Console\Command\Command;
@@ -52,8 +53,36 @@ class CompileCommand extends Command
         $cacheDir = $input->getArgument('cacheDirectory');
 
         $clientStub = new class implements HttpClient {
-            public function send(RequestInterface $request): ResponseInterface { }
+
+            /**
+             * Send a request synchronously and return a PSR-7 [@see ResponseInterface]
+             *
+             * @param RequestInterface $request
+             * @return ResponseInterface
+             */
+            public function send(RequestInterface $request): ResponseInterface { return new Response(); }
+
+            /**
+             * Send a request asynchronously
+             *
+             * The response callback must be called if any response is returned from the request, and the failure
+             * callback should only be executed if a request was not completed.
+             *
+             * The response callback should pass a PSR-7 [@see ResponseInterface] as the one and only argument. The
+             * failure callback should pass a [@see Throwable] as the one and only argument.
+             *
+             * @param RequestInterface $request
+             * @param callable $onResponse
+             * @param callable $onFailure
+             * @return void
+             */
             public function sendAsync(RequestInterface $request, callable $onResponse, callable $onFailure): void { }
+
+            /**
+             * Calling this method should execute any enqueued requests asynchronously
+             *
+             * @return void
+             */
             public function wait(): void { }
         };
 

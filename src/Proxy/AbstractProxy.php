@@ -46,6 +46,7 @@ abstract class AbstractProxy implements Proxy
         $this->client = $client;
     }
 
+    /** @noinspection MagicMethodsValidityInspection */
     /**
      * Constructs a [@see Call] object based on an interface method and arguments, then passes it through a
      * [@see CallAdapter] before returning.
@@ -56,6 +57,7 @@ abstract class AbstractProxy implements Proxy
      * @return mixed
      * @throws \ReflectionException
      * @throws \LogicException
+     *
      */
     public function __handleRetrofitRequest(string $interfaceName, string $methodName, array $args)
     {
