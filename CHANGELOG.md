@@ -3,6 +3,16 @@ Change Log
 
 This document keeps track of important changes between releases of the library.
 
+3.0.2
+-----
+
+* ADDED: Symfony 4 support
+
+3.0.1
+-----
+
+* FIXED: Issue with query encoding
+
 3.0.0
 -----
 
