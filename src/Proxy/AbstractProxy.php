@@ -55,7 +55,6 @@ abstract class AbstractProxy implements Proxy
      * @param string $methodName
      * @param array $args
      * @return mixed
-     * @throws \ReflectionException
      * @throws \LogicException
      *
      */

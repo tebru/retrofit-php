@@ -98,7 +98,6 @@ final class ServiceMethodFactory
      * @param string $methodName
      * @return DefaultServiceMethod
      * @throws \LogicException
-     * @throws \ReflectionException
      */
     public function create(string $interfaceName, string $methodName): DefaultServiceMethod
     {

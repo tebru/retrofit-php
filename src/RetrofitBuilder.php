@@ -200,7 +200,6 @@ class RetrofitBuilder
      * Build a retrofit instance
      *
      * @return Retrofit
-     * @throws \Doctrine\Common\Annotations\AnnotationException
      * @throws \LogicException
      */
     public function build(): Retrofit
@@ -220,7 +219,6 @@ class RetrofitBuilder
      * Creates the default proxy factory and all necessary dependencies
      *
      * @return ProxyFactory
-     * @throws \Doctrine\Common\Annotations\AnnotationException
      * @throws \LogicException
      */
     private function createDefaultProxyFactory(): ProxyFactory
