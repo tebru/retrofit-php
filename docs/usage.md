@@ -264,6 +264,22 @@ interface GitHubService
 $githubService->listRepos(new ListReposQueries());
 ```
 
+Parameters (and all parameters) are optional and accept default values.
+Specifying default null here will not send any query parameters.
+
+```php
+interface GitHubService
+{
+    /**
+     * @GET("/user/list")
+     * @QueryMap("queries")
+     */
+    public function listRepos(?ListReposQueries $queries = null): Call;
+}
+
+$githubService->listRepos();
+```
+
 This behavior is consistent with `@Field`/`@FieldMap` and
 `@Header`/`@HeaderMap`.
 

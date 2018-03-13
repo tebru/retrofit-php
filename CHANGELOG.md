@@ -3,6 +3,11 @@ Change Log
 
 This document keeps track of important changes between releases of the library.
 
+3.0.3
+-----
+
+* FIXED: Issue with default parameters and nulls
+
 3.0.2
 -----
 
