@@ -25,7 +25,8 @@ interface Proxy
      * @param string $interfaceName
      * @param string $methodName
      * @param array $args
+     * @param array $defaultArgs
      * @return mixed
      */
-    public function __handleRetrofitRequest(string $interfaceName, string $methodName, array $args);
+    public function __handleRetrofitRequest(string $interfaceName, string $methodName, array $args, array $defaultArgs);
 }

@@ -57,6 +57,10 @@ final class FieldParamHandler extends AbstractParameterHandler
      */
     public function apply(RequestBuilder $requestBuilder, $value): void
     {
+        if ($value === null) {
+            return;
+        }
+
         foreach ($this->getListValues($value) as $element) {
             $requestBuilder->addField($this->name, $this->converter->convert($element), $this->encoded);
         }

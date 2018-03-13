@@ -50,6 +50,10 @@ final class QueryNameParamHandler extends AbstractParameterHandler
      */
     public function apply(RequestBuilder $requestBuilder, $value): void
     {
+        if ($value === null) {
+            return;
+        }
+
         foreach ($this->getListValues($value) as $element) {
             $requestBuilder->addQueryName($this->converter->convert($element), $this->encoded);
         }

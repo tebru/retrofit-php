@@ -11,12 +11,16 @@ namespace Tebru\Retrofit\Internal;
 use InvalidArgumentException;
 use LogicException;
 use PhpParser\BuilderFactory;
+use PhpParser\Node\Expr;
+use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Name;
 use PhpParser\Node\NullableType;
+use PhpParser\Node\Scalar\DNumber;
+use PhpParser\Node\Scalar\LNumber;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\Return_;
 use PhpParser\PrettyPrinterAbstract;
@@ -144,6 +148,8 @@ final class DefaultProxyFactory implements ProxyFactory
                 $methodBuilder->makeStatic();
             }
 
+            $defaultValues = [];
+
             foreach ($reflectionMethod->getParameters() as $reflectionParameter) {
                 $paramBuilder = $this->builderFactory->param($reflectionParameter->name);
 
@@ -177,6 +183,13 @@ final class DefaultProxyFactory implements ProxyFactory
                 }
 
                 $methodBuilder->addParam($paramBuilder->getNode());
+
+                // set all default values
+                // if a method is called with two few arguments, a native exception will be thrown
+                // so we can safely use null as a placeholder here.
+                $defaultValues[] = $reflectionParameter->isDefaultValueAvailable()
+                    ? $reflectionParameter->getDefaultValue()
+                    : null;
             }
 
             if (!$reflectionMethod->hasReturnType()) {
@@ -190,6 +203,8 @@ final class DefaultProxyFactory implements ProxyFactory
             /** @noinspection NullPointerExceptionInspection */
             $methodBuilder->setReturnType('\\'.(string)$reflectionMethod->getReturnType());
 
+            $defaultNodes = $this->mapArray($defaultValues);
+
             $methodBuilder->addStmt(
                 new Return_(
                     new MethodCall(
@@ -198,7 +213,8 @@ final class DefaultProxyFactory implements ProxyFactory
                         [
                             new String_($reflectionClass->name),
                             new ConstFetch(new Name('__FUNCTION__')),
-                            new FuncCall(new Name('func_get_args'))
+                            new FuncCall(new Name('func_get_args')),
+                            new Array_($defaultNodes)
                         ]
                     )
                 )
@@ -206,7 +222,6 @@ final class DefaultProxyFactory implements ProxyFactory
 
             $builder->addStmt($methodBuilder->getNode());
         }
-
 
         $namespaceBuilder = $this->builderFactory
             ->namespace(self::PROXY_PREFIX.$reflectionClass->getNamespaceName())
@@ -237,5 +252,53 @@ final class DefaultProxyFactory implements ProxyFactory
         }
 
         return new $className($this->serviceMethodFactory, $this->httpClient);
+    }
+
+    /**
+     * Convert array to an array of [@see Expr] to add to builder
+     *
+     * @param array $array
+     * @return Expr[]
+     */
+    private function mapArray(array $array): array
+    {
+        // for each element in the array, create an Expr object
+        $values = array_values(array_map(function ($value) {
+            $type = TypeToken::createFromVariable($value);
+            switch ($type) {
+                case TypeToken::STRING:
+                    return new String_($value);
+                case TypeToken::INTEGER:
+                    return new LNumber($value);
+                case TypeToken::FLOAT:
+                    return new DNumber($value);
+                case TypeToken::BOOLEAN:
+                    return $value === true ? new ConstFetch(new Name('true')) : new ConstFetch(new Name('false'));
+                case TypeToken::HASH:
+                    // recurse if array contains an array
+                    return new Array_($this->mapArray($value));
+                case TypeToken::NULL:
+                    return new ConstFetch(new Name('null'));
+            }
+        }, $array));
+
+        $keys = \array_keys($array);
+        $isNumericKeys = \count(\array_filter($keys, '\is_string')) === 0;
+
+        // a 0-indexed array can be returned as-is
+        if ($isNumericKeys) {
+            return $values;
+        }
+
+        // if we're dealing with an associative array, run the keys through the mapper
+        $keys = $this->mapArray($keys);
+
+        // create an array of ArrayItem objects for an associative array
+        $items = [];
+        foreach ($values as $index => $value) {
+            $items[] = new Expr\ArrayItem($value, $keys[$index]);
+        }
+
+        return $items;
     }
 }

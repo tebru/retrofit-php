@@ -44,6 +44,10 @@ final class HeaderMapParamHandler extends AbstractParameterHandler
      */
     public function apply(RequestBuilder $requestBuilder, $map): void
     {
+        if ($map === null) {
+            return;
+        }
+
         foreach ($map as $name => $value) {
             foreach ($this->getListValues($value) as $element) {
                 $requestBuilder->addHeader($name, $this->converter->convert($element));

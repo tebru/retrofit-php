@@ -56,6 +56,10 @@ final class PartParamHandler extends AbstractParameterHandler
      */
     public function apply(RequestBuilder $requestBuilder, $value): void
     {
+        if ($value === null) {
+            return;
+        }
+
         $this->handlePart($requestBuilder, $this->converter, $this->name, $value, $this->encoding);
     }
 }

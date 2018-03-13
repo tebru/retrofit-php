@@ -197,11 +197,11 @@ class PFTCTestCreate extends \Tebru\Retrofit\Proxy\AbstractProxy implements \Teb
 {
     public function simple(string $path, \stdClass $body, string &$query = 'foo', string ...$fields) : \Tebru\Retrofit\Call
     {
-        return $this->__handleRetrofitRequest('Tebru\\Retrofit\\Test\\Mock\\Unit\\Internal\\ProxyFactoryTest\\PFTCTestCreate', __FUNCTION__, func_get_args());
+        return $this->__handleRetrofitRequest('Tebru\\Retrofit\\Test\\Mock\\Unit\\Internal\\ProxyFactoryTest\\PFTCTestCreate', __FUNCTION__, func_get_args(), array(null, null, 'foo', null));
     }
     public static function static() : \Tebru\Retrofit\Call
     {
-        return $this->__handleRetrofitRequest('Tebru\\Retrofit\\Test\\Mock\\Unit\\Internal\\ProxyFactoryTest\\PFTCTestCreate', __FUNCTION__, func_get_args());
+        return $this->__handleRetrofitRequest('Tebru\\Retrofit\\Test\\Mock\\Unit\\Internal\\ProxyFactoryTest\\PFTCTestCreate', __FUNCTION__, func_get_args(), array());
     }
 }
 EOT;

@@ -45,7 +45,7 @@ class ParameterHandlersTest extends TestCase
 
     public function setUp()
     {
-        $this->requestBuilder = new RequestBuilder('GET', 'http://example.com', '/test/{path}?q=test', [], false);
+        $this->requestBuilder = new RequestBuilder('GET', 'http://example.com', '/test/{path}?q=test', []);
     }
 
     public function testBodyHandler()
@@ -102,6 +102,13 @@ class ParameterHandlersTest extends TestCase
     public function testFieldMapHandlerEmpty()
     {
         (new FieldMapParamHandler(new DefaultStringConverter(), false))->apply($this->requestBuilder, []);
+
+        self::assertAttributeSame([], 'fields', $this->requestBuilder);
+    }
+
+    public function testFieldMapHandlerNull()
+    {
+        (new FieldMapParamHandler(new DefaultStringConverter(), false))->apply($this->requestBuilder, null);
 
         self::assertAttributeSame([], 'fields', $this->requestBuilder);
     }
@@ -164,6 +171,13 @@ class ParameterHandlersTest extends TestCase
     public function testHeaderMapHandlerEmpty()
     {
         (new HeaderMapParamHandler(new DefaultStringConverter()))->apply($this->requestBuilder, []);
+
+        self::assertAttributeSame([], 'headers', $this->requestBuilder);
+    }
+
+    public function testHeaderMapHandlerNull()
+    {
+        (new HeaderMapParamHandler(new DefaultStringConverter()))->apply($this->requestBuilder, null);
 
         self::assertAttributeSame([], 'headers', $this->requestBuilder);
     }
@@ -278,6 +292,13 @@ class ParameterHandlersTest extends TestCase
         self::assertAttributeSame([], 'parts', $this->requestBuilder);
     }
 
+    public function testPartMapHandlerNull()
+    {
+        (new PartMapParamHandler(new DefaultRequestBodyConverter(), 'binary'))->apply($this->requestBuilder, null);
+
+        self::assertAttributeSame([], 'parts', $this->requestBuilder);
+    }
+
     public function testPartHandler()
     {
         $stream = stream_for('bar');
@@ -320,6 +341,13 @@ class ParameterHandlersTest extends TestCase
         (new PartParamHandler(new DefaultRequestBodyConverter(), 'foo', 'binary'))->apply($this->requestBuilder, $multipart);
 
         self::assertAttributeSame($expected, 'parts', $this->requestBuilder);
+    }
+
+    public function testPartHandlerNull()
+    {
+        (new PartParamHandler(new DefaultRequestBodyConverter(), 'foo', 'binary'))->apply($this->requestBuilder, null);
+
+        self::assertAttributeSame([], 'parts', $this->requestBuilder);
     }
 
     public function testPathHandler()
@@ -378,6 +406,13 @@ class ParameterHandlersTest extends TestCase
     public function testQueryMapHandlerEmpty()
     {
         (new QueryMapParamHandler(new DefaultStringConverter(), false))->apply($this->requestBuilder, []);
+
+        self::assertAttributeSame([], 'queries', $this->requestBuilder);
+    }
+
+    public function testQueryMapHandlerNull()
+    {
+        (new QueryMapParamHandler(new DefaultStringConverter(), false))->apply($this->requestBuilder, null);
 
         self::assertAttributeSame([], 'queries', $this->requestBuilder);
     }

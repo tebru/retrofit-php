@@ -18,7 +18,7 @@ use Tebru\Retrofit\Proxy;
  *
  * @author Nate Brunette <n@tebru.net>
  */
-class RetrofitTestDelegateProxy implements ApiClient, Proxy
+class RetrofitTestDelegateProxy implements ApiClient, DefaultParamsApiClient, Proxy
 {
     /**
      * @var Proxy
@@ -36,17 +36,17 @@ class RetrofitTestDelegateProxy implements ApiClient, Proxy
 
     public function get(): Call
     {
-        return $this->__handleRetrofitRequest(ApiClient::class, __FUNCTION__, func_get_args());
+        return $this->__handleRetrofitRequest(ApiClient::class, __FUNCTION__, func_get_args(), []);
     }
 
     public function uri(string $newUrl, array $queryMap, array $query1, bool $query2, string $path): Call
     {
-        return $this->__handleRetrofitRequest(ApiClient::class, __FUNCTION__, func_get_args());
+        return $this->__handleRetrofitRequest(ApiClient::class, __FUNCTION__, func_get_args(), []);
     }
 
     public function headers(array $headerMap, array $header1, int $header2): Call
     {
-        return $this->__handleRetrofitRequest(ApiClient::class, __FUNCTION__, func_get_args());
+        return $this->__handleRetrofitRequest(ApiClient::class, __FUNCTION__, func_get_args(), []);
     }
 
     /**
@@ -54,32 +54,57 @@ class RetrofitTestDelegateProxy implements ApiClient, Proxy
      */
     public function postWithoutBody(): Call
     {
-        return $this->__handleRetrofitRequest(ApiClient::class, __FUNCTION__, func_get_args());
+        return $this->__handleRetrofitRequest(ApiClient::class, __FUNCTION__, func_get_args(), []);
     }
 
     public function body(RetrofitTestRequestBodyMock $requestBody): Call
     {
-        return $this->__handleRetrofitRequest(ApiClient::class, __FUNCTION__, func_get_args());
+        return $this->__handleRetrofitRequest(ApiClient::class, __FUNCTION__, func_get_args(), []);
     }
 
     public function field(float $field1, bool $field2, string $field3, array $fieldMap): Call
     {
-        return $this->__handleRetrofitRequest(ApiClient::class, __FUNCTION__, func_get_args());
+        return $this->__handleRetrofitRequest(ApiClient::class, __FUNCTION__, func_get_args(), []);
     }
 
     public function part(RetrofitTestRequestBodyMock $part1, MultipartBody $part2, array $partMap): Call
     {
-        return $this->__handleRetrofitRequest(ApiClient::class, __FUNCTION__, func_get_args());
+        return $this->__handleRetrofitRequest(ApiClient::class, __FUNCTION__, func_get_args(), []);
     }
 
     public function callAdapter(): RetrofitTestAdaptedCallMock
     {
-        return $this->__handleRetrofitRequest(ApiClient::class, __FUNCTION__, func_get_args());
+        return $this->__handleRetrofitRequest(ApiClient::class, __FUNCTION__, func_get_args(), []);
     }
 
     public function customAnnotation(): Call
     {
-        return $this->__handleRetrofitRequest(ApiClient::class, __FUNCTION__, func_get_args());
+        return $this->__handleRetrofitRequest(ApiClient::class, __FUNCTION__, func_get_args(), []);
+    }
+
+    /**
+     * @param string $string
+     * @param bool $bool
+     * @param int $int
+     * @param float $float
+     * @param array $array
+     * @param ApiClient|null $client
+     * @return Call
+     */
+    public function getWithDefaults(
+        ?string $string = 'test',
+        ?bool $bool = true,
+        ?int $int = 1,
+        ?float $float = 3.2,
+        ?array $array = [],
+        ?ApiClient $client = null
+    ): Call {
+        return $this->__handleRetrofitRequest(
+            DefaultParamsApiClient::class,
+            __FUNCTION__,
+            func_get_args(),
+            ['test', true, 1, 3.2, [], null]
+        );
     }
 
     /**
@@ -89,10 +114,11 @@ class RetrofitTestDelegateProxy implements ApiClient, Proxy
      * @param string $interfaceName
      * @param string $methodName
      * @param array $args
+     * @param array $defaultArgs
      * @return mixed
      */
-    public function __handleRetrofitRequest(string $interfaceName, string $methodName, array $args)
+    public function __handleRetrofitRequest(string $interfaceName, string $methodName, array $args, array $defaultArgs)
     {
-        return $this->proxy->__handleRetrofitRequest($interfaceName, $methodName, $args);
+        return $this->proxy->__handleRetrofitRequest($interfaceName, $methodName, $args, []);
     }
 }

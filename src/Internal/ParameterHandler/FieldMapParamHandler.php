@@ -50,6 +50,10 @@ final class FieldMapParamHandler extends AbstractParameterHandler
      */
     public function apply(RequestBuilder $requestBuilder, $map): void
     {
+        if ($map === null) {
+            return;
+        }
+
         foreach ($map as $name => $value) {
             foreach ($this->getListValues($value) as $element) {
                 $requestBuilder->addField($name, $this->converter->convert($element), $this->encoded);

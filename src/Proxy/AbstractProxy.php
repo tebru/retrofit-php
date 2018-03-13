@@ -20,6 +20,8 @@ use Tebru\Retrofit\Proxy;
  */
 abstract class AbstractProxy implements Proxy
 {
+    public const RETROFIT_NO_DEFAULT_VALUE = '__retrofit_no_default_value__';
+
     /**
      * Creates a [@see DefaultServiceMethod]
      *
@@ -54,14 +56,36 @@ abstract class AbstractProxy implements Proxy
      * @param string $interfaceName
      * @param string $methodName
      * @param array $args
+     * @param array $defaultArgs
      * @return mixed
-     * @throws \LogicException
-     *
      */
-    public function __handleRetrofitRequest(string $interfaceName, string $methodName, array $args)
+    public function __handleRetrofitRequest(string $interfaceName, string $methodName, array $args, array $defaultArgs)
     {
+        $args = $this->createArgs($args, $defaultArgs);
         $serviceMethod = $this->serviceMethodFactory->create($interfaceName, $methodName);
 
         return $serviceMethod->adapt(new HttpClientCall($this->client, $serviceMethod, $args));
+    }
+
+    /**
+     * Append any default args to argument array
+     *
+     * @param array $args
+     * @param array $defaultArgs
+     * @return array
+     */
+    private function createArgs(array $args, array $defaultArgs): array
+    {
+        $numProvidedArgs = \count($args);
+        $numArgs = \count($defaultArgs);
+
+        if ($numArgs === $numProvidedArgs) {
+            return $args;
+        }
+
+        // get arguments from end that were not provided
+        $appendedArgs = \array_slice($defaultArgs, $numProvidedArgs);
+
+        return \array_merge($args, $appendedArgs);
     }
 }

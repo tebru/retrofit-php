@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Tebru\Retrofit\RetrofitBuilder;
 use Tebru\Retrofit\Test\Mock\Unit\RetrofitTest\ApiClient;
 use Tebru\Retrofit\Test\Mock\Unit\RetrofitTest\CacheableApiClient;
+use Tebru\Retrofit\Test\Mock\Unit\RetrofitTest\DefaultParamsApiClient;
 use Tebru\Retrofit\Test\Mock\Unit\RetrofitTest\InvalidSyntaxApiClient;
 use Tebru\Retrofit\Test\Mock\Unit\RetrofitTest\RetrofitTestAdaptedCallMock;
 use Tebru\Retrofit\Test\Mock\Unit\RetrofitTest\RetrofitTestCallAdapterFactory;
@@ -292,6 +293,63 @@ class RetrofitTest extends TestCase
         self::assertSame(['Host' => ['example.com'], 'foo' => ['bar']], $request->getHeaders());
     }
 
+    public function testGetWithDefaults()
+    {
+        $retrofit = $this->retrofitBuilder->build();
+
+        /** @var DefaultParamsApiClient $service */
+        $service = $retrofit->create(DefaultParamsApiClient::class);
+
+        $service->getWithDefaults()->execute();
+
+        self::assertCount(1, $this->httpClient->requests);
+
+        $request = $this->httpClient->requests[0];
+
+        self::assertSame('GET', $request->getMethod());
+        self::assertSame('http://example.com/?string=test&bool=true&int=1&float=3.2', (string)$request->getUri());
+        self::assertSame('', (string)$request->getBody());
+        self::assertSame(['Host' => ['example.com'], 'test' => ['value']], $request->getHeaders());
+    }
+
+    public function testGetWithSomeDefaults()
+    {
+        $retrofit = $this->retrofitBuilder->build();
+
+        /** @var DefaultParamsApiClient $service */
+        $service = $retrofit->create(DefaultParamsApiClient::class);
+
+        $service->getWithDefaults('test2', false)->execute();
+
+        self::assertCount(1, $this->httpClient->requests);
+
+        $request = $this->httpClient->requests[0];
+
+        self::assertSame('GET', $request->getMethod());
+        self::assertSame('http://example.com/?string=test2&bool=false&int=1&float=3.2', (string)$request->getUri());
+        self::assertSame('', (string)$request->getBody());
+        self::assertSame(['Host' => ['example.com'], 'test' => ['value']], $request->getHeaders());
+    }
+
+    public function testGetWithNullDefaults()
+    {
+        $retrofit = $this->retrofitBuilder->build();
+
+        /** @var DefaultParamsApiClient $service */
+        $service = $retrofit->create(DefaultParamsApiClient::class);
+
+        $service->getWithDefaults(null, null, null, null, null, null)->execute();
+
+        self::assertCount(1, $this->httpClient->requests);
+
+        $request = $this->httpClient->requests[0];
+
+        self::assertSame('GET', $request->getMethod());
+        self::assertSame('http://example.com/', (string)$request->getUri());
+        self::assertSame('', (string)$request->getBody());
+        self::assertSame(['Host' => ['example.com']], $request->getHeaders());
+    }
+
     public function testCache()
     {
         $cacheDir = __DIR__.'/../cache';
@@ -369,7 +427,7 @@ class RetrofitTest extends TestCase
     {
         $retrofit = $this->retrofitBuilder->build();
 
-        self::assertSame(3, $retrofit->createAll(__DIR__.'/../Mock/Unit/RetrofitTest/'));
+        self::assertSame(4, $retrofit->createAll(__DIR__.'/../Mock/Unit/RetrofitTest/'));
     }
 
     public function testCreateThrowsExceptionWithoutFactory()

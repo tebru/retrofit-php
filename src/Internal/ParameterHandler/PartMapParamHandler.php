@@ -50,6 +50,10 @@ final class PartMapParamHandler extends AbstractParameterHandler
      */
     public function apply(RequestBuilder $requestBuilder, $map): void
     {
+        if ($map === null) {
+            return;
+        }
+
         foreach ($map as $name => $value) {
             $this->handlePart($requestBuilder, $this->converter, $name, $value, $this->encoding);
         }
