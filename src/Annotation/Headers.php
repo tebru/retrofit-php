@@ -14,7 +14,7 @@ use Tebru\AnnotationReader\AbstractAnnotation;
 
 /**
  * Adds headers statically supplied in the value.
- * 
+ *
  *     @Headers("Cache-Control: max-age=640000")
  *     @Headers({
  *         "X-Foo: Bar",

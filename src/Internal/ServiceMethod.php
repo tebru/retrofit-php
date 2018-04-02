@@ -10,7 +10,6 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Tebru\Retrofit\Call;
 
-
 /**
  * Class ServiceMethod
  *

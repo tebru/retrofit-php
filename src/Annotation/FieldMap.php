@@ -32,5 +32,4 @@ class FieldMap extends Encodable
     {
         return true;
     }
-
 }

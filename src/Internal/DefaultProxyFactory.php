@@ -241,9 +241,11 @@ final class DefaultProxyFactory implements ProxyFactory
 
         $class = '<?php'.PHP_EOL.PHP_EOL.$source;
         if (!$this->filesystem->makeDirectory($directory)) {
-            throw new RuntimeException(sprintf(
-                'Retrofit: There was an issue creating the cache directory: %s',
-                $directory)
+            throw new RuntimeException(
+                sprintf(
+                    'Retrofit: There was an issue creating the cache directory: %s',
+                    $directory
+                )
             );
         }
 

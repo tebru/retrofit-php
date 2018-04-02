@@ -60,7 +60,10 @@ class CompileCommand extends Command
              * @param RequestInterface $request
              * @return ResponseInterface
              */
-            public function send(RequestInterface $request): ResponseInterface { return new Response(); }
+            public function send(RequestInterface $request): ResponseInterface
+            {
+                return new Response();
+            }
 
             /**
              * Send a request asynchronously
@@ -76,14 +79,18 @@ class CompileCommand extends Command
              * @param callable $onFailure
              * @return void
              */
-            public function sendAsync(RequestInterface $request, callable $onResponse, callable $onFailure): void { }
+            public function sendAsync(RequestInterface $request, callable $onResponse, callable $onFailure): void
+            {
+            }
 
             /**
              * Calling this method should execute any enqueued requests asynchronously
              *
              * @return void
              */
-            public function wait(): void { }
+            public function wait(): void
+            {
+            }
         };
 
         $retrofit = Retrofit::builder()

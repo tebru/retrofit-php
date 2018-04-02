@@ -136,7 +136,8 @@ final class ServiceMethodFactory
                 } catch (LogicException $exception) {
                     throw new LogicException(
                         $exception->getMessage() .
-                        sprintf(' for %s::%s()',
+                        sprintf(
+                            ' for %s::%s()',
                             $reflectionMethod->getDeclaringClass()->name,
                             $reflectionMethod->name
                         )
