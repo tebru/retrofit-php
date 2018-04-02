@@ -12,21 +12,22 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use LogicException;
 use PhpParser\BuilderFactory;
 use PhpParser\PrettyPrinter\Standard;
+use Psr\SimpleCache\CacheInterface;
 use Symfony\Component\Cache\Simple\ArrayCache;
 use Symfony\Component\Cache\Simple\ChainCache;
-use Symfony\Component\Cache\Simple\FilesystemCache;
+use Symfony\Component\Cache\Simple\PhpFilesCache;
 use Tebru\AnnotationReader\AnnotationReaderAdapter;
 use Tebru\Retrofit\Annotation as Annot;
 use Tebru\Retrofit\Finder\ServiceResolver;
 use Tebru\Retrofit\Internal\AnnotationHandler as AnnotHandler;
 use Tebru\Retrofit\Internal\AnnotationProcessor;
 use Tebru\Retrofit\Internal\CallAdapter\CallAdapterProvider;
-use Tebru\Retrofit\Internal\Converter\ConverterProvider;
 use Tebru\Retrofit\Internal\CallAdapter\DefaultCallAdapterFactory;
+use Tebru\Retrofit\Internal\Converter\ConverterProvider;
+use Tebru\Retrofit\Internal\Converter\DefaultConverterFactory;
 use Tebru\Retrofit\Internal\DefaultProxyFactory;
 use Tebru\Retrofit\Internal\Filesystem;
 use Tebru\Retrofit\Internal\ServiceMethod\ServiceMethodFactory;
-use Tebru\Retrofit\Internal\Converter\DefaultConverterFactory;
 
 /**
  * Class RetrofitBuilder
@@ -35,6 +36,17 @@ use Tebru\Retrofit\Internal\Converter\DefaultConverterFactory;
  */
 class RetrofitBuilder
 {
+    /**
+     * A cache interface to be used in place of defaults
+     *
+     * If this is set, [@see RetrofitBuilder::$shouldCache] will be ignored for internal
+     * caches, however, [@see RetrofitBuilder::$shouldCache] and
+     * [@see RetrofitBuilder::$cacheDir] will still be used to cache proxy clients.
+     *
+     * @var CacheInterface
+     */
+    private $cache;
+
     /**
      * Directory to store generated proxy clients
      *
@@ -90,6 +102,19 @@ class RetrofitBuilder
      * @var bool
      */
     private $shouldCache = false;
+
+    /**
+     * Override default cache adapters
+     *
+     * @param CacheInterface $cache
+     * @return RetrofitBuilder
+     */
+    public function setCache(CacheInterface $cache): RetrofitBuilder
+    {
+        $this->cache = $cache;
+
+        return $this;
+    }
 
     /**
      * Set the cache directory
@@ -241,9 +266,11 @@ class RetrofitBuilder
         $this->callAdapterFactories[] = new DefaultCallAdapterFactory();
         $this->converterFactories[] = new DefaultConverterFactory();
 
-        $cache = $this->shouldCache
-            ? new ChainCache([new ArrayCache(), new FilesystemCache()])
-            : new ArrayCache();
+        if ($this->cache === null) {
+            $this->cache = $this->shouldCache === true
+                ? new ChainCache([new ArrayCache(0, false), new PhpFilesCache('', 0, $this->cacheDir)])
+                : new ArrayCache(0, false);
+        }
 
         $httpRequestHandler = new AnnotHandler\HttpRequestAnnotHandler();
 
@@ -278,7 +305,7 @@ class RetrofitBuilder
             new AnnotationProcessor($annotationHandlers),
             new CallAdapterProvider($this->callAdapterFactories),
             new ConverterProvider($this->converterFactories),
-            new AnnotationReaderAdapter(new AnnotationReader(), $cache),
+            new AnnotationReaderAdapter(new AnnotationReader(), $this->cache),
             $this->baseUrl
         );
 

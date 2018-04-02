@@ -8,6 +8,8 @@ namespace Tebru\Retrofit\Test\Unit;
 
 use LogicException;
 use RuntimeException;
+use Symfony\Component\Cache\Simple\ArrayCache;
+use Tebru\Retrofit\Annotation\GET;
 use Tebru\Retrofit\Finder\ServiceResolver;
 use Tebru\Retrofit\Http\MultipartBody;
 use Tebru\Retrofit\Retrofit;
@@ -375,6 +377,23 @@ class RetrofitTest extends TestCase
 
         self::assertFileExists($file);
         unlink($file);
+    }
+
+    public function testCustomCache()
+    {
+        $cache = new ArrayCache(0, false);
+
+        $retrofit = $this->retrofitBuilder
+            ->setCache($cache)
+            ->build();
+
+        /** @var CacheableApiClient $service */
+        $service = $retrofit->create(CacheableApiClient::class);
+
+        $service->get()->execute();
+
+        $annotation = new GET(['value' => '/']);
+        self::assertEquals([GET::class => $annotation], $cache->get('annotationreader.TebruRetrofitTestMockUnitRetrofitTestCacheableApiClientget'));
     }
 
     public function testBuilderThrowsExceptionWithoutBaseUrl()

@@ -3,6 +3,12 @@ Change Log
 
 This document keeps track of important changes between releases of the library.
 
+3.1.0
+-----
+
+* ADDED: Ability to set custom cache adapter
+* CHANGED: Default cache to use php file cache over filesystem cache
+
 3.0.3
 -----
 
