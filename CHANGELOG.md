@@ -3,6 +3,12 @@ Change Log
 
 This document keeps track of important changes between releases of the library.
 
+3.2.0
+-----
+
+* ADDED: Exception handling on response body conversion (Should not be a
+BC break unless applications are checking for specific exceptions)
+
 3.1.0
 -----
 

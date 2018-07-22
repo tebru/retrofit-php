@@ -11,6 +11,7 @@ namespace Tebru\Retrofit\Internal;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Tebru\Retrofit\Call;
+use Tebru\Retrofit\Exception\ResponseHandlingFailedException;
 use Tebru\Retrofit\HttpClient;
 use Tebru\Retrofit\Response;
 use Throwable;
@@ -157,12 +158,30 @@ final class HttpClientCall implements Call
     {
         $code = $response->getStatusCode();
         if ($code >= 200 && $code < 300) {
-            $responseBody = $this->serviceMethod->toResponseBody($response);
+            try {
+                $responseBody = $this->serviceMethod->toResponseBody($response);
+            } catch (Throwable $throwable) {
+                throw new ResponseHandlingFailedException(
+                    $this->request(),
+                    $response,
+                    'Retrofit: Could not convert response body',
+                    $throwable
+                );
+            }
 
             return new RetrofitResponse($response, $responseBody, null);
         }
 
-        $errorBody = $this->serviceMethod->toErrorBody($response);
+        try {
+            $errorBody = $this->serviceMethod->toErrorBody($response);
+        } catch (Throwable $throwable) {
+            throw new ResponseHandlingFailedException(
+                $this->request(),
+                $response,
+                'Retrofit: Could not convert error body',
+                $throwable
+            );
+        }
 
         return new RetrofitResponse($response, null, $errorBody);
     }

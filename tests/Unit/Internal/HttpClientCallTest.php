@@ -9,7 +9,7 @@ namespace Tebru\Retrofit\Test\Unit\Internal;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use RuntimeException;
-use Tebru\Retrofit\Call;
+use Tebru\Retrofit\Exception\ResponseHandlingFailedException;
 use Tebru\Retrofit\Internal\HttpClientCall;
 use Tebru\Retrofit\Response as RetrofitResponse;
 use PHPUnit\Framework\TestCase;
@@ -157,6 +157,104 @@ class HttpClientCallTest extends TestCase
             $call->wait();
         } catch (RuntimeException $exception) {
             self::assertTrue(true);
+            return;
+        }
+
+        self::fail('Exception not thrown');
+    }
+
+    public function testSyncInvalidJsonResponseThrowsException()
+    {
+        $request = new Request('GET', 'http://example.com/');
+        $response = new Response(204, [], '{');
+
+        $responseBody = new HttpClientCallTestResponseBodyMock();
+
+        $call = new HttpClientCall(
+            new HttpClientCallTestClientMock($response),
+            new HttpClientCallTestServiceMethodMock($request, $responseBody),
+            []
+        );
+
+        try {
+            $call->execute();
+        } catch (ResponseHandlingFailedException $exception) {
+            self::assertSame('GET', $exception->getRequest()->getMethod());
+            self::assertSame('{', (string)$exception->getResponse()->getBody());
+            return;
+        }
+
+        self::fail('Exception not thrown');
+    }
+
+    public function testSyncInvalidJsonErrorThrowsException()
+    {
+        $request = new Request('GET', 'http://example.com/');
+        $response = new Response(400, [], '{');
+
+        $responseBody = new HttpClientCallTestResponseBodyMock();
+
+        $call = new HttpClientCall(
+            new HttpClientCallTestClientMock($response),
+            new HttpClientCallTestServiceMethodMock($request, $responseBody),
+            []
+        );
+
+        try {
+            $call->execute();
+        } catch (ResponseHandlingFailedException $exception) {
+            self::assertSame('GET', $exception->getRequest()->getMethod());
+            self::assertSame('{', (string)$exception->getResponse()->getBody());
+            return;
+        }
+
+        self::fail('Exception not thrown');
+    }
+
+    public function testAsyncInvalidJsonResponseThrowsExceptions()
+    {
+        $request = new Request('GET', 'http://example.com/');
+        $response = new Response(204, [], '{');
+        $responseBody = new HttpClientCallTestResponseBodyMock();
+
+        $call = new HttpClientCall(
+            new HttpClientCallTestClientMock($response),
+            new HttpClientCallTestServiceMethodMock($request, $responseBody),
+            []
+        );
+
+        $call->enqueue(function () {});
+
+        try {
+            $call->wait();
+        } catch (ResponseHandlingFailedException $exception) {
+            self::assertSame('GET', $exception->getRequest()->getMethod());
+            self::assertSame('{', (string)$exception->getResponse()->getBody());
+            return;
+        }
+
+        self::fail('Exception not thrown');
+    }
+
+    public function testAsyncInvalidJsonerrorThrowsExceptions()
+    {
+        $request = new Request('GET', 'http://example.com/');
+        $response = new Response(400, [], '{');
+        $responseBody = new HttpClientCallTestResponseBodyMock();
+
+        $call = new HttpClientCall(
+            new HttpClientCallTestClientMock($response),
+            new HttpClientCallTestServiceMethodMock($request, $responseBody),
+            []
+        );
+
+        $call->enqueue(function () {});
+
+        try {
+            $call->wait();
+        } catch (ResponseHandlingFailedException $exception) {
+            self::assertSame('GET', $exception->getRequest()->getMethod());
+            self::assertSame('{', (string)$exception->getResponse()->getBody());
             return;
         }
 

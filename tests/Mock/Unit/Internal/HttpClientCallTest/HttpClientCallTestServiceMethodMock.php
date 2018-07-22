@@ -72,6 +72,8 @@ class HttpClientCallTestServiceMethodMock implements ServiceMethod
      */
     public function toResponseBody(ResponseInterface $response)
     {
+        $this->checkResponse($response);
+
         return $this->response;
     }
 
@@ -83,6 +85,8 @@ class HttpClientCallTestServiceMethodMock implements ServiceMethod
      */
     public function toErrorBody(ResponseInterface $response)
     {
+        $this->checkResponse($response);
+
         return $this->error;
     }
 
@@ -95,5 +99,19 @@ class HttpClientCallTestServiceMethodMock implements ServiceMethod
     public function adapt(Call $call)
     {
         return $call;
+    }
+
+    private function checkResponse(ResponseInterface $response): void
+    {
+        $body = (string)$response->getBody();
+        if ($body === '') {
+            return;
+        }
+
+        json_decode($body);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \RuntimeException();
+        }
     }
 }
