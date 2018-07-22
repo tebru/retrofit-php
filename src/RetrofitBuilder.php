@@ -23,6 +23,7 @@ use Tebru\Retrofit\Internal\AnnotationHandler as AnnotHandler;
 use Tebru\Retrofit\Internal\AnnotationProcessor;
 use Tebru\Retrofit\Internal\CallAdapter\CallAdapterProvider;
 use Tebru\Retrofit\Internal\CallAdapter\DefaultCallAdapterFactory;
+use Tebru\Retrofit\Internal\CallAdapter\SynchronousCallAdapter;
 use Tebru\Retrofit\Internal\Converter\ConverterProvider;
 use Tebru\Retrofit\Internal\Converter\DefaultConverterFactory;
 use Tebru\Retrofit\Internal\DefaultProxyFactory;
@@ -263,7 +264,10 @@ class RetrofitBuilder
         $this->cacheDir .= '/retrofit';
 
         // add defaults to any user registered
-        $this->callAdapterFactories[] = new DefaultCallAdapterFactory();
+        $this->callAdapterFactories[] = [
+            new SynchronousCallAdapter(),
+            new DefaultCallAdapterFactory(),
+        ];
         $this->converterFactories[] = new DefaultConverterFactory();
 
         if ($this->cache === null) {
