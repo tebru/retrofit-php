@@ -111,7 +111,7 @@ because it can handle the conversion from any type to json and back.
 Adding it to the builder is simple
 
 ```php
-RetrofitBuilder::builder()
+Retrofit::builder()
     // ...
     ->addConverterFactory(new GsonConverterFactory(Gson::builder()->build()))
     // ...

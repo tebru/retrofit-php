@@ -48,7 +48,7 @@ Then, the `Retrofit` class generates a working implementation of the
 service interface.
 
 ```php
-$retrofit = RetrofitBuilder::builder()
+$retrofit = Retrofit::builder()
     ->setBaseUrl('https://api.github.com')
     ->setHttpClient(new Guzzle6HttpClient(new Client())) // requires a separate library
     ->addConverterFactory(new GsonConverterFactory(Gson::builder()->build())) // requies a separate library
