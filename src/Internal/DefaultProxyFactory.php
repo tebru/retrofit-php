@@ -166,7 +166,7 @@ final class DefaultProxyFactory implements ProxyFactory
                     ));
                 }
 
-                $reflectionTypeName = (string)$reflectionParameter->getType();
+                $reflectionTypeName = $reflectionParameter->getType()->getName();
                 if ((new TypeToken($reflectionTypeName))->isObject()) {
                     $reflectionTypeName = '\\'.$reflectionTypeName;
                 }
