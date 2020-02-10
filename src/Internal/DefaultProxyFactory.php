@@ -201,7 +201,7 @@ final class DefaultProxyFactory implements ProxyFactory
             }
 
             /** @noinspection NullPointerExceptionInspection */
-            $methodBuilder->setReturnType('\\'.(string)$reflectionMethod->getReturnType());
+            $methodBuilder->setReturnType('\\'.$reflectionMethod->getReturnType()->getName());
 
             $defaultNodes = $this->mapArray($defaultValues);
 

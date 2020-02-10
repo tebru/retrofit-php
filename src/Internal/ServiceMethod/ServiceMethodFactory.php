@@ -115,7 +115,7 @@ final class ServiceMethodFactory
         }
 
         /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
-        $returnTypeToken = new TypeToken((string)$returnType);
+        $returnTypeToken = new TypeToken($returnType->getName());
 
         $serviceMethodBuilder->setBaseUrl($this->baseUrl);
         $serviceMethodBuilder->setCallAdapter($this->callAdapterProvider->get($returnTypeToken));
