@@ -13,14 +13,12 @@ use LogicException;
 use PhpParser\BuilderFactory;
 use PhpParser\PrettyPrinter\Standard;
 use Psr\SimpleCache\CacheInterface;
-use Symfony\Component\Cache\Simple\ArrayCache;
-use Symfony\Component\Cache\Simple\ChainCache;
-use Symfony\Component\Cache\Simple\PhpFilesCache;
 use Tebru\AnnotationReader\AnnotationReaderAdapter;
 use Tebru\Retrofit\Annotation as Annot;
 use Tebru\Retrofit\Finder\ServiceResolver;
 use Tebru\Retrofit\Internal\AnnotationHandler as AnnotHandler;
 use Tebru\Retrofit\Internal\AnnotationProcessor;
+use Tebru\Retrofit\Internal\CacheProvider;
 use Tebru\Retrofit\Internal\CallAdapter\CallAdapterProvider;
 use Tebru\Retrofit\Internal\CallAdapter\DefaultCallAdapterFactory;
 use Tebru\Retrofit\Internal\Converter\ConverterProvider;
@@ -268,8 +266,8 @@ class RetrofitBuilder
 
         if ($this->cache === null) {
             $this->cache = $this->shouldCache === true
-                ? new ChainCache([new ArrayCache(0, false), new PhpFilesCache('', 0, $this->cacheDir)])
-                : new ArrayCache(0, false);
+                ? CacheProvider::createFileCache($this->cacheDir)
+                : CacheProvider::createMemoryCache();
         }
 
         $httpRequestHandler = new AnnotHandler\HttpRequestAnnotHandler();

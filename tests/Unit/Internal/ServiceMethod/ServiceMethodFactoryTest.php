@@ -8,13 +8,13 @@ namespace Tebru\Retrofit\Test\Unit\Internal\ServiceMethod;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use LogicException;
-use Symfony\Component\Cache\Simple\NullCache;
 use Tebru\AnnotationReader\AnnotationReaderAdapter;
 use Tebru\Retrofit\Annotation\Body;
 use Tebru\Retrofit\Annotation\GET;
 use Tebru\Retrofit\Internal\AnnotationHandler\BodyAnnotHandler;
 use Tebru\Retrofit\Internal\AnnotationHandler\HttpRequestAnnotHandler;
 use Tebru\Retrofit\Internal\AnnotationProcessor;
+use Tebru\Retrofit\Internal\CacheProvider;
 use Tebru\Retrofit\Internal\CallAdapter\CallAdapterProvider;
 use Tebru\Retrofit\Internal\CallAdapter\DefaultCallAdapterFactory;
 use Tebru\Retrofit\Internal\Converter\ConverterProvider;
@@ -41,7 +41,7 @@ class ServiceMethodFactoryTest extends TestCase
             ]),
             new CallAdapterProvider([new DefaultCallAdapterFactory()]),
             new ConverterProvider([new DefaultConverterFactory(), new ServiceMethodFactoryTestConverterFactory()]),
-            new AnnotationReaderAdapter(new AnnotationReader(), new NullCache()),
+            new AnnotationReaderAdapter(new AnnotationReader(), CacheProvider::createNullCache()),
             'http://example.com'
         );
     }

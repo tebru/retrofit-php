@@ -8,10 +8,10 @@ namespace Tebru\Retrofit\Test\Unit;
 
 use LogicException;
 use RuntimeException;
-use Symfony\Component\Cache\Simple\ArrayCache;
 use Tebru\Retrofit\Annotation\GET;
 use Tebru\Retrofit\Finder\ServiceResolver;
 use Tebru\Retrofit\Http\MultipartBody;
+use Tebru\Retrofit\Internal\CacheProvider;
 use Tebru\Retrofit\Retrofit;
 use PHPUnit\Framework\TestCase;
 use Tebru\Retrofit\RetrofitBuilder;
@@ -381,7 +381,7 @@ class RetrofitTest extends TestCase
 
     public function testCustomCache()
     {
-        $cache = new ArrayCache(0, false);
+        $cache = CacheProvider::createMemoryCache();
 
         $retrofit = $this->retrofitBuilder
             ->setCache($cache)

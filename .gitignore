@@ -1,5 +1,6 @@
 /vendor
-/node_modules
+/composer.lock
 /tests/cache
 /build
 /.php_cs.cache
+
