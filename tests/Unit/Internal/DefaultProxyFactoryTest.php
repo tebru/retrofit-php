@@ -12,9 +12,9 @@ use LogicException;
 use PhpParser\BuilderFactory;
 use PhpParser\PrettyPrinter\Standard;
 use RuntimeException;
-use Symfony\Component\Cache\Simple\NullCache;
 use Tebru\AnnotationReader\AnnotationReaderAdapter;
 use Tebru\Retrofit\Internal\AnnotationProcessor;
+use Tebru\Retrofit\Internal\CacheProvider;
 use Tebru\Retrofit\Internal\CallAdapter\CallAdapterProvider;
 use Tebru\Retrofit\Internal\CallAdapter\DefaultCallAdapterFactory;
 use Tebru\Retrofit\Internal\Converter\ConverterProvider;
@@ -176,7 +176,7 @@ class DefaultProxyFactoryTest extends TestCase
                 ]),
                 new CallAdapterProvider([new DefaultCallAdapterFactory()]),
                 new ConverterProvider([new DefaultConverterFactory()]),
-                new AnnotationReaderAdapter(new AnnotationReader(), new NullCache()),
+                new AnnotationReaderAdapter(new AnnotationReader(), CacheProvider::createNullCache()),
                 'http://example.com'
             ),
             new ProxyFactoryTestHttpClient(),

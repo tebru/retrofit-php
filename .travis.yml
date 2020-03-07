@@ -7,19 +7,26 @@ php:
   - 7.3
   - 7.4
 
-matrix:
-    include:
-        - php: 7.1
-          env: dependencies=lowest
+env:
+  - SF_CACHE=3
+  - SF_CACHE=4
+  - SF_CACHE=4.3
+  - SF_CACHE=5
 
+jobs:
+  exclude:
+    - php: 7.1
+      env:
+        - SF_CACHE=5
+
+# remove composer.lock (it should not be published)
 before_script:
-  - rm composer.lock
   - composer install --no-interaction -o
-  - if [ "$dependencies" = "lowest" ]; then composer update -o --prefer-lowest; fi;
+  - if [ "$SF_CACHE" = "3" ]; then composer require symfony/cache:^3.3; fi;
+  - if [ "$SF_CACHE" = "4" ]; then composer require symfony/cache:">=4.0 <4.3"; fi;
+  - if [ "$SF_CACHE" = "4.3" ]; then composer require symfony/cache:^4.3; fi;
+  - if [ "$SF_CACHE" = "5" ]; then composer require symfony/cache:5.0; fi;
 
 script:
   - mkdir -p build/logs
   - vendor/bin/phpunit
-
-after_script:
-  - php bin/coveralls.phar -v
