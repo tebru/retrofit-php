@@ -22,17 +22,20 @@ use Tebru\Retrofit\Internal\Converter\DefaultConverterFactory;
 use Tebru\Retrofit\Internal\Converter\DefaultResponseBodyConverter;
 use Tebru\Retrofit\Internal\ServiceMethod\ServiceMethodFactory;
 use PHPUnit\Framework\TestCase;
+use Tebru\Retrofit\Test\LegacyAttributeTestFunctionsTrait;
 use Tebru\Retrofit\Test\Mock\Unit\Internal\ServiceMethod\ServiceMethodFactoryTest\ServiceMethodFactoryTestConverterFactory;
 use Tebru\Retrofit\Test\Mock\Unit\Internal\ServiceMethod\ServiceMethodFactoryTest\ServiceMethodFactoryTestClient;
 
 class ServiceMethodFactoryTest extends TestCase
 {
+    use LegacyAttributeTestFunctionsTrait;
+
     /**
      * @var ServiceMethodFactory
      */
     private $serviceMethodFactory;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->serviceMethodFactory = new ServiceMethodFactory(
             new AnnotationProcessor([

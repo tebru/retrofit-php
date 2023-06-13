@@ -2,16 +2,16 @@
     "name": "tebru/retrofit-php",
     "description": "Retrofit for PHP - A type-safe PHP REST client.",
     "require": {
-        "php": ">= 7.1",
+        "php": ">= 8.0",
         "guzzlehttp/psr7": "^1.0",
         "nikic/php-parser": "~3.0.6|^4.0",
-        "symfony/cache": "^3.3|^4.0|^5.0",
-        "symfony/console": "^3.0|^4.0|^5.0",
+        "symfony/cache": "^5.4|^6.0",
+        "symfony/console": "^5.4|^6.0",
         "tebru/doctrine-annotation-reader": "^0.3.0",
         "tebru/php-type": "^0.1.1"
     },
     "require-dev": {
-        "phpunit/phpunit": "^7.3",
+        "phpunit/phpunit": "^9.3",
         "mikey179/vfsstream": "^1.6"
     },
     "license": "MIT",

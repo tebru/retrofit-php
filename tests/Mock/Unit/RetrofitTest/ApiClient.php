@@ -60,9 +60,9 @@ interface ApiClient
      * @Headers({
      *     "X-Foo: bar",
      *     "X-Baz: qux",
-     *     "X-Header[]: first"
+     *     "X-Header: first"
      * })
-     * @Header("X-Header[]", var="header1")
+     * @Header("X-Header", var="header1")
      * @Header("header2")
      * @HeaderMap("headerMap")
      */

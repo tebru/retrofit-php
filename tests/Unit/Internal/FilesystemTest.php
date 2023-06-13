@@ -7,8 +7,8 @@
 namespace Tebru\Retrofit\Test\Unit\Internal;
 
 use org\bovigo\vfs\vfsStream;
-use Tebru\Retrofit\Internal\Filesystem;
 use PHPUnit\Framework\TestCase;
+use Tebru\Retrofit\Internal\Filesystem;
 
 class FilesystemTest extends TestCase
 {
@@ -17,7 +17,7 @@ class FilesystemTest extends TestCase
      */
     private $filesystem;
 
-    public function setUp()
+    public function setUp(): void
     {
         vfsStream::setup('cache');
         $this->filesystem = new Filesystem();

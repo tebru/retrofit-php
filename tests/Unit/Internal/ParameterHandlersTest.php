@@ -29,6 +29,7 @@ use Tebru\Retrofit\Internal\ParameterHandler\QueryNameParamHandler;
 use Tebru\Retrofit\Internal\ParameterHandler\QueryParamHandler;
 use Tebru\Retrofit\Internal\ParameterHandler\UrlParamHandler;
 use Tebru\Retrofit\Internal\RequestBuilder;
+use Tebru\Retrofit\Test\LegacyAttributeTestFunctionsTrait;
 use function GuzzleHttp\Psr7\stream_for;
 
 /**
@@ -38,12 +39,14 @@ use function GuzzleHttp\Psr7\stream_for;
  */
 class ParameterHandlersTest extends TestCase
 {
+    use LegacyAttributeTestFunctionsTrait;
+
     /**
      * @var RequestBuilder
      */
     private $requestBuilder;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->requestBuilder = new RequestBuilder('GET', 'http://example.com', '/test/{path}?q=test', []);
     }

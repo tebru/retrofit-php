@@ -16,15 +16,18 @@ use Tebru\Retrofit\Internal\ParameterHandler\FieldParamHandler;
 use Tebru\Retrofit\Internal\ParameterHandler\PartParamHandler;
 use Tebru\Retrofit\Internal\ServiceMethod\DefaultServiceMethodBuilder;
 use PHPUnit\Framework\TestCase;
+use Tebru\Retrofit\Test\LegacyAttributeTestFunctionsTrait;
 
 class DefaultServiceMethodBuilderTest extends TestCase
 {
+    use LegacyAttributeTestFunctionsTrait;
+
     /**
      * @var DefaultServiceMethodBuilder
      */
     private $serviceMethodBuilder;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->serviceMethodBuilder = new DefaultServiceMethodBuilder();
     }
@@ -199,7 +202,7 @@ class DefaultServiceMethodBuilderTest extends TestCase
             $this->serviceMethodBuilder->build();
         } catch (LogicException $exception) {
             self::assertSame(
-                'Retrofit: Cannot build service method without HTTP method. Please specify @GET, @POST, etc',
+                'Retrofit: Cannot build service method without path. Please specify on RetrofitBuilder',
                 $exception->getMessage()
             );
             return;

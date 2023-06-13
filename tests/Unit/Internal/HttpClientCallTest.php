@@ -8,11 +8,11 @@ namespace Tebru\Retrofit\Test\Unit\Internal;
 
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Tebru\Retrofit\Exception\ResponseHandlingFailedException;
 use Tebru\Retrofit\Internal\HttpClientCall;
 use Tebru\Retrofit\Response as RetrofitResponse;
-use PHPUnit\Framework\TestCase;
 use Tebru\Retrofit\Test\Mock\Unit\Internal\HttpClientCallTest\HttpClientCallTestClientMock;
 use Tebru\Retrofit\Test\Mock\Unit\Internal\HttpClientCallTest\HttpClientCallTestErrorBodyMock;
 use Tebru\Retrofit\Test\Mock\Unit\Internal\HttpClientCallTest\HttpClientCallTestResponseBodyMock;

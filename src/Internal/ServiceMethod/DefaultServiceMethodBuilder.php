@@ -319,7 +319,7 @@ final class DefaultServiceMethodBuilder implements ServiceMethodBuilder
 
         if ($this->path === null) {
             throw new LogicException(
-                'Retrofit: Cannot build service method without HTTP method. Please specify @GET, @POST, etc'
+                'Retrofit: Cannot build service method without path. Please specify on RetrofitBuilder'
             );
         }
 

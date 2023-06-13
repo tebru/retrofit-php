@@ -1,31 +1,22 @@
-sudo: false
+dist: xenial
+
+os: linux
 
 language: php
+
 php:
-  - 7.1
-  - 7.2
-  - 7.3
-  - 7.4
+  - 8.0
+  - 8.1
 
 env:
-  - SF_CACHE=3
-  - SF_CACHE=4
-  - SF_CACHE=4.3
-  - SF_CACHE=5
-
-jobs:
-  exclude:
-    - php: 7.1
-      env:
-        - SF_CACHE=5
+  - SYMFONY=5
+  - SYMFONY=6
 
 # remove composer.lock (it should not be published)
 before_script:
   - composer install --no-interaction -o
-  - if [ "$SF_CACHE" = "3" ]; then composer require symfony/cache:^3.3; fi;
-  - if [ "$SF_CACHE" = "4" ]; then composer require symfony/cache:">=4.0 <4.3"; fi;
-  - if [ "$SF_CACHE" = "4.3" ]; then composer require symfony/cache:^4.3; fi;
-  - if [ "$SF_CACHE" = "5" ]; then composer require symfony/cache:5.0; fi;
+  - if [ "$SYMFONY" = "5" ]; then composer update --with=symfony/cache:^5.4 --with=symfony/console:^5.4; fi;
+  - if [ "$SYMFONY" = "6" ]; then composer update --with=symfony/cache:^6.0 --with=symfony/console:^6.0; fi;
 
 script:
   - mkdir -p build/logs

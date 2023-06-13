@@ -10,12 +10,12 @@ use GuzzleHttp\Psr7\AppendStream;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use LogicException;
+use PHPUnit\Framework\TestCase;
 use Tebru\Retrofit\Internal\CallAdapter\DefaultCallAdapter;
 use Tebru\Retrofit\Internal\Converter\DefaultRequestBodyConverter;
 use Tebru\Retrofit\Internal\Converter\DefaultResponseBodyConverter;
 use Tebru\Retrofit\Internal\ParameterHandler\BodyParamHandler;
 use Tebru\Retrofit\Internal\ServiceMethod\DefaultServiceMethod;
-use PHPUnit\Framework\TestCase;
 use Tebru\Retrofit\Test\Mock\Unit\MockCall;
 
 class ServiceMethodTest extends TestCase
@@ -25,7 +25,7 @@ class ServiceMethodTest extends TestCase
      */
     private $serviceMethod;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->serviceMethod = new DefaultServiceMethod(
             'POST',
