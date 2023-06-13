@@ -11,6 +11,7 @@ use InvalidArgumentException;
 use LogicException;
 use PhpParser\BuilderFactory;
 use PhpParser\PrettyPrinter\Standard;
+use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Tebru\AnnotationReader\AnnotationReaderAdapter;
 use Tebru\Retrofit\Internal\AnnotationProcessor;
@@ -20,7 +21,6 @@ use Tebru\Retrofit\Internal\CallAdapter\DefaultCallAdapterFactory;
 use Tebru\Retrofit\Internal\Converter\ConverterProvider;
 use Tebru\Retrofit\Internal\Converter\DefaultConverterFactory;
 use Tebru\Retrofit\Internal\DefaultProxyFactory;
-use PHPUnit\Framework\TestCase;
 use Tebru\Retrofit\Internal\ServiceMethod\ServiceMethodFactory;
 use Tebru\Retrofit\Test\Mock\Unit\Internal\ProxyFactoryTest\PFTCTestCreate;
 use Tebru\Retrofit\Test\Mock\Unit\Internal\ProxyFactoryTest\PFTCTestCreateCacheDirectoryFail;
@@ -39,7 +39,7 @@ class DefaultProxyFactoryTest extends TestCase
      */
     private $filesystem;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->filesystem = new ProxyFactoryTestFilesystem();
     }

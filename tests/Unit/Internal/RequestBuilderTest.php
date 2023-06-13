@@ -8,8 +8,8 @@ namespace Tebru\Retrofit\Test\Unit\Internal;
 
 use GuzzleHttp\Psr7\AppendStream;
 use LogicException;
-use Tebru\Retrofit\Internal\RequestBuilder;
 use PHPUnit\Framework\TestCase;
+use Tebru\Retrofit\Internal\RequestBuilder;
 use function GuzzleHttp\Psr7\stream_for;
 
 class RequestBuilderTest extends TestCase

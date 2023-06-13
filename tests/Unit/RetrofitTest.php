@@ -6,6 +6,7 @@
 
 namespace Tebru\Retrofit\Test\Unit;
 
+use Doctrine\Common\Annotations\AnnotationException;
 use LogicException;
 use RuntimeException;
 use Tebru\Retrofit\Annotation\GET;
@@ -41,7 +42,7 @@ class RetrofitTest extends TestCase
      */
     private $retrofitBuilder;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->httpClient = new RetrofitTestHttpClient();
         $this->retrofitBuilder = Retrofit::builder()
@@ -102,7 +103,7 @@ class RetrofitTest extends TestCase
 
         $service
             ->headers(
-                ['X-Header[]' => ['one', 2, false]],
+                ['X-Header' => ['one', 2, false]],
                 [true, 3.14],
                 5
             )
@@ -120,7 +121,7 @@ class RetrofitTest extends TestCase
                 'Host' => ['example.com'],
                 'x-foo' => ['bar'],
                 'x-baz' => ['qux'],
-                'x-header[]' => ['first', 'one', '2', 'false', 'true', '3.14'],
+                'x-header' => ['first', 'one', '2', 'false', 'true', '3.14'],
                 'header2' => ['5']
             ],
             $request->getHeaders()
@@ -471,8 +472,11 @@ class RetrofitTest extends TestCase
 
         try {
             $service->get();
-        } catch (RuntimeException $exception) {
-            self::assertSame('Retrofit: Header in an incorrect format.  Expected "Name: value"', $exception->getMessage());
+        } catch (AnnotationException $exception) {
+            self::assertSame(
+                'Retrofit: Header in an incorrect format.  Expected "Name: value"',
+                $exception->getPrevious()->getMessage()
+            );
             return;
         }
 

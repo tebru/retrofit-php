@@ -1,0 +1,17 @@
+build:
+    nodes:
+        my-tests:
+            environment:
+                php:
+                    version: 8.1
+            tests:
+                override:
+                    - phpcs-run
+                    -
+                        command: 'XDEBUG_MODE=coverage vendor/bin/phpunit'
+                        coverage:
+                            file: 'build/logs/clover.xml'
+                            format: 'clover'
+filter:
+    excluded_paths:
+        - 'tests/*'

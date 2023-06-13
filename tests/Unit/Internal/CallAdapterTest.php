@@ -27,7 +27,7 @@ class CallAdapterTest extends TestCase
      */
     private $callAdapterProvider;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->callAdapterProvider = new CallAdapterProvider([new DefaultCallAdapterFactory()]);
     }

@@ -96,7 +96,7 @@ $responseBody = $response->body();
 Installation & Usage
 --------------------
 
-*Retrofit 3 requires PHP 7.1*
+*Retrofit 3 requires PHP 8.0*
 
 ```bash
 composer require tebru/retrofit-php

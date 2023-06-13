@@ -26,11 +26,14 @@ use Tebru\Retrofit\Internal\Converter\DefaultStringConverter;
 use Tebru\Retrofit\Internal\ParameterHandler\BodyParamHandler;
 use Tebru\Retrofit\Internal\ParameterHandler\QueryParamHandler;
 use Tebru\Retrofit\ServiceMethodBuilder;
+use Tebru\Retrofit\Test\LegacyAttributeTestFunctionsTrait;
 use Tebru\Retrofit\Test\Mock\Unit\Internal\AnnotationProcessorTest\AnnotationProcessorTestMock;
 use Tebru\Retrofit\Test\Mock\Unit\Internal\AnnotationProcessorTest\BadConverterAnnotation;
 
 class AnnotationProcessorTest extends TestCase
 {
+    use LegacyAttributeTestFunctionsTrait;
+
     /**
      * @var AnnotationProcessor
      */
@@ -46,7 +49,7 @@ class AnnotationProcessorTest extends TestCase
      */
     private $converterProvider;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->annotationProcessor = new AnnotationProcessor([
             Header::class => new HeadersAnnotHandler(),

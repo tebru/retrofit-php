@@ -29,7 +29,7 @@ class ConverterTest extends TestCase
      */
     private $converterProvider;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->converterProvider = new ConverterProvider([new DefaultConverterFactory()]);
     }

@@ -57,9 +57,12 @@ use Tebru\Retrofit\Internal\ParameterHandler\UrlParamHandler;
 use Tebru\Retrofit\RequestBodyConverter;
 use Tebru\Retrofit\ServiceMethodBuilder;
 use Tebru\Retrofit\StringConverter;
+use Tebru\Retrofit\Test\LegacyAttributeTestFunctionsTrait;
 
 class AnnotationHandlersTest extends TestCase
 {
+    use LegacyAttributeTestFunctionsTrait;
+
     /**
      * @var ServiceMethodBuilder
      */
@@ -75,7 +78,7 @@ class AnnotationHandlersTest extends TestCase
      */
     private $stringConverter;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->serviceMethodBuilder = new DefaultServiceMethodBuilder();
         $this->requestBodyConverter = new DefaultRequestBodyConverter();
